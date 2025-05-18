@@ -23,15 +23,19 @@ export default function HeroSection() {
       className="relative h-screen flex items-center justify-center overflow-hidden"
     >
       <div 
-        className="absolute inset-0 z-0"
+        className="absolute inset-0 z-0 min-h-screen"
         style={{
-          backgroundImage: 'url(https://images.pexels.com/photos/3342739/pexels-photo-3342739.jpeg)',
+          backgroundImage: 'url(https://images5.alphacoders.com/109/1094981.jpg)',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
-          transform: `translateY(${offset * 0.5}px)`,
+          backgroundRepeat: 'no-repeat',
+          willChange: 'transform',
+          transform: `translateY(${Math.min(offset * 0.3, 120)}px)`,
+          transition: 'transform 0.1s linear',
+          backgroundColor: '#1e293b',
         }}
       >
-        <div className="absolute inset-0 bg-gradient-to-b from-blue-900/30 to-blue-900/70"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-blue-900/40 to-blue-900/80"></div>
       </div>
       
       <Container className="relative z-10 text-center">

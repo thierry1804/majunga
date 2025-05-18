@@ -11,8 +11,8 @@ const tours: Tour[] = [
     price: 75,
     currency: "EUR",
     images: [
-      "https://images.pexels.com/photos/1591373/pexels-photo-1591373.jpeg",
-      "https://images.pexels.com/photos/1032650/pexels-photo-1032650.jpeg",
+      "https://www.linfo.re/IMG/jpg/majunga-6.jpg",
+      "https://media-cdn.tripadvisor.com/media/photo-s/06/06/2d/5a/antsanitia-resort.jpg",
       "https://images.pexels.com/photos/1450353/pexels-photo-1450353.jpeg"
     ],
     highlights: [

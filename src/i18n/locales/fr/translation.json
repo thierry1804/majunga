@@ -50,6 +50,41 @@
         "time": "Heure",
         "passengers": "Nombre de passagers",
         "submit": "Réserver",
+        "sectionSubtitle": "Transport Pratique",
+        "sectionDescription": "Notre service de navette confortable et fiable relie l'aéroport de Majunga au centre-ville quotidiennement, rendant votre arrivée et votre départ sans stress.",
+        "direction": {
+            "airportToCity": "Aéroport vers Ville",
+            "cityToAirport": "Ville vers Aéroport"
+        },
+        "highlights": {
+            "reliableSchedule": {
+                "title": "Horaires Fiables",
+                "description": "Départs quotidiens multiples pour s'adapter à vos plans de voyage"
+            },
+            "convenientStops": {
+                "title": "Arrêts Pratiques",
+                "description": "Service direct entre l'aéroport et les principaux sites de la ville"
+            },
+            "easyBooking": {
+                "title": "Réservation Facile",
+                "description": "Réservez votre place en ligne ou appelez-nous pour assistance"
+            }
+        },
+        "schedule": {
+            "title": {
+                "airportToCity": "Horaires Aéroport vers Ville",
+                "cityToAirport": "Horaires Ville vers Aéroport"
+            },
+            "columns": {
+                "departure": "Départ",
+                "arrival": "Arrivée",
+                "price": "Prix",
+                "availableSeats": "Places Disponibles",
+                "action": "Action"
+            },
+            "noSchedules": "Aucun horaire disponible pour cette direction.",
+            "full": "Complet"
+        },
         "importantInfo": {
             "title": "Informations Importantes",
             "items": [
@@ -58,7 +93,9 @@
                 "Notre service de navette fonctionne 7 jours sur 7, y compris les jours fériés",
                 "Pour une assistance spéciale ou des réservations de groupe, veuillez nous contacter directement"
             ]
-        }
+        },
+        "loadingError": "Impossible de charger les horaires. Veuillez réessayer plus tard.",
+        "retry": "Réessayer"
     },
     "booking": {
         "title": "Réservez votre Expérience",

@@ -29,20 +29,22 @@ export default function AboutSection() {
           <div className="lg:w-1/2 relative">
             <div className="rounded-lg overflow-hidden shadow-xl">
               <img 
-                src="https://images.pexels.com/photos/2901212/pexels-photo-2901212.jpeg" 
+                src="https://www.primemadaguide.com/images/northern/baobomby%201.jpg" 
                 alt="Pirogue traditionnelle malgache" 
                 className="w-full h-auto object-cover"
               />
             </div>
             
             <div 
-              className="absolute -bottom-6 -right-6 w-48 h-48 rounded-lg overflow-hidden shadow-lg hidden md:block"
+              className="absolute -bottom-10 -right-10 lg:w-80 lg:h-80 rounded-lg overflow-hidden shadow-lg hidden md:block"
               style={{
-                transform: `translateY(${offset * 0.2}px)`,
+                transform: `translateY(${Math.min(offset * 0.35, 20)}px)`,
+                willChange: 'transform',
+                transition: 'transform 0.1s linear',
               }}
             >
               <img 
-                src="https://images.pexels.com/photos/1320684/pexels-photo-1320684.jpeg" 
+                src="https://tourisme-majunga.com/wp-content/uploads/2024/04/Capture-e1614608651409-1.jpg" 
                 alt="Fruits locaux de Madagascar" 
                 className="w-full h-full object-cover"
               />

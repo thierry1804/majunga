@@ -50,6 +50,41 @@
         "time": "Ora",
         "passengers": "Numero di passeggeri",
         "submit": "Prenota",
+        "sectionSubtitle": "Trasporto Comodo",
+        "sectionDescription": "Il nostro servizio navetta confortevole e affidabile collega ogni giorno l'aeroporto di Majunga al centro città, rendendo il tuo arrivo e la tua partenza senza stress.",
+        "direction": {
+            "airportToCity": "Aeroporto verso Città",
+            "cityToAirport": "Città verso Aeroporto"
+        },
+        "highlights": {
+            "reliableSchedule": {
+                "title": "Orari Affidabili",
+                "description": "Partenze giornaliere multiple per adattarsi ai tuoi piani di viaggio"
+            },
+            "convenientStops": {
+                "title": "Fermate Comode",
+                "description": "Servizio diretto tra l'aeroporto e le principali località della città"
+            },
+            "easyBooking": {
+                "title": "Prenotazione Facile",
+                "description": "Prenota il tuo posto online o chiamaci per assistenza"
+            }
+        },
+        "schedule": {
+            "title": {
+                "airportToCity": "Orari Aeroporto verso Città",
+                "cityToAirport": "Orari Città verso Aeroporto"
+            },
+            "columns": {
+                "departure": "Partenza",
+                "arrival": "Arrivo",
+                "price": "Prezzo",
+                "availableSeats": "Posti Disponibili",
+                "action": "Azione"
+            },
+            "noSchedules": "Nessun orario disponibile per questa direzione.",
+            "full": "Completo"
+        },
         "importantInfo": {
             "title": "Informazioni Importanti",
             "items": [
@@ -58,7 +93,9 @@
                 "Il nostro servizio navetta opera 7 giorni su 7, inclusi i giorni festivi",
                 "Per assistenza speciale o prenotazioni di gruppo, contattaci direttamente"
             ]
-        }
+        },
+        "loadingError": "Impossibile caricare gli orari. Si prega di riprovare più tardi.",
+        "retry": "Riprova"
     },
     "booking": {
         "title": "Prenota la tua Esperienza",
