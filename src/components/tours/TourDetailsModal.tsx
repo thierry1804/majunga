@@ -23,7 +23,7 @@ export default function TourDetailsModal({ tour, onClose, onBookNow }: TourDetai
           <button
             onClick={onClose}
             className="text-gray-500 hover:text-gray-700 transition-colors"
-            aria-label="Close details"
+            aria-label="Fermer les détails"
           >
             <X size={24} />
           </button>
@@ -40,7 +40,7 @@ export default function TourDetailsModal({ tour, onClose, onBookNow }: TourDetai
               >
                 <img 
                   src={image} 
-                  alt={`${tour.title} - view ${index + 1}`} 
+                  alt={`${tour.title} - vue ${index + 1}`} 
                   className="w-full h-full object-cover"
                 />
               </div>
@@ -49,27 +49,27 @@ export default function TourDetailsModal({ tour, onClose, onBookNow }: TourDetai
           
           {/* Tour details */}
           <div className="mb-6">
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">About This Tour</h3>
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">À Propos de ce Tour</h3>
             <p className="text-gray-700 mb-4 leading-relaxed">
               {tour.fullDescription}
             </p>
             
             <div className="grid grid-cols-2 gap-4 mb-4">
               <div className="bg-blue-50 p-3 rounded">
-                <span className="block text-sm text-gray-500">Duration</span>
+                <span className="block text-sm text-gray-500">Durée</span>
                 <span className="font-medium">{tour.duration}</span>
               </div>
               
               <div className="bg-blue-50 p-3 rounded">
-                <span className="block text-sm text-gray-500">Price</span>
-                <span className="font-medium">{tour.price} {tour.currency} per person</span>
+                <span className="block text-sm text-gray-500">Prix</span>
+                <span className="font-medium">{tour.price} {tour.currency} par personne</span>
               </div>
             </div>
           </div>
           
           {/* Highlights */}
           <div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-3">Tour Highlights</h3>
+            <h3 className="text-xl font-semibold text-gray-900 mb-3">Points Forts du Tour</h3>
             <ul className="grid grid-cols-1 md:grid-cols-2 gap-2">
               {tour.highlights.map((highlight, index) => (
                 <li key={index} className="flex items-start">
@@ -86,13 +86,13 @@ export default function TourDetailsModal({ tour, onClose, onBookNow }: TourDetai
         {/* Footer with action buttons */}
         <div className="border-t p-4 bg-gray-50 flex justify-end space-x-4">
           <Button variant="outline" onClick={onClose}>
-            Close
+            Fermer
           </Button>
           <Button 
             variant="primary"
             onClick={() => onBookNow(tour)}
           >
-            Book This Tour
+            Réserver ce Tour
           </Button>
         </div>
       </div>

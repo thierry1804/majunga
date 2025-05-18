@@ -88,7 +88,7 @@ export default function BookingForm() {
         setErrorMessage(response.error || 'An error occurred while processing your booking.');
       }
     } catch (error) {
-      setErrorMessage('Network error. Please try again later.');
+      setErrorMessage('Erreur réseau. Veuillez réessayer plus tard.');
       console.error('Booking submission error:', error);
     } finally {
       setLoading(false);
@@ -97,27 +97,27 @@ export default function BookingForm() {
   
   const validateForm = () => {
     if (!formData.name.trim()) {
-      setErrorMessage('Please enter your name.');
+      setErrorMessage('Veuillez entrer votre nom.');
       return false;
     }
     
     if (!formData.email.trim() || !/^\S+@\S+\.\S+$/.test(formData.email)) {
-      setErrorMessage('Please enter a valid email address.');
+      setErrorMessage('Veuillez entrer une adresse email valide.');
       return false;
     }
     
     if (!formData.phone.trim()) {
-      setErrorMessage('Please enter your phone number.');
+      setErrorMessage('Veuillez entrer votre numéro de téléphone.');
       return false;
     }
     
     if (!formData.date) {
-      setErrorMessage('Please select a date for your booking.');
+      setErrorMessage('Veuillez sélectionner une date pour votre réservation.');
       return false;
     }
     
     if (formData.serviceId === 0) {
-      setErrorMessage(`Please select a ${formData.service === 'tour' ? 'tour' : 'shuttle'}.`);
+      setErrorMessage(`Veuillez sélectionner un ${formData.service === 'tour' ? 'circuit' : 'service de navette'}.`);
       return false;
     }
     
@@ -131,7 +131,7 @@ export default function BookingForm() {
   
   const handlePaymentError = (error: any) => {
     setSuccess(false);
-    setErrorMessage('Payment failed: ' + (error.message || 'Unknown error'));
+    setErrorMessage('Paiement échoué : ' + (error.message || 'Erreur inconnue'));
     console.error('Payment error:', error);
   };
   
@@ -187,7 +187,7 @@ export default function BookingForm() {
           {!paymentStep ? (
             // Booking form
             <form onSubmit={handleSubmit}>
-              <h3 className="text-2xl font-bold text-gray-900 mb-6">Make a Reservation</h3>
+              <h3 className="text-2xl font-bold text-gray-900 mb-6">Faire une Réservation</h3>
               
               {/* Service type selector */}
               <div className="mb-6">
@@ -201,7 +201,7 @@ export default function BookingForm() {
                     }`}
                     onClick={() => handleServiceTypeChange('tour')}
                   >
-                    Book a Tour
+                    Réserver un Circuit
                   </button>
                   <button
                     type="button"
@@ -212,7 +212,7 @@ export default function BookingForm() {
                     }`}
                     onClick={() => handleServiceTypeChange('shuttle')}
                   >
-                    Airport Shuttle
+                    Navette Aéroport
                   </button>
                 </div>
               </div>
@@ -220,7 +220,7 @@ export default function BookingForm() {
               {/* Service selection */}
               <div className="mb-6">
                 <label htmlFor="serviceId" className="block text-sm font-medium text-gray-700 mb-1">
-                  {formData.service === 'tour' ? 'Select Tour' : 'Select Shuttle'}
+                  {formData.service === 'tour' ? 'Sélectionner un Circuit' : 'Sélectionner une Navette'}
                 </label>
                 <select
                   id="serviceId"
@@ -230,18 +230,18 @@ export default function BookingForm() {
                   className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2.5 border"
                   required
                 >
-                  <option value={0}>-- Select {formData.service === 'tour' ? 'a tour' : 'a shuttle'} --</option>
+                  <option value={0}>-- Sélectionner un {formData.service === 'tour' ? 'circuit' : 'service de navette'} --</option>
                   
                   {formData.service === 'tour' ? (
                     tours.map(tour => (
                       <option key={tour.id} value={tour.id}>
-                        {tour.title} - {tour.price} {tour.currency}/person
+                        {tour.title} - {tour.price} {tour.currency}/personne
                       </option>
                     ))
                   ) : (
                     schedules.map(schedule => (
                       <option key={schedule.id} value={schedule.id}>
-                        {schedule.from} to {schedule.to} - {schedule.departureTime} ({schedule.availableSeats} seats available)
+                        {schedule.from} vers {schedule.to} - {schedule.departureTime} ({schedule.availableSeats} places disponibles)
                       </option>
                     ))
                   )}
@@ -273,7 +273,7 @@ export default function BookingForm() {
                 
                 <div>
                   <label htmlFor="numberOfPeople" className="block text-sm font-medium text-gray-700 mb-1">
-                    Number of People
+                    Nombre de Personnes
                   </label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
@@ -297,7 +297,7 @@ export default function BookingForm() {
               {/* Personal details */}
               <div className="mb-6">
                 <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-                  Full Name
+                  Nom Complet
                 </label>
                 <input
                   type="text"
@@ -328,7 +328,7 @@ export default function BookingForm() {
                 
                 <div>
                   <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
-                    Phone Number
+                    Numéro de Téléphone
                   </label>
                   <input
                     type="tel"
@@ -344,7 +344,7 @@ export default function BookingForm() {
               
               <div className="mb-6">
                 <label htmlFor="specialRequests" className="block text-sm font-medium text-gray-700 mb-1">
-                  Special Requests (Optional)
+                  Demandes Spéciales (Optionnel)
                 </label>
                 <textarea
                   id="specialRequests"
@@ -368,34 +368,34 @@ export default function BookingForm() {
                 fullWidth
                 isLoading={loading}
               >
-                Proceed to Payment
+                Procéder au Paiement
               </Button>
             </form>
           ) : (
             // Payment form
             <div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-6">Payment</h3>
+                <h3 className="text-2xl font-bold text-gray-900 mb-6">Paiement</h3>
               
               <div className="bg-blue-50 p-4 rounded-md mb-6">
-                <h4 className="font-medium text-gray-900 mb-2">Booking Summary</h4>
+                  <h4 className="font-medium text-gray-900 mb-2">Résumé de la Réservation</h4>
                 <p className="text-gray-700 mb-1">
-                  <strong>Service:</strong> {formData.service === 'tour' ? 
+                    <strong>Service :</strong> {formData.service === 'tour' ? 
                     tours.find(t => t.id === formData.serviceId)?.title : 
-                    `Shuttle from ${schedules.find(s => s.id === formData.serviceId)?.from} to ${schedules.find(s => s.id === formData.serviceId)?.to}`
+                      `Navette de ${schedules.find(s => s.id === formData.serviceId)?.from} vers ${schedules.find(s => s.id === formData.serviceId)?.to}`
                   }
                 </p>
                 <p className="text-gray-700 mb-1">
-                  <strong>Date:</strong> {new Date(formData.date).toLocaleDateString()}
+                    <strong>Date :</strong> {new Date(formData.date).toLocaleDateString()}
                 </p>
                 <p className="text-gray-700 mb-1">
-                  <strong>Participants:</strong> {formData.numberOfPeople}
+                    <strong>Participants :</strong> {formData.numberOfPeople}
                 </p>
                 <p className="text-gray-700 mb-1">
-                  <strong>Booking Reference:</strong> {bookingId || 'Pending payment'}
+                    <strong>Référence de Réservation :</strong> {bookingId || 'En attente de paiement'}
                 </p>
                 <div className="border-t border-blue-200 my-3 pt-3">
                   <p className="text-lg font-bold text-gray-900">
-                    Total: {getBookingAmount()} {getBookingCurrency()}
+                      Total : {getBookingAmount()} {getBookingCurrency()}
                   </p>
                 </div>
               </div>
@@ -420,7 +420,7 @@ export default function BookingForm() {
                 fullWidth
                 onClick={() => setPaymentStep(false)}
               >
-                Back to Booking Form
+                  Retour au Formulaire
               </Button>
             </div>
           )}
@@ -433,13 +433,13 @@ export default function BookingForm() {
               <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-6">
                 <Check size={32} className="text-green-600" />
               </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-3">Booking Confirmed!</h3>
+                <h3 className="text-2xl font-bold text-gray-900 mb-3">Réservation Confirmée !</h3>
               <p className="text-gray-600 mb-6">
-                Your booking has been confirmed and payment has been processed successfully. 
-                We've sent a confirmation email with all the details.
+                  Votre réservation a été confirmée et le paiement a été traité avec succès.
+                  Nous avons envoyé un email de confirmation avec tous les détails.
               </p>
               <p className="text-gray-700 mb-6">
-                <strong>Booking Reference:</strong> {bookingId}
+                  <strong>Référence de Réservation :</strong> {bookingId}
               </p>
             </>
           ) : (
@@ -447,9 +447,9 @@ export default function BookingForm() {
               <div className="mx-auto w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-6">
                 <X size={32} className="text-red-600" />
               </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-3">Payment Failed</h3>
+                  <h3 className="text-2xl font-bold text-gray-900 mb-3">Paiement Échoué</h3>
               <p className="text-gray-600 mb-6">
-                {errorMessage || 'There was an issue processing your payment. Please try again.'}
+                    {errorMessage || 'Il y a eu un problème lors du traitement de votre paiement. Veuillez réessayer.'}
               </p>
             </>
           )}
@@ -458,7 +458,7 @@ export default function BookingForm() {
             variant={success ? 'primary' : 'outline'}
             onClick={resetForm}
           >
-            {success ? 'Make Another Booking' : 'Try Again'}
+              {success ? 'Faire une Autre Réservation' : 'Réessayer'}
           </Button>
         </div>
       )}

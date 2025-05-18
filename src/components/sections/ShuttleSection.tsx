@@ -51,12 +51,12 @@ export default function ShuttleSection() {
       
       <Container className="relative z-10">
         <div className="text-center mb-12">
-          <span className="text-orange-500 font-medium">Convenient Transport</span>
+          <span className="text-orange-500 font-medium">Transport Pratique</span>
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mt-2">
-            Airport Shuttle Service
+            Service de Navette Aéroport
           </h2>
           <p className="text-gray-600 max-w-2xl mx-auto mt-4">
-            Our comfortable and reliable shuttle service connects Majunga Airport with the city center daily, making your arrival and departure stress-free
+            Notre service de navette confortable et fiable relie l'aéroport de Majunga au centre-ville quotidiennement, rendant votre arrivée et votre départ sans stress
           </p>
         </div>
         
@@ -71,7 +71,7 @@ export default function ShuttleSection() {
               }`}
               onClick={() => setDirection('airport-to-city')}
             >
-              Airport to City
+              Aéroport vers Ville
             </button>
             <button
               className={`flex-1 py-3 px-4 font-medium ${
@@ -81,7 +81,7 @@ export default function ShuttleSection() {
               }`}
               onClick={() => setDirection('city-to-airport')}
             >
-              City to Airport
+              Ville vers Aéroport
             </button>
           </div>
           
@@ -91,24 +91,24 @@ export default function ShuttleSection() {
               <div className="bg-blue-100 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Clock className="text-blue-700" size={24} />
               </div>
-              <h3 className="font-bold text-gray-900 mb-2">Reliable Schedule</h3>
-              <p className="text-gray-600">Multiple daily departures to accommodate your travel plans</p>
+              <h3 className="font-bold text-gray-900 mb-2">Horaires Fiables</h3>
+              <p className="text-gray-600">Départs quotidiens multiples pour s'adapter à vos plans de voyage</p>
             </div>
             
             <div className="bg-blue-50 p-6 rounded-lg text-center">
               <div className="bg-blue-100 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Map className="text-blue-700" size={24} />
               </div>
-              <h3 className="font-bold text-gray-900 mb-2">Convenient Stops</h3>
-              <p className="text-gray-600">Direct service between the airport and main city locations</p>
+              <h3 className="font-bold text-gray-900 mb-2">Arrêts Pratiques</h3>
+              <p className="text-gray-600">Service direct entre l'aéroport et les principaux sites de la ville</p>
             </div>
             
             <div className="bg-blue-50 p-6 rounded-lg text-center">
               <div className="bg-blue-100 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4">
                 <ExternalLink className="text-blue-700" size={24} />
               </div>
-              <h3 className="font-bold text-gray-900 mb-2">Easy Booking</h3>
-              <p className="text-gray-600">Reserve your seat online or call us for assistance</p>
+              <h3 className="font-bold text-gray-900 mb-2">Réservation Facile</h3>
+              <p className="text-gray-600">Réservez votre place en ligne ou appelez-nous pour assistance</p>
             </div>
           </div>
           
@@ -116,7 +116,7 @@ export default function ShuttleSection() {
           <div className="bg-white rounded-lg shadow-md overflow-hidden mb-8">
             <div className="px-6 py-4 bg-gray-50 border-b">
               <h3 className="font-bold text-lg text-gray-900">
-                {direction === 'airport-to-city' ? 'Airport to City Schedule' : 'City to Airport Schedule'}
+                {direction === 'airport-to-city' ? 'Horaires Aéroport vers Ville' : 'Horaires Ville vers Aéroport'}
               </h3>
             </div>
             
@@ -128,7 +128,7 @@ export default function ShuttleSection() {
               <div className="text-center text-red-500 py-8">
                 <p>{error}</p>
                 <Button className="mt-4" onClick={() => window.location.reload()}>
-                  Try Again
+                    Réessayer
                 </Button>
               </div>
             ) : (
@@ -136,10 +136,10 @@ export default function ShuttleSection() {
                 <table className="w-full">
                   <thead>
                     <tr className="bg-gray-50">
-                      <th className="py-3 px-6 text-left text-sm font-medium text-gray-600">Departure</th>
-                      <th className="py-3 px-6 text-left text-sm font-medium text-gray-600">Arrival</th>
-                      <th className="py-3 px-6 text-left text-sm font-medium text-gray-600">Price</th>
-                      <th className="py-3 px-6 text-left text-sm font-medium text-gray-600">Available Seats</th>
+                          <th className="py-3 px-6 text-left text-sm font-medium text-gray-600">Départ</th>
+                          <th className="py-3 px-6 text-left text-sm font-medium text-gray-600">Arrivée</th>
+                          <th className="py-3 px-6 text-left text-sm font-medium text-gray-600">Prix</th>
+                          <th className="py-3 px-6 text-left text-sm font-medium text-gray-600">Places Disponibles</th>
                       <th className="py-3 px-6 text-right text-sm font-medium text-gray-600">Action</th>
                     </tr>
                   </thead>
@@ -153,7 +153,7 @@ export default function ShuttleSection() {
                             {schedule.price} {schedule.currency}
                           </td>
                           <td className="py-3 px-6 text-sm text-gray-900">
-                            {schedule.availableSeats > 0 ? schedule.availableSeats : 'Sold out'}
+                            {schedule.availableSeats > 0 ? schedule.availableSeats : 'Complet'}
                           </td>
                           <td className="py-3 px-6 text-right">
                             <Button
@@ -166,7 +166,7 @@ export default function ShuttleSection() {
                                 }
                               }}
                             >
-                              Book Now
+                              Réserver
                             </Button>
                           </td>
                         </tr>
@@ -174,7 +174,7 @@ export default function ShuttleSection() {
                     ) : (
                       <tr>
                         <td colSpan={5} className="py-6 text-center text-gray-500">
-                          No schedules available for this direction.
+                                Aucun horaire disponible pour cette direction.
                         </td>
                       </tr>
                     )}
@@ -186,12 +186,12 @@ export default function ShuttleSection() {
           
           {/* Additional info */}
           <div className="bg-blue-50 p-6 rounded-lg">
-            <h3 className="font-bold text-gray-900 mb-2">Important Information</h3>
+            <h3 className="font-bold text-gray-900 mb-2">Informations Importantes</h3>
             <ul className="list-disc pl-5 space-y-2 text-gray-700">
-              <li>Please arrive 15 minutes before scheduled departure time</li>
-              <li>Each passenger is allowed one suitcase and one carry-on bag</li>
-              <li>Our shuttle service operates 7 days a week, including holidays</li>
-              <li>For special assistance or group bookings, please contact us directly</li>
+              <li>Veuillez arriver 15 minutes avant l'heure de départ prévue</li>
+              <li>Chaque passager est autorisé à emporter une valise et un bagage à main</li>
+              <li>Notre service de navette fonctionne 7 jours sur 7, y compris les jours fériés</li>
+              <li>Pour une assistance spéciale ou des réservations de groupe, veuillez nous contacter directement</li>
             </ul>
           </div>
         </div>

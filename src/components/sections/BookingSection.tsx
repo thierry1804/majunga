@@ -36,12 +36,12 @@ export default function BookingSection() {
       
       <Container className="relative z-10">
         <div className="text-center mb-12">
-          <span className="text-orange-500 font-medium">Reserve Your Experience</span>
+          <span className="text-orange-500 font-medium">Réservez Votre Expérience</span>
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mt-2">
-            Book Your Adventure
+            Réservez Votre Aventure
           </h2>
           <p className="text-gray-600 max-w-2xl mx-auto mt-4">
-            Secure your spot on one of our popular tours or book a convenient airport shuttle service with our simple online booking system
+            Sécurisez votre place sur l'un de nos circuits populaires ou réservez un service de navette aéroport pratique avec notre système de réservation en ligne simple
           </p>
         </div>
         

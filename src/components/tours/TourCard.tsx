@@ -96,12 +96,12 @@ export default function TourCard({ tour, onClick }: TourCardProps) {
           
           <div className="flex items-center text-gray-700">
             <MapPin size={16} className="mr-1" />
-            <span className="text-sm">Majunga Region</span>
+            <span className="text-sm">Région de Majunga</span>
           </div>
           
           <div className="flex items-center text-gray-700">
             <TrendingUp size={16} className="mr-1" />
-            <span className="text-sm">{tour.highlights.length} highlights</span>
+            <span className="text-sm">{tour.highlights.length} points forts</span>
           </div>
         </div>
         
@@ -110,10 +110,10 @@ export default function TourCard({ tour, onClick }: TourCardProps) {
             <span className="text-xl font-bold text-blue-800">
               {tour.price} {tour.currency}
             </span>
-            <span className="text-gray-500 text-sm ml-1">/ person</span>
+            <span className="text-gray-500 text-sm ml-1">/ personne</span>
           </div>
           
-          <Button onClick={() => onClick(tour)}>View Details</Button>
+          <Button onClick={() => onClick(tour)}>Voir les Détails</Button>
         </div>
       </div>
     </div>

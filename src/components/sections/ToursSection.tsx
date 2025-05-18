@@ -60,12 +60,12 @@ export default function ToursSection() {
     <section id="tours" className="py-20 bg-gray-50">
       <Container>
         <div className="text-center mb-12">
-          <span className="text-orange-500 font-medium">Explore With Us</span>
+          <span className="text-orange-500 font-medium">Explorez avec Nous</span>
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mt-2">
-            Our Popular Tours
+            Nos Circuits Populaires
           </h2>
           <p className="text-gray-600 max-w-2xl mx-auto mt-4">
-            Discover the most beautiful and exciting destinations around Majunga with our carefully crafted tour experiences
+            Découvrez les plus beaux et excitants sites autour de Majunga avec nos circuits soigneusement élaborés
           </p>
         </div>
         
@@ -77,7 +77,7 @@ export default function ToursSection() {
           <div className="text-center text-red-500 py-8">
             <p>{error}</p>
             <Button className="mt-4" onClick={() => window.location.reload()}>
-              Try Again
+                Réessayer
             </Button>
           </div>
         ) : (
@@ -113,7 +113,7 @@ export default function ToursSection() {
               variant="primary"
               className="shadow-lg"
             >
-              Book Your Tour Now
+              Réserver Votre Circuit
             </Button>
           </div>
         )}
