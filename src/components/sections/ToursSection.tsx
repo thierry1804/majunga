@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { fetchTours } from '../../api/mockApi';
 import { Tour } from '../../types';
 import Container from '../ui/Container';
@@ -7,6 +8,7 @@ import TourDetailsModal from '../tours/TourDetailsModal';
 import Button from '../ui/Button';
 
 export default function ToursSection() {
+  const { t } = useTranslation();
   const [tours, setTours] = useState<Tour[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -21,7 +23,7 @@ export default function ToursSection() {
         setTours(toursData);
         setError(null);
       } catch (err) {
-        setError('Unable to load tours. Please try again later.');
+        setError(t('tours.loadingError'));
         console.error('Error fetching tours:', err);
       } finally {
         setLoading(false);
@@ -29,7 +31,7 @@ export default function ToursSection() {
     };
     
     loadTours();
-  }, []);
+  }, [t]);
   
   const handleTourClick = (tour: Tour) => {
     setSelectedTour(tour);
@@ -60,12 +62,12 @@ export default function ToursSection() {
     <section id="tours" className="py-20 bg-gray-50">
       <Container>
         <div className="text-center mb-12">
-          <span className="text-orange-500 font-medium">Explorez avec Nous</span>
+          <span className="text-orange-500 font-medium">{t('tours.sectionSubtitle')}</span>
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mt-2">
-            Nos Circuits Populaires
+            {t('tours.sectionTitle')}
           </h2>
           <p className="text-gray-600 max-w-2xl mx-auto mt-4">
-            Découvrez les plus beaux et excitants sites autour de Majunga avec nos circuits soigneusement élaborés
+            {t('tours.sectionDescription')}
           </p>
         </div>
         
@@ -77,7 +79,7 @@ export default function ToursSection() {
           <div className="text-center text-red-500 py-8">
             <p>{error}</p>
             <Button className="mt-4" onClick={() => window.location.reload()}>
-                Réessayer
+                {t('tours.retry')}
             </Button>
           </div>
         ) : (
@@ -113,7 +115,7 @@ export default function ToursSection() {
               variant="primary"
               className="shadow-lg"
             >
-              Réserver Votre Circuit
+              {t('tours.bookTour')}
             </Button>
           </div>
         )}

@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
 import { ChevronDown } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import Container from '../ui/Container';
 import Button from '../ui/Button';
 
 export default function HeroSection() {
+  const { t } = useTranslation();
   const [offset, setOffset] = useState(0);
   
   useEffect(() => {
@@ -35,12 +37,12 @@ export default function HeroSection() {
       <Container className="relative z-10 text-center">
         <div className="max-w-3xl mx-auto">
           <h1 className="text-5xl sm:text-6xl font-bold text-white mb-6">
-            Découvrez la Magie de{' '} 
+            {t('hero.title')}{' '} 
             <span className="text-orange-400">Majunga</span>
           </h1>
           
           <p className="text-xl text-white/90 mb-8">
-            Vivez des plages à couper le souffle, une culture vibrante et des aventures inoubliables avec nos circuits premium et notre service de navette aéroport
+            {t('hero.subtitle')}
           </p>
           
           <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 justify-center">
@@ -51,7 +53,7 @@ export default function HeroSection() {
                 document.querySelector('#tours')?.scrollIntoView({ behavior: 'smooth' });
               }}
             >
-              Découvrir nos Circuits
+              {t('hero.discoverTours')}
             </Button>
             
             <Button 
@@ -61,7 +63,7 @@ export default function HeroSection() {
                 document.querySelector('#booking')?.scrollIntoView({ behavior: 'smooth' });
               }}
             >
-              Réserver la Navette
+              {t('hero.bookShuttle')}
             </Button>
           </div>
         </div>
@@ -69,7 +71,7 @@ export default function HeroSection() {
       
       <div className="absolute bottom-8 left-0 right-0 flex justify-center animate-bounce">
         <button 
-          aria-label="Défiler vers le bas"
+          aria-label={t('hero.scrollDown')}
           onClick={() => {
             document.querySelector('#about')?.scrollIntoView({ behavior: 'smooth' });
           }}

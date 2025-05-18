@@ -1,0 +1,73 @@
+{
+    "welcome": "Benvenuto",
+    "language": "Lingua",
+    "navigation": {
+        "home": "Home",
+        "about": "Chi siamo",
+        "contact": "Contatti"
+    },
+    "hero": {
+        "title": "Scopri la Magia di",
+        "subtitle": "Vivi spiagge mozzafiato, una cultura vibrante e avventure indimenticabili con i nostri tour premium e il servizio navetta aeroportuale",
+        "discoverTours": "Scopri i nostri Tour",
+        "bookShuttle": "Prenota la Navetta",
+        "scrollDown": "Scorri in basso"
+    },
+    "about": {
+        "title": "Su Majunga",
+        "description": "Majunga, o Mahajanga, è un'affascinante città portuale situata sulla costa nord-occidentale del Madagascar. Con il suo piacevole clima tropicale e il ricco patrimonio culturale, è una destinazione ideale per i viaggiatori in cerca di avventura e autenticità.",
+        "sectionTitle": "Benvenuto a Majunga Explorer",
+        "intro": "Dal 2015, ci dedichiamo a condividere la bellezza naturale e la ricca cultura di Majunga, Madagascar con viaggiatori da tutto il mondo. La nostra passione è creare esperienze autentiche che connettono i visitatori con il vero Madagascar.",
+        "distinction": "Ciò che ci distingue è la nostra profonda conoscenza locale e il nostro impegno per il turismo sostenibile. Tutte le nostre guide sono native di Majunga con una profonda comprensione della storia, della cultura e dei tesori nascosti della regione.",
+        "mission": {
+            "title": "La Nostra Missione",
+            "description": "Valorizzare la bellezza di Majunga sostenendo le comunità locali e preservando gli ambienti naturali."
+        },
+        "experience": {
+            "title": "Esperienza Locale",
+            "description": "Tutti i nostri tour sono progettati e guidati da guide locali che condividono prospettive e storie autentiche."
+        }
+    },
+    "tours": {
+        "title": "I nostri Tour",
+        "description": "Scopri i nostri tour accuratamente selezionati per offrirti un'esperienza indimenticabile a Majunga",
+        "viewDetails": "Vedi dettagli",
+        "bookNow": "Prenota ora",
+        "sectionTitle": "I nostri Tour Popolari",
+        "sectionSubtitle": "Esplora con Noi",
+        "sectionDescription": "Scopri i siti più belli ed emozionanti intorno a Majunga con i nostri tour accuratamente progettati",
+        "loadingError": "Impossibile caricare i tour. Si prega di riprovare più tardi.",
+        "retry": "Riprova",
+        "bookTour": "Prenota il tuo Tour"
+    },
+    "shuttle": {
+        "title": "Servizio Navetta Aeroportuale",
+        "description": "Trasporto confortevole e affidabile tra l'aeroporto e la tua destinazione",
+        "bookShuttle": "Prenota la Navetta",
+        "pickupLocation": "Luogo di ritiro",
+        "dropoffLocation": "Luogo di consegna",
+        "date": "Data",
+        "time": "Ora",
+        "passengers": "Numero di passeggeri",
+        "submit": "Prenota",
+        "importantInfo": {
+            "title": "Informazioni Importanti",
+            "items": [
+                "Si prega di arrivare 15 minuti prima dell'orario di partenza previsto",
+                "Ogni passeggero può portare una valigia e un bagaglio a mano",
+                "Il nostro servizio navetta opera 7 giorni su 7, inclusi i giorni festivi",
+                "Per assistenza speciale o prenotazioni di gruppo, contattaci direttamente"
+            ]
+        }
+    },
+    "booking": {
+        "title": "Prenota la tua Esperienza",
+        "description": "Pianifica oggi il tuo viaggio a Majunga",
+        "contactUs": "Contattaci"
+    },
+    "footer": {
+        "copyright": "© 2024 Majunga Tours. Tutti i diritti riservati.",
+        "privacy": "Informativa sulla privacy",
+        "terms": "Termini di utilizzo"
+    }
+}

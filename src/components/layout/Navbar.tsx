@@ -1,17 +1,28 @@
 import { useState, useEffect } from 'react';
 import { Menu, X, Plane, MapPin, Calendar, Info } from 'lucide-react';
-
-const navLinks = [
-  { href: '#home', label: 'Accueil', icon: <MapPin size={16} /> },
-  { href: '#about', label: 'À propos', icon: <Info size={16} /> },
-  { href: '#tours', label: 'Circuits', icon: <MapPin size={16} /> },
-  { href: '#shuttle', label: 'Navette Aéroport', icon: <Plane size={16} /> },
-  { href: '#booking', label: 'Réserver', icon: <Calendar size={16} /> },
-];
+import LanguageSwitcher from '../LanguageSwitcher';
+import { useTranslation } from 'react-i18next';
 
 export default function Navbar() {
+  const { t, i18n } = useTranslation();
+  const [_, setLang] = useState(i18n.language);
+
+  useEffect(() => {
+    const onLangChanged = () => setLang(i18n.language);
+    i18n.on('languageChanged', onLangChanged);
+    return () => i18n.off('languageChanged', onLangChanged);
+  }, [i18n]);
+
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+
+  const navLinks = [
+    { href: '#home', label: t('navigation.home'), icon: <MapPin size={16} /> },
+    { href: '#about', label: t('navigation.about'), icon: <Info size={16} /> },
+    { href: '#tours', label: t('tours.title'), icon: <MapPin size={16} /> },
+    { href: '#shuttle', label: t('shuttle.title'), icon: <Plane size={16} /> },
+    { href: '#booking', label: t('booking.title'), icon: <Calendar size={16} /> },
+  ];
 
   useEffect(() => {
     const handleScroll = () => {
@@ -66,7 +77,7 @@ export default function Navbar() {
             <span className={`ml-1 text-orange-500 font-light`}>Explorer</span>
           </a>
           
-          <div className="hidden md:flex space-x-8">
+          <div className="hidden md:flex space-x-8 items-center">
             {navLinks.map((link) => (
               <a
                 key={link.href}
@@ -79,6 +90,7 @@ export default function Navbar() {
                 <span>{link.label}</span>
               </a>
             ))}
+            <LanguageSwitcher />
           </div>
           
           <button 
@@ -105,6 +117,7 @@ export default function Navbar() {
                   <span>{link.label}</span>
                 </a>
               ))}
+              <div className="mt-2"><LanguageSwitcher /></div>
             </div>
           </div>
         )}

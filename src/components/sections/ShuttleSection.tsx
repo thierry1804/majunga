@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 import { Clock, ExternalLink, Map } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { fetchShuttleSchedules } from '../../api/mockApi';
 import { ShuttleSchedule } from '../../types';
 import Container from '../ui/Container';
 import Button from '../ui/Button';
 
 export default function ShuttleSection() {
+  const { t } = useTranslation();
   const [schedules, setSchedules] = useState<ShuttleSchedule[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -19,7 +21,7 @@ export default function ShuttleSection() {
         setSchedules(schedulesData);
         setError(null);
       } catch (err) {
-        setError('Unable to load shuttle schedules. Please try again later.');
+        setError(t('shuttle.loadingError'));
         console.error('Error fetching schedules:', err);
       } finally {
         setLoading(false);
@@ -27,7 +29,7 @@ export default function ShuttleSection() {
     };
     
     loadSchedules();
-  }, []);
+  }, [t]);
   
   const filteredSchedules = schedules.filter(schedule => 
     direction === 'airport-to-city' 
@@ -51,12 +53,12 @@ export default function ShuttleSection() {
       
       <Container className="relative z-10">
         <div className="text-center mb-12">
-          <span className="text-orange-500 font-medium">Transport Pratique</span>
+          <span className="text-orange-500 font-medium">{t('shuttle.sectionSubtitle')}</span>
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mt-2">
-            Service de Navette Aéroport
+            {t('shuttle.title')}
           </h2>
           <p className="text-gray-600 max-w-2xl mx-auto mt-4">
-            Notre service de navette confortable et fiable relie l'aéroport de Majunga au centre-ville quotidiennement, rendant votre arrivée et votre départ sans stress
+            {t('shuttle.sectionDescription')}
           </p>
         </div>
         
@@ -71,7 +73,7 @@ export default function ShuttleSection() {
               }`}
               onClick={() => setDirection('airport-to-city')}
             >
-              Aéroport vers Ville
+              {t('shuttle.direction.airportToCity')}
             </button>
             <button
               className={`flex-1 py-3 px-4 font-medium ${
@@ -81,7 +83,7 @@ export default function ShuttleSection() {
               }`}
               onClick={() => setDirection('city-to-airport')}
             >
-              Ville vers Aéroport
+              {t('shuttle.direction.cityToAirport')}
             </button>
           </div>
           
@@ -91,24 +93,24 @@ export default function ShuttleSection() {
               <div className="bg-blue-100 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Clock className="text-blue-700" size={24} />
               </div>
-              <h3 className="font-bold text-gray-900 mb-2">Horaires Fiables</h3>
-              <p className="text-gray-600">Départs quotidiens multiples pour s'adapter à vos plans de voyage</p>
+              <h3 className="font-bold text-gray-900 mb-2">{t('shuttle.highlights.reliableSchedule.title')}</h3>
+              <p className="text-gray-600">{t('shuttle.highlights.reliableSchedule.description')}</p>
             </div>
             
             <div className="bg-blue-50 p-6 rounded-lg text-center">
               <div className="bg-blue-100 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Map className="text-blue-700" size={24} />
               </div>
-              <h3 className="font-bold text-gray-900 mb-2">Arrêts Pratiques</h3>
-              <p className="text-gray-600">Service direct entre l'aéroport et les principaux sites de la ville</p>
+              <h3 className="font-bold text-gray-900 mb-2">{t('shuttle.highlights.convenientStops.title')}</h3>
+              <p className="text-gray-600">{t('shuttle.highlights.convenientStops.description')}</p>
             </div>
             
             <div className="bg-blue-50 p-6 rounded-lg text-center">
               <div className="bg-blue-100 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4">
                 <ExternalLink className="text-blue-700" size={24} />
               </div>
-              <h3 className="font-bold text-gray-900 mb-2">Réservation Facile</h3>
-              <p className="text-gray-600">Réservez votre place en ligne ou appelez-nous pour assistance</p>
+              <h3 className="font-bold text-gray-900 mb-2">{t('shuttle.highlights.easyBooking.title')}</h3>
+              <p className="text-gray-600">{t('shuttle.highlights.easyBooking.description')}</p>
             </div>
           </div>
           
@@ -116,7 +118,10 @@ export default function ShuttleSection() {
           <div className="bg-white rounded-lg shadow-md overflow-hidden mb-8">
             <div className="px-6 py-4 bg-gray-50 border-b">
               <h3 className="font-bold text-lg text-gray-900">
-                {direction === 'airport-to-city' ? 'Horaires Aéroport vers Ville' : 'Horaires Ville vers Aéroport'}
+                {direction === 'airport-to-city'
+                  ? t('shuttle.schedule.title.airportToCity')
+                  : t('shuttle.schedule.title.cityToAirport')
+                }
               </h3>
             </div>
             
@@ -128,7 +133,7 @@ export default function ShuttleSection() {
               <div className="text-center text-red-500 py-8">
                 <p>{error}</p>
                 <Button className="mt-4" onClick={() => window.location.reload()}>
-                    Réessayer
+                    {t('shuttle.retry')}
                 </Button>
               </div>
             ) : (
@@ -136,11 +141,11 @@ export default function ShuttleSection() {
                 <table className="w-full">
                   <thead>
                     <tr className="bg-gray-50">
-                          <th className="py-3 px-6 text-left text-sm font-medium text-gray-600">Départ</th>
-                          <th className="py-3 px-6 text-left text-sm font-medium text-gray-600">Arrivée</th>
-                          <th className="py-3 px-6 text-left text-sm font-medium text-gray-600">Prix</th>
-                          <th className="py-3 px-6 text-left text-sm font-medium text-gray-600">Places Disponibles</th>
-                      <th className="py-3 px-6 text-right text-sm font-medium text-gray-600">Action</th>
+                          <th className="py-3 px-6 text-left text-sm font-medium text-gray-600">{t('shuttle.schedule.columns.departure')}</th>
+                          <th className="py-3 px-6 text-left text-sm font-medium text-gray-600">{t('shuttle.schedule.columns.arrival')}</th>
+                          <th className="py-3 px-6 text-left text-sm font-medium text-gray-600">{t('shuttle.schedule.columns.price')}</th>
+                          <th className="py-3 px-6 text-left text-sm font-medium text-gray-600">{t('shuttle.schedule.columns.availableSeats')}</th>
+                          <th className="py-3 px-6 text-right text-sm font-medium text-gray-600">{t('shuttle.schedule.columns.action')}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-200">
@@ -153,7 +158,7 @@ export default function ShuttleSection() {
                             {schedule.price} {schedule.currency}
                           </td>
                           <td className="py-3 px-6 text-sm text-gray-900">
-                            {schedule.availableSeats > 0 ? schedule.availableSeats : 'Complet'}
+                            {schedule.availableSeats > 0 ? schedule.availableSeats : t('shuttle.schedule.full')}
                           </td>
                           <td className="py-3 px-6 text-right">
                             <Button
@@ -166,7 +171,7 @@ export default function ShuttleSection() {
                                 }
                               }}
                             >
-                              Réserver
+                              {t('shuttle.submit')}
                             </Button>
                           </td>
                         </tr>
@@ -174,7 +179,7 @@ export default function ShuttleSection() {
                     ) : (
                       <tr>
                         <td colSpan={5} className="py-6 text-center text-gray-500">
-                                Aucun horaire disponible pour cette direction.
+                                {t('shuttle.schedule.noSchedules')}
                         </td>
                       </tr>
                     )}
@@ -186,12 +191,11 @@ export default function ShuttleSection() {
           
           {/* Additional info */}
           <div className="bg-blue-50 p-6 rounded-lg">
-            <h3 className="font-bold text-gray-900 mb-2">Informations Importantes</h3>
+            <h3 className="font-bold text-gray-900 mb-2">{t('shuttle.importantInfo.title')}</h3>
             <ul className="list-disc pl-5 space-y-2 text-gray-700">
-              <li>Veuillez arriver 15 minutes avant l'heure de départ prévue</li>
-              <li>Chaque passager est autorisé à emporter une valise et un bagage à main</li>
-              <li>Notre service de navette fonctionne 7 jours sur 7, y compris les jours fériés</li>
-              <li>Pour une assistance spéciale ou des réservations de groupe, veuillez nous contacter directement</li>
+              {(t('shuttle.importantInfo.items', { returnObjects: true }) as string[]).map((item: string, index: number) => (
+                <li key={index}>{item}</li>
+              ))}
             </ul>
           </div>
         </div>
