@@ -42,7 +42,7 @@ export default function ToursSection() {
     setShowScrollToBooking(false);
   };
   
-  const handleBookNow = (tour: Tour) => {
+  const handleBookNow = () => {
     setSelectedTour(null);
     document.body.style.overflow = ''; // Restore scrolling
     setShowScrollToBooking(true);
