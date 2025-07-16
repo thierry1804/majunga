@@ -10,7 +10,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
           {/* Company Info */}
           <div>
-            <h3 className="text-xl font-bold mb-4">Majunga Explorer</h3>
+            <h3 className="text-xl font-bold mb-4">Mada Booking</h3>
             <p className="text-blue-100 mb-6">
               Votre porte d'entrée vers des expériences authentiques dans la belle région de Majunga à Madagascar, proposant des circuits et des services de navette aéroport fiables.
             </p>
@@ -63,7 +63,7 @@ export default function Footer() {
               </li>
               <li className="flex items-center">
                 <Mail size={18} className="text-orange-400 mr-2 flex-shrink-0" />
-                <a href="mailto:info@majungaexplorer.com" className="text-blue-100 hover:text-white transition-colors">info@majungaexplorer.com</a>
+                <a href="mailto:info@madabooking.mg" className="text-blue-100 hover:text-white transition-colors">info@madabooking.mg</a>
               </li>
             </ul>
           </div>
@@ -94,7 +94,7 @@ export default function Footer() {
         <div className="border-t border-blue-800 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <p className="text-blue-200 text-sm mb-4 md:mb-0">
-              &copy; {currentYear} Majunga Explorer. Tous droits réservés.
+              &copy; {currentYear} Mada Booking. Tous droits réservés.
             </p>
             <div className="flex space-x-6">
               <a href="#" className="text-blue-200 hover:text-white transition-colors text-sm">

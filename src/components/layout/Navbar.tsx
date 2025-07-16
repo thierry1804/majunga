@@ -72,9 +72,9 @@ export default function Navbar() {
             className="text-2xl font-bold flex items-center"
           >
             <span className={`transition-colors duration-300 ${isScrolled ? 'text-blue-800' : 'text-white'}`}>
-              Majunga
+              Mada
             </span>
-            <span className={`ml-1 text-orange-500 font-light`}>Explorer</span>
+            <span className={`ml-1 text-orange-500 font-light`}>Booking</span>
           </a>
           
           <div className="hidden md:flex space-x-8 items-center">
