@@ -3,6 +3,7 @@ import { ChevronDown } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import Container from '../ui/Container';
 import Button from '../ui/Button';
+import WeatherWidget from '../WeatherWidget';
 
 export default function HeroSection() {
   const { t } = useTranslation();
@@ -49,7 +50,7 @@ export default function HeroSection() {
             {t('hero.subtitle')}
           </p>
           
-          <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 justify-center">
+          <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 justify-center mb-8">
             <Button 
               size="lg" 
               variant="primary"
@@ -69,6 +70,11 @@ export default function HeroSection() {
             >
               {t('hero.bookShuttle')}
             </Button>
+          </div>
+          
+          {/* Widget météo en dessous des CTA */}
+          <div className="flex justify-center">
+            <WeatherWidget />
           </div>
         </div>
       </Container>

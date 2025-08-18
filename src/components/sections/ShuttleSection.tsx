@@ -5,6 +5,7 @@ import { fetchShuttleSchedules } from '../../api/mockApi';
 import { ShuttleSchedule } from '../../types';
 import Container from '../ui/Container';
 import Button from '../ui/Button';
+import FlightSchedule from '../FlightSchedule';
 
 export default function ShuttleSection() {
   const { t } = useTranslation();
@@ -62,7 +63,7 @@ export default function ShuttleSection() {
           </p>
         </div>
         
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-6xl mx-auto">
           {/* Direction selector */}
           <div className="flex rounded-lg overflow-hidden mb-8 shadow-sm border">
             <button
@@ -187,6 +188,11 @@ export default function ShuttleSection() {
                 </table>
               </div>
             )}
+          </div>
+          
+          {/* Planning des vols */}
+          <div className="mb-8">
+            <FlightSchedule />
           </div>
           
           {/* Additional info */}
