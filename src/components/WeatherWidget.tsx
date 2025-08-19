@@ -1,9 +1,11 @@
-import { Droplets, Thermometer, Wind } from 'lucide-react';
+import { Droplets, Thermometer, Wind, Calendar } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { useWeather } from '../hooks/useWeather';
 import { WeatherIcon } from './ui/WeatherIcon';
 
 const WeatherWidget = () => {
   const { weather, loading, error } = useWeather();
+  const { t } = useTranslation();
 
   if (loading) {
     return (
@@ -32,10 +34,10 @@ const WeatherWidget = () => {
     return (
       <div className="bg-white/10 backdrop-blur-md rounded-lg p-4 border border-white/20 text-white">
         <div className="text-center">
-          <div className="text-sm opacity-75">Météo non disponible</div>
+          <div className="text-sm opacity-75">{t('weather.unavailable')}</div>
           {error && (
             <div className="text-xs opacity-50 mt-1">
-              {error.includes('Clé API') ? 'Configurez votre clé API dans .env' : error}
+              {error.includes('Clé API') ? t('weather.apiError') : error}
             </div>
           )}
         </div>
@@ -55,7 +57,7 @@ const WeatherWidget = () => {
             {weather?.current.feelsLike && (
               <div className="text-xs opacity-75 flex items-center gap-1">
                 <Thermometer className="w-3 h-3" />
-                Ressenti: {weather.current.feelsLike}°C
+                {t('weather.feelsLike')}: {weather.current.feelsLike}°C
               </div>
             )}
           </div>

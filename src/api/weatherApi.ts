@@ -1,3 +1,5 @@
+import i18n from '../i18n/i18n';
+
 // Service API pour OpenWeatherMap
 const API_KEY = 'e94faa4685cda7d067809c3f0101e91e';
 const MAJUNGA_COORDS = {
@@ -29,6 +31,20 @@ export interface WeatherError {
 }
 
 class WeatherApiService {
+  private getCurrentLanguage(): string {
+    // Obtenir la langue actuelle de l'application
+    const currentLang = i18n.language;
+
+    // Mapping des langues de l'app vers les codes OpenWeatherMap
+    const langMapping: { [key: string]: string } = {
+      'fr': 'fr',
+      'en': 'en',
+      'it': 'it'
+    };
+
+    return langMapping[currentLang] || 'fr'; // Fallback vers français
+  }
+
   private async makeRequest(url: string): Promise<any> {
     const response = await fetch(url);
     
@@ -53,7 +69,8 @@ class WeatherApiService {
   // API alternative gratuite (OpenMeteo)
   private async getAlternativeWeather(): Promise<any> {
     try {
-      const url = `https://api.open-meteo.com/v1/forecast?latitude=${MAJUNGA_COORDS.lat}&longitude=${MAJUNGA_COORDS.lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m&hourly=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m&timezone=auto`;
+      const currentLang = this.getCurrentLanguage();
+      const url = `https://api.open-meteo.com/v1/forecast?latitude=${MAJUNGA_COORDS.lat}&longitude=${MAJUNGA_COORDS.lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m&hourly=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m&timezone=auto&language=${currentLang}`;
       const response = await fetch(url);
       
       if (!response.ok) {
@@ -67,41 +84,92 @@ class WeatherApiService {
   }
 
   private convertWeatherCode(code: number): { description: string; icon: string } {
-    // Conversion des codes météo OpenMeteo vers OpenWeatherMap
-    const weatherMap: { [key: number]: { description: string; icon: string } } = {
-      0: { description: 'Ciel dégagé', icon: '01d' },
-      1: { description: 'Peu nuageux', icon: '02d' },
-      2: { description: 'Partiellement nuageux', icon: '02d' },
-      3: { description: 'Couvert', icon: '03d' },
-      45: { description: 'Brouillard', icon: '50d' },
-      48: { description: 'Brouillard givrant', icon: '50d' },
-      51: { description: 'Bruine légère', icon: '09d' },
-      53: { description: 'Bruine modérée', icon: '09d' },
-      55: { description: 'Bruine dense', icon: '09d' },
-      61: { description: 'Pluie légère', icon: '10d' },
-      63: { description: 'Pluie modérée', icon: '10d' },
-      65: { description: 'Pluie forte', icon: '10d' },
-      71: { description: 'Neige légère', icon: '13d' },
-      73: { description: 'Neige modérée', icon: '13d' },
-      75: { description: 'Neige forte', icon: '13d' },
-      95: { description: 'Orage', icon: '11d' },
+    const currentLang = this.getCurrentLanguage();
+
+    // Conversion des codes météo OpenMeteo vers OpenWeatherMap avec support multilingue
+    const weatherMap: { [key: string]: { [key: number]: { description: string; icon: string } } } = {
+      'fr': {
+        0: { description: 'Ciel dégagé', icon: '01d' },
+        1: { description: 'Peu nuageux', icon: '02d' },
+        2: { description: 'Partiellement nuageux', icon: '02d' },
+        3: { description: 'Couvert', icon: '03d' },
+        45: { description: 'Brouillard', icon: '50d' },
+        48: { description: 'Brouillard givrant', icon: '50d' },
+        51: { description: 'Bruine légère', icon: '09d' },
+        53: { description: 'Bruine modérée', icon: '09d' },
+        55: { description: 'Bruine dense', icon: '09d' },
+        61: { description: 'Pluie légère', icon: '10d' },
+        63: { description: 'Pluie modérée', icon: '10d' },
+        65: { description: 'Pluie forte', icon: '10d' },
+        71: { description: 'Neige légère', icon: '13d' },
+        73: { description: 'Neige modérée', icon: '13d' },
+        75: { description: 'Neige forte', icon: '13d' },
+        95: { description: 'Orage', icon: '11d' },
+      },
+      'en': {
+        0: { description: 'Clear sky', icon: '01d' },
+        1: { description: 'Mainly clear', icon: '02d' },
+        2: { description: 'Partly cloudy', icon: '02d' },
+        3: { description: 'Overcast', icon: '03d' },
+        45: { description: 'Foggy', icon: '50d' },
+        48: { description: 'Depositing rime fog', icon: '50d' },
+        51: { description: 'Light drizzle', icon: '09d' },
+        53: { description: 'Moderate drizzle', icon: '09d' },
+        55: { description: 'Dense drizzle', icon: '09d' },
+        61: { description: 'Slight rain', icon: '10d' },
+        63: { description: 'Moderate rain', icon: '10d' },
+        65: { description: 'Heavy rain', icon: '10d' },
+        71: { description: 'Slight snow', icon: '13d' },
+        73: { description: 'Moderate snow', icon: '13d' },
+        75: { description: 'Heavy snow', icon: '13d' },
+        95: { description: 'Thunderstorm', icon: '11d' },
+      },
+      'it': {
+        0: { description: 'Cielo sereno', icon: '01d' },
+        1: { description: 'Poco nuvoloso', icon: '02d' },
+        2: { description: 'Parzialmente nuvoloso', icon: '02d' },
+        3: { description: 'Nuvoloso', icon: '03d' },
+        45: { description: 'Nebbia', icon: '50d' },
+        48: { description: 'Nebbia con brina', icon: '50d' },
+        51: { description: 'Pioggia leggera', icon: '09d' },
+        53: { description: 'Pioggia moderata', icon: '09d' },
+        55: { description: 'Pioggia intensa', icon: '09d' },
+        61: { description: 'Pioggia leggera', icon: '10d' },
+        63: { description: 'Pioggia moderata', icon: '10d' },
+        65: { description: 'Pioggia forte', icon: '10d' },
+        71: { description: 'Neve leggera', icon: '13d' },
+        73: { description: 'Neve moderata', icon: '13d' },
+        75: { description: 'Neve forte', icon: '13d' },
+        95: { description: 'Temporale', icon: '11d' },
+      }
     };
     
-    return weatherMap[code] || { description: 'Inconnu', icon: '01d' };
+    const langWeatherMap = weatherMap[currentLang] || weatherMap['fr'];
+    return langWeatherMap[code] || { description: 'Inconnu', icon: '01d' };
   }
 
   async getCurrentWeather(): Promise<any> {
-    const url = `https://api.openweathermap.org/data/2.5/weather?lat=${MAJUNGA_COORDS.lat}&lon=${MAJUNGA_COORDS.lon}&appid=${API_KEY}&units=metric&lang=fr`;
+    const currentLang = this.getCurrentLanguage();
+    const url = `https://api.openweathermap.org/data/2.5/weather?lat=${MAJUNGA_COORDS.lat}&lon=${MAJUNGA_COORDS.lon}&appid=${API_KEY}&units=metric&lang=${currentLang}`;
     return this.makeRequest(url);
   }
 
   async getForecast(): Promise<any> {
-    const url = `https://api.openweathermap.org/data/2.5/forecast?lat=${MAJUNGA_COORDS.lat}&lon=${MAJUNGA_COORDS.lon}&appid=${API_KEY}&units=metric&lang=fr`;
+    const currentLang = this.getCurrentLanguage();
+    const url = `https://api.openweathermap.org/data/2.5/forecast?lat=${MAJUNGA_COORDS.lat}&lon=${MAJUNGA_COORDS.lon}&appid=${API_KEY}&units=metric&lang=${currentLang}`;
     return this.makeRequest(url);
   }
 
   private getDayName(date: Date): string {
-    const days = ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'];
+    const currentLang = this.getCurrentLanguage();
+
+    const dayNames: { [key: string]: string[] } = {
+      'fr': ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'],
+      'en': ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+      'it': ['Dom', 'Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab']
+    };
+
+    const days = dayNames[currentLang] || dayNames['fr'];
     return days[date.getDay()];
   }
 
@@ -166,8 +234,8 @@ class WeatherApiService {
             humidity: item.main.humidity,
             windSpeed: Math.round(item.wind.speed * 3.6),
             feelsLike: Math.round(item.main.feels_like),
-            date: isToday ? 'Aujourd\'hui' : `${this.getDayName(date)} ${date.getDate()}`,
-            dayName: isToday ? 'Aujourd\'hui' : this.getDayName(date)
+            date: isToday ? this.getTodayText() : `${this.getDayName(date)} ${date.getDate()}`,
+            dayName: isToday ? this.getTodayText() : this.getDayName(date)
           };
         })
       };
@@ -209,8 +277,8 @@ class WeatherApiService {
               humidity: alternativeData.hourly.relative_humidity_2m[timeIndex],
               windSpeed: Math.round(alternativeData.hourly.wind_speed_10m[timeIndex] * 3.6),
               feelsLike: Math.round(alternativeData.hourly.apparent_temperature[timeIndex]),
-              date: isToday ? 'Aujourd\'hui' : `${this.getDayName(targetDate)} ${targetDate.getDate()}`,
-              dayName: isToday ? 'Aujourd\'hui' : this.getDayName(targetDate)
+              date: isToday ? this.getTodayText() : `${this.getDayName(targetDate)} ${targetDate.getDate()}`,
+              dayName: isToday ? this.getTodayText() : this.getDayName(targetDate)
             });
           }
         }
@@ -223,12 +291,31 @@ class WeatherApiService {
     }
   }
 
+  private getTodayText(): string {
+    const currentLang = this.getCurrentLanguage();
+    const todayTexts: { [key: string]: string } = {
+      'fr': 'Aujourd\'hui',
+      'en': 'Today',
+      'it': 'Oggi'
+    };
+    return todayTexts[currentLang] || todayTexts['fr'];
+  }
+
   getFallbackData(): ForecastData {
     const today = new Date();
+    const currentLang = this.getCurrentLanguage();
+
     const getDayName = (date: Date) => {
-      const days = ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'];
+      const dayNames: { [key: string]: string[] } = {
+        'fr': ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'],
+        'en': ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+        'it': ['Dom', 'Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab']
+      };
+      const days = dayNames[currentLang] || dayNames['fr'];
       return days[date.getDay()];
     };
+
+    const todayText = this.getTodayText();
 
     return {
       current: {
@@ -249,8 +336,8 @@ class WeatherApiService {
           humidity: 65,
           windSpeed: 12,
           feelsLike: 30,
-          date: 'Aujourd\'hui',
-          dayName: 'Aujourd\'hui'
+          date: todayText,
+          dayName: todayText
         },
         {
           temperature: 29,

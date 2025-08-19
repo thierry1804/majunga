@@ -100,6 +100,12 @@
         "description": "Pianifica oggi il tuo viaggio a Majunga",
         "contactUs": "Contattaci"
     },
+    "weather": {
+        "forecastTitle": "Oggi + 3 giorni",
+        "unavailable": "Meteo non disponibile",
+        "apiError": "Configura la tua chiave API in .env",
+        "feelsLike": "Percepita"
+    },
     "footer": {
         "copyright": "© 2024 Majunga Tours. Tutti i diritti riservati.",
         "privacy": "Informativa sulla privacy",

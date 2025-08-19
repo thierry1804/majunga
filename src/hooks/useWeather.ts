@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { weatherApi, ForecastData } from '../api/weatherApi';
 
 interface UseWeatherReturn {
@@ -12,6 +13,7 @@ export const useWeather = (): UseWeatherReturn => {
   const [weather, setWeather] = useState<ForecastData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { i18n } = useTranslation();
 
   const fetchWeather = async () => {
     try {
@@ -33,7 +35,7 @@ export const useWeather = (): UseWeatherReturn => {
 
   useEffect(() => {
     fetchWeather();
-  }, []);
+  }, [i18n.language]); // Recharger quand la langue change
 
   return {
     weather,
