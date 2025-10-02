@@ -1,4 +1,4 @@
-import { Droplets, Thermometer, Wind, Calendar } from 'lucide-react';
+import { Droplets, Thermometer, Wind } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useWeather } from '../hooks/useWeather';
 import { WeatherIcon } from './ui/WeatherIcon';
