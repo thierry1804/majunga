@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
-import { Menu, X, Plane, MapPin, Calendar, Info } from 'lucide-react';
+import { Menu, X, Plane, MapPin, Calendar, Info, Settings } from 'lucide-react';
 import LanguageSwitcher from '../LanguageSwitcher';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from '../../hooks/useAuth';
 
 export default function Navbar() {
   const { t, i18n } = useTranslation();
+  const { canAccessAdmin } = useAuth();
   const [_, setLang] = useState(i18n.language);
 
   useEffect(() => {
@@ -90,6 +92,17 @@ export default function Navbar() {
                 <span>{link.label}</span>
               </a>
             ))}
+            {canAccessAdmin() && (
+              <a
+                href="/admin"
+                className={`flex items-center space-x-1 transition-colors duration-300 hover:text-orange-500 ${
+                  isScrolled ? 'text-gray-800' : 'text-white'
+                }`}
+              >
+                <Settings size={16} />
+                <span>Admin</span>
+              </a>
+            )}
             <LanguageSwitcher />
           </div>
           
@@ -117,6 +130,15 @@ export default function Navbar() {
                   <span>{link.label}</span>
                 </a>
               ))}
+              {canAccessAdmin() && (
+                <a
+                  href="/admin"
+                  className="flex items-center space-x-2 text-gray-800 hover:text-orange-500 transition-colors duration-300"
+                >
+                  <Settings size={16} />
+                  <span>Admin</span>
+                </a>
+              )}
               <div className="mt-2"><LanguageSwitcher /></div>
             </div>
           </div>
