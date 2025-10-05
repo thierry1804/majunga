@@ -87,7 +87,7 @@ export function useAuth() {
     getSession()
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
+      async (_, session) => {
         if (!mounted) return
 
         setSession(session)
