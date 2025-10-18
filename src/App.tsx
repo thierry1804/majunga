@@ -1,6 +1,4 @@
-import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
 import Navbar from './components/layout/Navbar';
 import HeroSection from './components/sections/HeroSection';
 import AboutSection from './components/sections/AboutSection';
@@ -16,8 +14,6 @@ import BookingsManagement from './components/admin/BookingsManagement';
 import ShuttleManagement from './components/admin/ShuttleManagement';
 
 function App() {
-  const { t } = useTranslation();
-
   return (
     <Router>
       <Routes>

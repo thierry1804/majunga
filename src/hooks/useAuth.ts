@@ -22,6 +22,13 @@ export function useAuth() {
 
     const getSession = async () => {
       try {
+        // Vérifier si Supabase est configuré
+        if (!supabase || !supabase.auth) {
+          console.warn('Supabase non configuré - arrêt du chargement')
+          setLoading(false)
+          return
+        }
+
         const { data: { session }, error } = await supabase.auth.getSession()
         
         if (!mounted) return
@@ -86,6 +93,12 @@ export function useAuth() {
 
     getSession()
 
+    // Vérifier si Supabase est configuré avant d'écouter les changements
+    if (!supabase || !supabase.auth) {
+      console.warn('Supabase non configuré - pas d\'écoute des changements d\'auth')
+      return
+    }
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (_, session) => {
         if (!mounted) return
@@ -94,15 +107,41 @@ export function useAuth() {
         setUser(session?.user ?? null)
         
         if (session?.user) {
-          const defaultProfile: Profile = {
-            id: session.user.id,
-            email: session.user.email || '',
-            full_name: session.user.user_metadata?.full_name || null,
-            role: 'user',
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
+          // Récupérer le profil depuis la base de données comme dans getSession
+          try {
+            const { data: profileData, error } = await supabase
+              .from('profiles')
+              .select('*')
+              .eq('id', session.user.id)
+              .single()
+
+            if (profileData && !error) {
+              setProfile(profileData)
+            } else {
+              // Créer un profil par défaut si pas trouvé
+              const defaultProfile: Profile = {
+                id: session.user.id,
+                email: session.user.email || '',
+                full_name: session.user.user_metadata?.full_name || null,
+                role: 'user',
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString()
+              }
+              setProfile(defaultProfile)
+            }
+          } catch (error) {
+            console.error('Erreur lors de la récupération du profil:', error)
+            // Créer un profil par défaut en cas d'erreur
+            const defaultProfile: Profile = {
+              id: session.user.id,
+              email: session.user.email || '',
+              full_name: session.user.user_metadata?.full_name || null,
+              role: 'user',
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString()
+            }
+            setProfile(defaultProfile)
           }
-          setProfile(defaultProfile)
         } else {
           setProfile(null)
         }
@@ -113,7 +152,9 @@ export function useAuth() {
 
     return () => {
       mounted = false
-      subscription.unsubscribe()
+      if (subscription) {
+        subscription.unsubscribe()
+      }
     }
   }, [])
 
