@@ -9,6 +9,7 @@ import {
   DollarSign,
   Clock
 } from 'lucide-react'
+import ErrorMessage from '../ui/ErrorMessage'
 
 interface DashboardStats {
   totalTours: number
@@ -33,6 +34,7 @@ export default function Dashboard() {
     recentBookings: []
   })
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     fetchDashboardData()
@@ -40,6 +42,9 @@ export default function Dashboard() {
 
   const fetchDashboardData = async () => {
     try {
+      setError(null)
+      setLoading(true)
+
       // Récupérer les statistiques des tours
       const { data: tours, error: toursError } = await supabase
         .from('tours')
@@ -47,6 +52,7 @@ export default function Dashboard() {
 
       if (toursError) {
         console.error('Erreur lors du chargement des tours:', toursError)
+        throw new Error(`Erreur de connexion à la base de données (tours): ${toursError.message}`)
       }
 
       // Récupérer les statistiques des réservations
@@ -56,6 +62,7 @@ export default function Dashboard() {
 
       if (bookingsError) {
         console.error('Erreur lors du chargement des réservations:', bookingsError)
+        throw new Error(`Erreur de connexion à la base de données (réservations): ${bookingsError.message}`)
       }
 
       // Récupérer les statistiques des navettes
@@ -65,6 +72,7 @@ export default function Dashboard() {
 
       if (shuttlesError) {
         console.error('Erreur lors du chargement des navettes:', shuttlesError)
+        throw new Error(`Erreur de connexion à la base de données (navettes): ${shuttlesError.message}`)
       }
 
       // Récupérer les réservations récentes (sans jointure pour éviter les erreurs)
@@ -76,6 +84,7 @@ export default function Dashboard() {
 
       if (recentBookingsError) {
         console.error('Erreur lors du chargement des réservations récentes:', recentBookingsError)
+        throw new Error(`Erreur de connexion à la base de données (réservations récentes): ${recentBookingsError.message}`)
       }
 
       // Calculer les statistiques avec des valeurs par défaut
@@ -96,6 +105,7 @@ export default function Dashboard() {
       })
     } catch (error) {
       console.error('Erreur lors du chargement des données:', error)
+      setError(error instanceof Error ? error.message : 'Une erreur inattendue s\'est produite')
       // Définir des statistiques par défaut en cas d'erreur
       setStats({
         totalTours: 0,
@@ -131,6 +141,24 @@ export default function Dashboard() {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
+          <p className="mt-1 text-sm text-gray-500">
+            Vue d'ensemble de votre activité MadaBooking
+          </p>
+        </div>
+        <ErrorMessage
+          error={error}
+          onRetry={fetchDashboardData}
+          title="Erreur de chargement du dashboard"
+        />
       </div>
     )
   }

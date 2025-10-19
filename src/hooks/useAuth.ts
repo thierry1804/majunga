@@ -16,9 +16,11 @@ export function useAuth() {
   const [profile, setProfile] = useState<Profile | null>(null)
   const [loading, setLoading] = useState(true)
   const [session, setSession] = useState<Session | null>(null)
+  const [timedOut, setTimedOut] = useState(false)
 
   useEffect(() => {
     let mounted = true
+    let timeoutId: NodeJS.Timeout
 
     const getSession = async () => {
       try {
@@ -29,8 +31,20 @@ export function useAuth() {
           return
         }
 
+        // Définir un timeout de 10 secondes pour éviter le chargement infini
+        timeoutId = setTimeout(() => {
+          if (mounted) {
+            console.warn('Timeout lors de la vérification de la session - arrêt du chargement')
+            setTimedOut(true)
+            setLoading(false)
+          }
+        }, 10000)
+
         const { data: { session }, error } = await supabase.auth.getSession()
         
+        // Annuler le timeout si la requête se termine
+        clearTimeout(timeoutId)
+
         if (!mounted) return
 
         if (error) {
@@ -152,6 +166,9 @@ export function useAuth() {
 
     return () => {
       mounted = false
+      if (timeoutId) {
+        clearTimeout(timeoutId)
+      }
       if (subscription) {
         subscription.unsubscribe()
       }
@@ -193,6 +210,7 @@ export function useAuth() {
     profile,
     session,
     loading,
+    timedOut,
     signIn,
     signUp,
     signOut,

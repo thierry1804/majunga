@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { supabase } from '../../lib/supabase'
 import { Search, Filter, CheckCircle, XCircle, Clock, Eye } from 'lucide-react'
+import ErrorMessage from '../ui/ErrorMessage'
 
 interface Booking {
   id: string
@@ -22,6 +23,7 @@ interface Booking {
 export default function BookingsManagement() {
   const [bookings, setBookings] = useState<Booking[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [searchTerm, setSearchTerm] = useState('')
   const [statusFilter, setStatusFilter] = useState<string>('all')
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null)
@@ -32,6 +34,9 @@ export default function BookingsManagement() {
 
   const fetchBookings = async () => {
     try {
+      setError(null)
+      setLoading(true)
+
       const { data, error } = await supabase
         .from('bookings')
         .select(`
@@ -42,10 +47,15 @@ export default function BookingsManagement() {
         `)
         .order('created_at', { ascending: false })
 
-      if (error) throw error
+      if (error) {
+        console.error('Erreur Supabase:', error)
+        throw new Error(`Erreur de connexion à la base de données: ${error.message}`)
+      }
+
       setBookings(data || [])
     } catch (error) {
       console.error('Erreur lors du chargement des réservations:', error)
+      setError(error instanceof Error ? error.message : 'Une erreur inattendue s\'est produite')
     } finally {
       setLoading(false)
     }
@@ -134,6 +144,24 @@ export default function BookingsManagement() {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Gestion des Réservations</h1>
+          <p className="mt-1 text-sm text-gray-500">
+            Gérez toutes les réservations de tours
+          </p>
+        </div>
+        <ErrorMessage
+          error={error}
+          onRetry={fetchBookings}
+          title="Erreur de chargement des réservations"
+        />
       </div>
     )
   }

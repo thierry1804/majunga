@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { supabase } from '../../lib/supabase'
 import { Plus, Edit, Trash2, Eye, EyeOff, Search } from 'lucide-react'
+import ErrorMessage from '../ui/ErrorMessage'
 
 interface Tour {
   id: string
@@ -18,6 +19,7 @@ interface Tour {
 export default function ToursManagement() {
   const [tours, setTours] = useState<Tour[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [searchTerm, setSearchTerm] = useState('')
   const [showModal, setShowModal] = useState(false)
   const [editingTour, setEditingTour] = useState<Tour | null>(null)
@@ -37,15 +39,23 @@ export default function ToursManagement() {
 
   const fetchTours = async () => {
     try {
+      setError(null)
+      setLoading(true)
+
       const { data, error } = await supabase
         .from('tours')
         .select('*')
         .order('created_at', { ascending: false })
 
-      if (error) throw error
+      if (error) {
+        console.error('Erreur Supabase:', error)
+        throw new Error(`Erreur de connexion à la base de données: ${error.message}`)
+      }
+
       setTours(data || [])
     } catch (error) {
       console.error('Erreur lors du chargement des tours:', error)
+      setError(error instanceof Error ? error.message : 'Une erreur inattendue s\'est produite')
     } finally {
       setLoading(false)
     }
@@ -158,6 +168,24 @@ export default function ToursManagement() {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Gestion des Tours</h1>
+          <p className="mt-1 text-sm text-gray-500">
+            Gérez vos offres de tours et excursions
+          </p>
+        </div>
+        <ErrorMessage
+          error={error}
+          onRetry={fetchTours}
+          title="Erreur de chargement des tours"
+        />
       </div>
     )
   }

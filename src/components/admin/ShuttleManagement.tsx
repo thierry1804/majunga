@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { supabase } from '../../lib/supabase'
-import { Plus, Edit, Trash2, Eye, EyeOff, Clock, MapPin } from 'lucide-react'
+import { Plus, Edit, Trash2, Eye, EyeOff, Clock, MapPin, Bus } from 'lucide-react'
+import ErrorMessage from '../ui/ErrorMessage'
 
 interface ShuttleSchedule {
   id: string
@@ -16,6 +17,7 @@ interface ShuttleSchedule {
 export default function ShuttleManagement() {
   const [schedules, setSchedules] = useState<ShuttleSchedule[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [showModal, setShowModal] = useState(false)
   const [editingSchedule, setEditingSchedule] = useState<ShuttleSchedule | null>(null)
   const [formData, setFormData] = useState({
@@ -32,15 +34,23 @@ export default function ShuttleManagement() {
 
   const fetchSchedules = async () => {
     try {
+      setError(null)
+      setLoading(true)
+
       const { data, error } = await supabase
         .from('shuttle_schedules')
         .select('*')
         .order('departure_time', { ascending: true })
 
-      if (error) throw error
+      if (error) {
+        console.error('Erreur Supabase:', error)
+        throw new Error(`Erreur de connexion à la base de données: ${error.message}`)
+      }
+
       setSchedules(data || [])
     } catch (error) {
       console.error('Erreur lors du chargement des horaires:', error)
+      setError(error instanceof Error ? error.message : 'Une erreur inattendue s\'est produite')
     } finally {
       setLoading(false)
     }
@@ -161,6 +171,24 @@ export default function ShuttleManagement() {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Gestion des Navettes</h1>
+          <p className="mt-1 text-sm text-gray-500">
+            Gérez les horaires et tarifs des navettes
+          </p>
+        </div>
+        <ErrorMessage
+          error={error}
+          onRetry={fetchSchedules}
+          title="Erreur de chargement des navettes"
+        />
       </div>
     )
   }
