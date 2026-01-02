@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react';
-import { Menu, X, Plane, MapPin, Calendar, Info, Settings } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Menu, X, Plane, MapPin, Calendar, Info, Settings, LogOut, User } from 'lucide-react';
 import LanguageSwitcher from '../LanguageSwitcher';
 import { useTranslation } from 'react-i18next';
-import { useAuth } from '../../hooks/useAuth';
+import { useAuth } from '../../contexts/AuthContext';
 
 export default function Navbar() {
   const { t, i18n } = useTranslation();
-  const { canAccessAdmin } = useAuth();
+  const { user, profile, canAccessAdmin, signOut } = useAuth();
   const [_, setLang] = useState(i18n.language);
 
   useEffect(() => {
@@ -17,6 +18,21 @@ export default function Navbar() {
 
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+
+  const handleSignOut = async () => {
+    try {
+      const { error } = await signOut()
+      if (error) {
+        console.error('Erreur lors de la déconnexion:', error)
+        alert('Erreur lors de la déconnexion. Veuillez réessayer.')
+        return
+      }
+      window.location.reload()
+    } catch (error) {
+      console.error('Erreur lors de la déconnexion:', error)
+      alert('Erreur lors de la déconnexion. Veuillez réessayer.')
+    }
+  }
 
   const navLinks = [
     { href: '#home', label: t('navigation.home'), icon: <MapPin size={16} /> },
@@ -93,15 +109,27 @@ export default function Navbar() {
               </a>
             ))}
             {canAccessAdmin() && (
-              <a
-                href="/admin"
+              <Link
+                to="/admin"
                 className={`flex items-center space-x-1 transition-colors duration-300 hover:text-orange-500 ${
                   isScrolled ? 'text-gray-800' : 'text-white'
                 }`}
               >
                 <Settings size={16} />
                 <span>Admin</span>
-              </a>
+              </Link>
+            )}
+            {user && (
+              <button
+                onClick={handleSignOut}
+                className={`flex items-center space-x-1 transition-colors duration-300 hover:text-orange-500 ${
+                  isScrolled ? 'text-gray-800' : 'text-white'
+                }`}
+                title={profile?.email || 'Déconnexion'}
+              >
+                <User size={16} />
+                <LogOut size={16} />
+              </button>
             )}
             <LanguageSwitcher />
           </div>
@@ -131,13 +159,22 @@ export default function Navbar() {
                 </a>
               ))}
               {canAccessAdmin() && (
-                <a
-                  href="/admin"
+                <Link
+                  to="/admin"
                   className="flex items-center space-x-2 text-gray-800 hover:text-orange-500 transition-colors duration-300"
                 >
                   <Settings size={16} />
                   <span>Admin</span>
-                </a>
+                </Link>
+              )}
+              {user && (
+                <button
+                  onClick={handleSignOut}
+                  className="flex items-center space-x-2 text-gray-800 hover:text-orange-500 transition-colors duration-300 w-full text-left"
+                >
+                  <LogOut size={16} />
+                  <span>Déconnexion{profile?.email && ` (${profile.email})`}</span>
+                </button>
               )}
               <div className="mt-2"><LanguageSwitcher /></div>
             </div>

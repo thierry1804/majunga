@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react'
 import { User, Session } from '@supabase/supabase-js'
 import { supabase } from '../lib/supabase'
 
@@ -11,7 +11,24 @@ export interface Profile {
   updated_at: string
 }
 
-export function useAuth() {
+interface AuthContextType {
+  user: User | null
+  profile: Profile | null
+  session: Session | null
+  loading: boolean
+  signIn: (email: string, password: string) => Promise<{ data: any; error: any }>
+  signUp: (email: string, password: string, fullName?: string) => Promise<{ data: any; error: any }>
+  signOut: () => Promise<{ error: any }>
+  resetPassword: (email: string) => Promise<{ data: any; error: any }>
+  updatePassword: (newPassword: string) => Promise<{ data: any; error: any }>
+  isAdmin: () => boolean
+  isEditor: () => boolean
+  canAccessAdmin: () => boolean
+}
+
+const AuthContext = createContext<AuthContextType | undefined>(undefined)
+
+export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [profile, setProfile] = useState<Profile | null>(null)
   const [loading, setLoading] = useState(true)
@@ -19,15 +36,13 @@ export function useAuth() {
 
   // Fonction helper pour créer ou récupérer le profil avec timeout
   const fetchOrCreateProfile = async (user: User): Promise<Profile | null> => {
-    const timeoutMs = 30000 // 30 secondes timeout (augmenté pour gérer le service worker)
+    const timeoutMs = 30000
 
     try {
-      // Créer une promesse avec timeout
       const timeoutPromise = new Promise<never>((_, reject) => {
         setTimeout(() => reject(new Error('Timeout lors de la récupération du profil')), timeoutMs)
       })
 
-      // Essayer de récupérer le profil avec timeout
       const fetchPromise = supabase
         .from('profiles')
         .select('*')
@@ -44,7 +59,6 @@ export function useAuth() {
         return profileData
       }
 
-      // Si le profil n'existe pas, essayer de le créer
       if (fetchError?.code === 'PGRST116') {
         console.log('Profil non trouvé, tentative de création...')
 
@@ -78,7 +92,6 @@ export function useAuth() {
       console.error('Erreur lors de la récupération du profil:', fetchError)
       return null
     } catch (error) {
-      // Ne logger que si ce n'est pas un timeout bénin
       if (error instanceof Error && !error.message.includes('Timeout')) {
         console.error('Erreur lors de la récupération/création du profil:', error)
       }
@@ -92,20 +105,18 @@ export function useAuth() {
 
     const getSession = async () => {
       try {
-        console.log('[useAuth] Initializing auth check...')
+        console.log('[AuthContext] Initializing auth check...')
 
-        // Vérifier si Supabase est configuré
         if (!supabase || !supabase.auth) {
-          console.warn('[useAuth] Supabase non configuré - arrêt du chargement')
+          console.warn('[AuthContext] Supabase non configuré')
           if (mounted) {
             setLoading(false)
           }
           return
         }
 
-        console.log('[useAuth] Fetching session...')
+        console.log('[AuthContext] Fetching session...')
 
-        // Ajouter un timeout à la récupération de session (30 secondes pour gérer le service worker)
         const timeoutPromise = new Promise<never>((_, reject) => {
           setTimeout(() => reject(new Error('Timeout lors de la récupération de la session')), 30000)
         })
@@ -118,29 +129,29 @@ export function useAuth() {
         ])
 
         if (!mounted) {
-          console.log('[useAuth] Component unmounted, aborting')
+          console.log('[AuthContext] Component unmounted, aborting')
           return
         }
 
         if (error) {
-          console.error('[useAuth] Erreur de session:', error)
+          console.error('[AuthContext] Erreur de session:', error)
           if (mounted) {
             setLoading(false)
           }
           return
         }
 
-        console.log('[useAuth] Session fetched:', session ? 'User logged in' : 'No session')
+        console.log('[AuthContext] Session fetched:', session ? 'User logged in' : 'No session')
 
         setSession(session)
         setUser(session?.user ?? null)
 
         if (session?.user) {
-          console.log('[useAuth] Fetching profile for user:', session.user.email)
+          console.log('[AuthContext] Fetching profile for user:', session.user.email)
           const profile = await fetchOrCreateProfile(session.user)
           if (mounted) {
             setProfile(profile)
-            console.log('[useAuth] Profile set:', profile ? `Role: ${profile.role}` : 'No profile')
+            console.log('[AuthContext] Profile set:', profile ? `Role: ${profile.role}` : 'No profile')
           }
         } else {
           setProfile(null)
@@ -149,13 +160,12 @@ export function useAuth() {
         if (mounted) {
           setLoading(false)
           initialLoadComplete = true
-          console.log('[useAuth] Auth initialization complete')
+          console.log('[AuthContext] Auth initialization complete')
         }
       } catch (error) {
-        // Ne logger que si le composant est toujours monté et ce n'est pas un simple timeout
         if (mounted) {
           if (!(error instanceof Error && error.message.includes('Timeout'))) {
-            console.error('[useAuth] Erreur lors de la récupération de la session:', error)
+            console.error('[AuthContext] Erreur lors de la récupération de la session:', error)
           }
           setLoading(false)
           initialLoadComplete = true
@@ -165,9 +175,8 @@ export function useAuth() {
 
     getSession()
 
-    // Vérifier si Supabase est configuré avant d'écouter les changements
     if (!supabase || !supabase.auth) {
-      console.warn('Supabase non configuré - pas d\'écoute des changements d\'auth')
+      console.warn('[AuthContext] Supabase non configuré - pas d\'écoute des changements d\'auth')
       return
     }
 
@@ -175,7 +184,13 @@ export function useAuth() {
       async (event, session) => {
         if (!mounted) return
 
-        console.log('[useAuth] Auth state changed:', event, '| Initial load complete:', initialLoadComplete)
+        console.log('[AuthContext] Auth state changed:', event, '| Initial load complete:', initialLoadComplete)
+
+        // Ne pas changer loading pendant l'initialisation
+        if (!initialLoadComplete) {
+          console.log('[AuthContext] Skipping state change during initialization')
+          return
+        }
 
         try {
           setSession(session)
@@ -190,16 +205,14 @@ export function useAuth() {
             setProfile(null)
           }
         } catch (error) {
-          console.error('[useAuth] Erreur dans onAuthStateChange:', error)
+          console.error('[AuthContext] Erreur dans onAuthStateChange:', error)
           if (mounted) {
             setProfile(null)
           }
         } finally {
-          // Ne mettre loading à false que si l'initialisation est terminée
-          // Sinon, c'est getSession() qui le fera
-          if (mounted && initialLoadComplete) {
-            setLoading(false)
-            console.log('[useAuth] Auth state change handled')
+          // Toujours mettre loading à false après avoir traité le changement
+          if (mounted) {
+            console.log('[AuthContext] Auth state change handled')
           }
         }
       }
@@ -257,7 +270,7 @@ export function useAuth() {
   const isEditor = () => profile?.role === 'editor' || profile?.role === 'admin'
   const canAccessAdmin = () => isAdmin() || isEditor()
 
-  return {
+  const value = {
     user,
     profile,
     session,
@@ -271,4 +284,14 @@ export function useAuth() {
     isEditor,
     canAccessAdmin,
   }
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
+}
+
+export function useAuth() {
+  const context = useContext(AuthContext)
+  if (context === undefined) {
+    throw new Error('useAuth must be used within an AuthProvider')
+  }
+  return context
 }

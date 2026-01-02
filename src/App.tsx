@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { AuthProvider } from './contexts/AuthContext';
 import Navbar from './components/layout/Navbar';
 import HeroSection from './components/sections/HeroSection';
 import AboutSection from './components/sections/AboutSection';
@@ -7,6 +8,7 @@ import ShuttleSection from './components/sections/ShuttleSection';
 import BookingSection from './components/sections/BookingSection';
 import Footer from './components/layout/Footer';
 import ProtectedRoute from './components/auth/ProtectedRoute';
+import ResetPasswordPage from './components/auth/ResetPasswordPage';
 import AdminLayout from './components/admin/AdminLayout';
 import Dashboard from './components/admin/Dashboard';
 import ToursManagement from './components/admin/ToursManagement';
@@ -15,7 +17,8 @@ import ShuttleManagement from './components/admin/ShuttleManagement';
 
 function App() {
   return (
-    <Router>
+    <AuthProvider>
+      <Router>
       <Routes>
         {/* Route publique */}
         <Route path="/" element={
@@ -29,7 +32,10 @@ function App() {
             <Footer />
           </div>
         } />
-        
+
+        {/* Route de réinitialisation de mot de passe */}
+        <Route path="/reset-password" element={<ResetPasswordPage />} />
+
         {/* Routes admin */}
         <Route path="/admin" element={
           <ProtectedRoute requireEditor>
@@ -80,7 +86,8 @@ function App() {
           </ProtectedRoute>
         } />
       </Routes>
-    </Router>
+      </Router>
+    </AuthProvider>
   );
 }
 

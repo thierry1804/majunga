@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { supabase } from '../../lib/supabase'
-import { Plus, Edit, Trash2, Eye, EyeOff, Clock, MapPin } from 'lucide-react'
+import { Plus, Edit, Trash2, Eye, EyeOff, Clock, MapPin, Bus } from 'lucide-react'
 
 interface ShuttleSchedule {
   id: string

@@ -1,14 +1,15 @@
 import React, { useState } from 'react'
-import { useAuth } from '../../hooks/useAuth'
-import { 
-  LayoutDashboard, 
-  MapPin, 
-  Calendar, 
-  Bus, 
-  Users, 
-  Settings, 
-  LogOut, 
-  Menu, 
+import { Link, useLocation } from 'react-router-dom'
+import { useAuth } from '../../contexts/AuthContext'
+import {
+  LayoutDashboard,
+  MapPin,
+  Calendar,
+  Bus,
+  Users,
+  Settings,
+  LogOut,
+  Menu,
   X,
   Home
 } from 'lucide-react'
@@ -28,10 +29,23 @@ const navigation = [
 
 export default function AdminLayout({ children }: AdminLayoutProps) {
   const { profile, signOut } = useAuth()
+  const location = useLocation()
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
   const handleSignOut = async () => {
-    await signOut()
+    try {
+      const { error } = await signOut()
+      if (error) {
+        console.error('Erreur lors de la déconnexion:', error)
+        alert('Erreur lors de la déconnexion. Veuillez réessayer.')
+        return
+      }
+      // Redirection vers la page d'accueil
+      window.location.href = '/'
+    } catch (error) {
+      console.error('Erreur lors de la déconnexion:', error)
+      alert('Erreur lors de la déconnexion. Veuillez réessayer.')
+    }
   }
 
   return (
@@ -56,15 +70,20 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
             <nav className="mt-5 px-2 space-y-1">
               {navigation.map((item) => {
                 const Icon = item.icon
+                const isActive = location.pathname === item.href
                 return (
-                  <a
+                  <Link
                     key={item.name}
-                    href={item.href}
-                    className="group flex items-center px-2 py-2 text-base font-medium rounded-md text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                    to={item.href}
+                    className={`group flex items-center px-2 py-2 text-base font-medium rounded-md ${
+                      isActive
+                        ? 'bg-blue-50 text-blue-600'
+                        : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                    }`}
                   >
                     <Icon className="mr-4 h-6 w-6" />
                     {item.name}
-                  </a>
+                  </Link>
                 )
               })}
             </nav>
@@ -83,15 +102,20 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
               <nav className="mt-5 flex-1 px-2 space-y-1">
                 {navigation.map((item) => {
                   const Icon = item.icon
+                  const isActive = location.pathname === item.href
                   return (
-                    <a
+                    <Link
                       key={item.name}
-                      href={item.href}
-                      className="group flex items-center px-2 py-2 text-sm font-medium rounded-md text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                      to={item.href}
+                      className={`group flex items-center px-2 py-2 text-sm font-medium rounded-md ${
+                        isActive
+                          ? 'bg-blue-50 text-blue-600'
+                          : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                      }`}
                     >
                       <Icon className="mr-3 h-5 w-5" />
                       {item.name}
-                    </a>
+                    </Link>
                   )
                 })}
               </nav>
@@ -137,13 +161,13 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           <div className="px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between items-center py-4">
               <div className="flex items-center">
-                <a
-                  href="/"
+                <Link
+                  to="/"
                   className="flex items-center text-sm text-gray-500 hover:text-gray-700"
                 >
                   <Home className="h-4 w-4 mr-1" />
                   Retour au site
-                </a>
+                </Link>
               </div>
               <div className="flex items-center space-x-4">
                 <span className="text-sm text-gray-500">

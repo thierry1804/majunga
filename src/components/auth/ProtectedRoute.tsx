@@ -1,5 +1,5 @@
 import React from 'react'
-import { useAuth } from '../../hooks/useAuth'
+import { useAuth } from '../../contexts/AuthContext'
 import LoginForm from './LoginForm'
 
 interface ProtectedRouteProps {
@@ -25,6 +25,38 @@ export default function ProtectedRoute({
 
   if (!user) {
     return <LoginForm />
+  }
+
+  // Si l'utilisateur est connecté mais n'a pas de profil
+  if (!profile) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="max-w-md w-full text-center space-y-4">
+          <div className="mx-auto h-12 w-12 flex items-center justify-center rounded-full bg-yellow-100">
+            <svg className="h-6 w-6 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+            </svg>
+          </div>
+          <h2 className="text-2xl font-bold text-gray-900">
+            Profil non configuré
+          </h2>
+          <p className="text-gray-600">
+            Votre compte utilisateur n'a pas de profil associé. Veuillez contacter l'administrateur pour activer votre compte.
+          </p>
+          <p className="text-sm text-gray-500">
+            Email : {user.email}
+          </p>
+          <div className="pt-4">
+            <button
+              onClick={() => window.location.reload()}
+              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              Réessayer
+            </button>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   if (requireAdmin && !isAdmin()) {
