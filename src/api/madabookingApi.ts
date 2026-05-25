@@ -62,9 +62,13 @@ export interface ApiBooking {
   '@id'?: string;
   '@type'?: string;
   id?: string;
-  tour?: string; // IRI du tour
+  serviceType?: 'tour' | 'shuttle';
+  tour?: string;
+  shuttleSchedule?: string;
   userEmail: string;
   userName: string;
+  phone?: string;
+  specialRequests?: string;
   bookingDate: string;
   participants: number;
   totalPrice: string;
@@ -81,7 +85,11 @@ export interface ApiShuttleSchedule {
   departureTime: string;
   arrivalTime: string;
   route: string;
+  from?: string;
+  to?: string;
   price: string;
+  direction?: 'airport-to-city' | 'city-to-airport';
+  availableSeats?: number;
   isActive?: boolean;
   createdAt?: string;
   updatedAt?: string;
@@ -209,6 +217,120 @@ function getHeaders(includeAuth = false): HeadersInit {
   }
 
   return headers;
+}
+
+function getPublicHeaders(): HeadersInit {
+  return {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json',
+  };
+}
+
+/**
+ * API PUBLIQUE (sans authentification)
+ */
+
+export async function getPublicTours(): Promise<ApiTour[]> {
+  const response = await fetch(`${API_BASE_URL}/public/tours`, {
+    method: 'GET',
+    headers: getPublicHeaders(),
+  });
+
+  return handleResponse<ApiTour[]>(response);
+}
+
+export async function getPublicShuttleSchedules(direction?: string): Promise<ApiShuttleSchedule[]> {
+  const url = direction
+    ? `${API_BASE_URL}/public/shuttle_schedules?direction=${encodeURIComponent(direction)}`
+    : `${API_BASE_URL}/public/shuttle_schedules`;
+
+  const response = await fetch(url, {
+    method: 'GET',
+    headers: getPublicHeaders(),
+  });
+
+  return handleResponse<ApiShuttleSchedule[]>(response);
+}
+
+export async function createPublicBooking(
+  booking: Omit<ApiBooking, 'id' | '@id' | '@type' | 'createdAt' | 'updatedAt'>
+): Promise<ApiBooking> {
+  const response = await fetch(`${API_BASE_URL}/public/bookings`, {
+    method: 'POST',
+    headers: getPublicHeaders(),
+    body: JSON.stringify(booking),
+  });
+
+  return handleResponse<ApiBooking>(response);
+}
+
+export async function createPayPalOrder(bookingId: string, amount: number, currency: string): Promise<{ orderId: string; status: string }> {
+  const response = await fetch(`${API_BASE_URL}/public/paypal/create-order`, {
+    method: 'POST',
+    headers: getPublicHeaders(),
+    body: JSON.stringify({ bookingId, amount, currency }),
+  });
+
+  return handleResponse(response);
+}
+
+export async function capturePayPalOrder(orderId: string, bookingId: string): Promise<{ capture: { captureId: string; status: string }; booking: ApiBooking }> {
+  const response = await fetch(`${API_BASE_URL}/public/paypal/capture-order`, {
+    method: 'POST',
+    headers: getPublicHeaders(),
+    body: JSON.stringify({ orderId, bookingId }),
+  });
+
+  return handleResponse(response);
+}
+
+export async function requestPasswordReset(email: string): Promise<{ message: string }> {
+  const response = await fetch(`${API_BASE_URL}/public/password/request-reset`, {
+    method: 'POST',
+    headers: getPublicHeaders(),
+    body: JSON.stringify({ email }),
+  });
+
+  return handleResponse(response);
+}
+
+export async function resetPasswordWithToken(token: string, password: string): Promise<{ message: string }> {
+  const response = await fetch(`${API_BASE_URL}/public/password/reset`, {
+    method: 'POST',
+    headers: getPublicHeaders(),
+    body: JSON.stringify({ token, password }),
+  });
+
+  return handleResponse(response);
+}
+
+export async function changePassword(currentPassword: string, newPassword: string): Promise<{ message: string }> {
+  const response = await fetch(`${API_BASE_URL}/password/change`, {
+    method: 'POST',
+    headers: getHeaders(true),
+    body: JSON.stringify({ currentPassword, newPassword }),
+  });
+
+  return handleResponse(response);
+}
+
+export async function deleteUser(id: string): Promise<void> {
+  const response = await fetch(`${API_BASE_URL}/users/${id}`, {
+    method: 'DELETE',
+    headers: getHeaders(true),
+  });
+
+  await handleResponse(response);
+}
+
+export async function promoteUser(id: string, role: string): Promise<void> {
+  const response = await fetch(`${API_BASE_URL}/users/${id}/promote`, {
+    method: 'POST',
+    headers: getHeaders(true),
+    body: JSON.stringify({ role }),
+  });
+
+  await handleResponse(response);
 }
 
 /**
@@ -988,6 +1110,26 @@ export async function getPublicSiteSettings(): Promise<ApiSiteSetting[]> {
   return collection['hydra:member'] || collection['member'] || [];
 }
 
+export async function getPublicSiteSettingByKey(key: string): Promise<ApiSiteSetting | null> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/site-settings/public/${encodeURIComponent(key)}`, {
+      method: 'GET',
+      headers: getPublicHeaders(),
+    });
+
+    if (response.status === 404) {
+      return null;
+    }
+
+    return handleResponse<ApiSiteSetting>(response);
+  } catch (error: unknown) {
+    if ((error as { status?: number }).status === 404) {
+      return null;
+    }
+    throw error;
+  }
+}
+
 /**
  * Récupère un paramètre par sa clé
  */
@@ -995,18 +1137,20 @@ export async function getSiteSettingByKey(key: string): Promise<ApiSiteSetting |
   try {
     const response = await fetch(`${API_BASE_URL}/site_settings?key=${encodeURIComponent(key)}`, {
       method: 'GET',
-      headers: getHeaders(false), // Peut être public
+      headers: getPublicHeaders(),
     });
 
     if (response.status === 404) {
       return null;
     }
 
-    const collection = await handleResponse<any>(response);
-    const members = collection['hydra:member'] || collection['member'] || [];
-    return members.length > 0 ? members[0] : null;
-  } catch (error: any) {
-    if (error.status === 404) {
+    const data = await handleResponse<any>(response);
+    if (Array.isArray(data)) {
+      return data.length > 0 ? data[0] : null;
+    }
+    return data;
+  } catch (error: unknown) {
+    if ((error as { status?: number }).status === 404) {
       return null;
     }
     throw error;

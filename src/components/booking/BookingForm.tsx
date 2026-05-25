@@ -3,6 +3,7 @@ import { Calendar, Users, Check, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Tour, ShuttleSchedule, BookingFormData } from '../../types';
 import { getToursFromSupabase, getShuttleSchedulesFromSupabase, createBooking } from '../../api/supabaseService';
+import { getPublicSiteSettingByKey } from '../../api/madabookingApi';
 import Button from '../ui/Button';
 import PayPalButton from './PayPalButton';
 
@@ -26,22 +27,34 @@ export default function BookingForm() {
   const [success, setSuccess] = useState<boolean | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [bookingId, setBookingId] = useState<string | null>(null);
+  const [bookingEnabled, setBookingEnabled] = useState(true);
+  const [maxParticipants, setMaxParticipants] = useState(20);
 
   useEffect(() => {
     const loadData = async () => {
       try {
-        const [toursData, schedulesData] = await Promise.all([
+        const [toursData, schedulesData, enabledSetting, maxSetting] = await Promise.all([
           getToursFromSupabase(),
           getShuttleSchedulesFromSupabase(),
+          getPublicSiteSettingByKey('booking_enabled'),
+          getPublicSiteSettingByKey('max_booking_participants'),
         ]);
+
         setTours(toursData);
         setSchedules(schedulesData);
 
+        if (enabledSetting?.value !== undefined && enabledSetting?.value !== null) {
+          setBookingEnabled(enabledSetting.value === true || enabledSetting.value === 'true');
+        }
+        if (maxSetting?.value) {
+          const max = parseInt(String(maxSetting.value), 10);
+          if (!Number.isNaN(max) && max > 0) {
+            setMaxParticipants(max);
+          }
+        }
+
         if (toursData.length > 0) {
-          setFormData((prev) => ({
-            ...prev,
-            serviceId: toursData[0].id,
-          }));
+          setFormData((prev) => ({ ...prev, serviceId: toursData[0].id }));
         }
       } catch (error) {
         console.error('Error loading booking form data:', error);
@@ -75,6 +88,10 @@ export default function BookingForm() {
   };
 
   const validateForm = () => {
+    if (!bookingEnabled) {
+      setErrorMessage(t('booking.form.errors.disabled', { defaultValue: 'Les réservations sont temporairement désactivées.' }));
+      return false;
+    }
     if (!formData.name.trim()) {
       setErrorMessage(t('booking.form.errors.name'));
       return false;
@@ -89,6 +106,10 @@ export default function BookingForm() {
     }
     if (!formData.date) {
       setErrorMessage(t('booking.form.errors.date'));
+      return false;
+    }
+    if (formData.numberOfPeople < 1 || formData.numberOfPeople > maxParticipants) {
+      setErrorMessage(t('booking.form.errors.maxParticipants', { defaultValue: `Maximum ${maxParticipants} participants.` }));
       return false;
     }
     if (formData.serviceId === 0) {
@@ -108,54 +129,61 @@ export default function BookingForm() {
     setErrorMessage(null);
 
     try {
-      setPaymentStep(true);
-      setBookingId(null);
-    } catch {
-      setErrorMessage(t('booking.form.errors.network'));
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handlePaymentSuccess = async (details: { id?: string; transactionID?: string }) => {
-    try {
-      let bookingCreated = false;
-      let bookingIdFromDb: string | null = null;
+      const amount = getBookingAmount();
+      let result;
 
       if (formData.service === 'tour') {
         const selectedTour = tours.find((tour) => tour.id === formData.serviceId);
         if (!selectedTour?.supabaseId) {
           throw new Error(t('booking.form.errors.serviceTour'));
         }
-
-        const totalPrice = selectedTour.price * formData.numberOfPeople;
-        const result = await createBooking({
+        result = await createBooking({
+          service_type: 'tour',
           tour_id: selectedTour.supabaseId,
           user_email: formData.email,
           user_name: formData.name,
+          phone: formData.phone,
+          special_requests: formData.specialRequests,
           booking_date: formData.date,
           participants: formData.numberOfPeople,
-          total_price: totalPrice,
-          payment_id: details.id || details.transactionID || undefined,
+          total_price: amount,
         });
-
-        bookingCreated = true;
-        if (result?.[0]?.id) {
-          bookingIdFromDb = result[0].id;
-        }
-      }
-
-      if (bookingCreated || formData.service === 'shuttle') {
-        setSuccess(true);
-        setBookingId(bookingIdFromDb || details.id || details.transactionID || `BK${Date.now()}`);
       } else {
-        throw new Error(t('booking.form.errors.payment'));
+        const selectedSchedule = schedules.find((s) => s.id === formData.serviceId);
+        if (!selectedSchedule?.apiId) {
+          throw new Error(t('booking.form.errors.serviceShuttle'));
+        }
+        result = await createBooking({
+          service_type: 'shuttle',
+          shuttle_id: selectedSchedule.apiId,
+          user_email: formData.email,
+          user_name: formData.name,
+          phone: formData.phone,
+          special_requests: formData.specialRequests,
+          booking_date: formData.date,
+          participants: formData.numberOfPeople,
+          total_price: amount,
+        });
       }
+
+      const id = result?.[0]?.id;
+      if (!id) {
+        throw new Error(t('booking.form.errors.network'));
+      }
+
+      setBookingId(id);
+      setPaymentStep(true);
     } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : t('booking.form.errors.payment');
-      setSuccess(false);
+      const message = error instanceof Error ? error.message : t('booking.form.errors.network');
       setErrorMessage(message);
+    } finally {
+      setLoading(false);
     }
+  };
+
+  const handlePaymentSuccess = async (details: { id?: string; transactionID?: string }) => {
+    setSuccess(true);
+    setBookingId(bookingId || details.id || details.transactionID || `BK${Date.now()}`);
   };
 
   const handlePaymentError = () => {
@@ -191,9 +219,9 @@ export default function BookingForm() {
 
   const getBookingCurrency = (): string => {
     if (formData.service === 'tour') {
-      return tours.find((tour) => tour.id === formData.serviceId)?.currency ?? 'MGA';
+      return tours.find((tour) => tour.id === formData.serviceId)?.currency ?? 'EUR';
     }
-    return schedules.find((schedule) => schedule.id === formData.serviceId)?.currency ?? 'MGA';
+    return schedules.find((schedule) => schedule.id === formData.serviceId)?.currency ?? 'EUR';
   };
 
   const getServiceLabel = () => {
@@ -208,6 +236,14 @@ export default function BookingForm() {
   const getMinDate = () => new Date().toISOString().split('T')[0];
 
   const inputWithIcon = 'field-input pl-10';
+
+  if (!bookingEnabled && success === null && !paymentStep) {
+    return (
+      <p className="text-ink-muted text-sm">
+        {t('booking.form.errors.disabled', { defaultValue: 'Les réservations sont temporairement désactivées.' })}
+      </p>
+    );
+  }
 
   return (
     <div>
@@ -308,7 +344,7 @@ export default function BookingForm() {
                       id="numberOfPeople"
                       name="numberOfPeople"
                       min={1}
-                      max={20}
+                      max={maxParticipants}
                       value={formData.numberOfPeople}
                       onChange={handleInputChange}
                       className={inputWithIcon}
@@ -430,6 +466,7 @@ export default function BookingForm() {
                 <PayPalButton
                   amount={getBookingAmount()}
                   currency={getBookingCurrency()}
+                  bookingId={bookingId}
                   onSuccess={handlePaymentSuccess}
                   onError={handlePaymentError}
                 />

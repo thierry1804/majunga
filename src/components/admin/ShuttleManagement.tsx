@@ -14,6 +14,10 @@ interface ShuttleSchedule {
   departure_time: string
   arrival_time: string
   route: string
+  from?: string
+  to?: string
+  direction?: string
+  available_seats?: number
   price: number
   is_active: boolean
   created_at: string
@@ -29,6 +33,10 @@ export default function ShuttleManagement() {
     departure_time: '',
     arrival_time: '',
     route: '',
+    from: '',
+    to: '',
+    direction: 'airport-to-city' as 'airport-to-city' | 'city-to-airport',
+    available_seats: '20',
     price: '',
     is_active: true
   })
@@ -46,6 +54,10 @@ export default function ShuttleManagement() {
         departure_time: schedule.departureTime,
         arrival_time: schedule.arrivalTime,
         route: schedule.route,
+        from: schedule.from,
+        to: schedule.to,
+        direction: schedule.direction,
+        available_seats: schedule.availableSeats,
         price: parseFloat(schedule.price) || 0,
         is_active: schedule.isActive !== false,
         created_at: schedule.createdAt || '',
@@ -70,10 +82,14 @@ export default function ShuttleManagement() {
     e.preventDefault()
     
     try {
-      const scheduleData = {
-        departureTime: formData.departure_time,
-        arrivalTime: formData.arrival_time,
+      const scheduleData: Partial<ApiShuttleSchedule> = {
+        departureTime: formData.departure_time.length === 5 ? `${formData.departure_time}:00` : formData.departure_time,
+        arrivalTime: formData.arrival_time.length === 5 ? `${formData.arrival_time}:00` : formData.arrival_time,
         route: formData.route,
+        from: formData.from || undefined,
+        to: formData.to || undefined,
+        direction: formData.direction,
+        availableSeats: parseInt(formData.available_seats, 10) || 20,
         price: String(parseFloat(formData.price)),
         isActive: formData.is_active
       }
@@ -94,9 +110,13 @@ export default function ShuttleManagement() {
   const handleEdit = (schedule: ShuttleSchedule) => {
     setEditingSchedule(schedule)
     setFormData({
-      departure_time: schedule.departure_time,
-      arrival_time: schedule.arrival_time,
+      departure_time: schedule.departure_time.substring(0, 5),
+      arrival_time: schedule.arrival_time.substring(0, 5),
       route: schedule.route,
+      from: schedule.from || '',
+      to: schedule.to || '',
+      direction: (schedule.direction as 'airport-to-city' | 'city-to-airport') || 'airport-to-city',
+      available_seats: String(schedule.available_seats ?? 20),
       price: schedule.price.toString(),
       is_active: schedule.is_active
     })
@@ -128,6 +148,10 @@ export default function ShuttleManagement() {
       departure_time: '',
       arrival_time: '',
       route: '',
+      from: '',
+      to: '',
+      direction: 'airport-to-city',
+      available_seats: '20',
       price: '',
       is_active: true
     })
@@ -442,6 +466,53 @@ export default function ShuttleManagement() {
                     placeholder="ex: Majunga - Antananarivo"
                     className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                   />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">Départ (libellé)</label>
+                    <input
+                      type="text"
+                      value={formData.from}
+                      onChange={(e) => setFormData({ ...formData, from: e.target.value })}
+                      placeholder="ex: Aéroport"
+                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">Arrivée (libellé)</label>
+                    <input
+                      type="text"
+                      value={formData.to}
+                      onChange={(e) => setFormData({ ...formData, to: e.target.value })}
+                      placeholder="ex: Majunga Centre"
+                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">Direction</label>
+                    <select
+                      value={formData.direction}
+                      onChange={(e) => setFormData({ ...formData, direction: e.target.value as 'airport-to-city' | 'city-to-airport' })}
+                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                    >
+                      <option value="airport-to-city">Aéroport → Ville</option>
+                      <option value="city-to-airport">Ville → Aéroport</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">Places disponibles</label>
+                    <input
+                      type="number"
+                      min={0}
+                      value={formData.available_seats}
+                      onChange={(e) => setFormData({ ...formData, available_seats: e.target.value })}
+                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                    />
+                  </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">

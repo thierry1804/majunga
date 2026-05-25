@@ -5,6 +5,9 @@ import {
   getCurrentUser, 
   getMe,
   isAuthenticated,
+  requestPasswordReset,
+  resetPasswordWithToken,
+  changePassword,
   ApiUser 
 } from '../api/madabookingApi'
 // Types pour compatibilité
@@ -46,7 +49,7 @@ interface AuthContextType {
   signUp: (email: string, password: string, fullName?: string) => Promise<{ data: any; error: any }>
   signOut: () => Promise<{ error: any }>
   resetPassword: (email: string) => Promise<{ data: any; error: any }>
-  updatePassword: (newPassword: string) => Promise<{ data: any; error: any }>
+  updatePassword: (newPassword: string, currentPassword?: string, resetToken?: string) => Promise<{ data: any; error: any }>
   refreshProfile: () => Promise<void>
   isAdmin: () => boolean
   isEditor: () => boolean
@@ -174,13 +177,34 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   const resetPassword = async (email: string) => {
-    console.warn('[resetPassword] Authentification désactivée - Supabase supprimé')
-    return { data: null, error: { message: 'Authentification désactivée - Supabase a été supprimé' } }
+    try {
+      const data = await requestPasswordReset(email);
+      return { data, error: null };
+    } catch (error: unknown) {
+      return {
+        data: null,
+        error: { message: error instanceof Error ? error.message : 'Erreur lors de la demande de réinitialisation' },
+      };
+    }
   }
 
-  const updatePassword = async (newPassword: string) => {
-    console.warn('[updatePassword] Authentification désactivée - Supabase supprimé')
-    return { data: null, error: { message: 'Authentification désactivée - Supabase a été supprimé' } }
+  const updatePassword = async (newPassword: string, currentPassword?: string, resetToken?: string) => {
+    try {
+      if (resetToken) {
+        const data = await resetPasswordWithToken(resetToken, newPassword);
+        return { data, error: null };
+      }
+      if (currentPassword) {
+        const data = await changePassword(currentPassword, newPassword);
+        return { data, error: null };
+      }
+      return { data: null, error: { message: 'Token ou mot de passe actuel requis' } };
+    } catch (error: unknown) {
+      return {
+        data: null,
+        error: { message: error instanceof Error ? error.message : 'Erreur lors de la mise à jour du mot de passe' },
+      };
+    }
   }
 
   const isAdmin = () => profile?.role === 'admin'

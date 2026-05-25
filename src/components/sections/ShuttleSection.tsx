@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Clock, MapPin, Ticket, Plane } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { fetchShuttleSchedules } from '../../api/mockApi';
+import { getShuttleSchedulesFromSupabase } from '../../api/supabaseService';
 import { ShuttleSchedule } from '../../types';
 import Container from '../ui/Container';
 import SectionHeader from '../ui/SectionHeader';
@@ -22,7 +22,7 @@ export default function ShuttleSection() {
     const loadSchedules = async () => {
       try {
         setLoading(true);
-        const schedulesData = await fetchShuttleSchedules();
+        const schedulesData = await getShuttleSchedulesFromSupabase();
         setSchedules(schedulesData);
         setError(null);
       } catch (err) {
@@ -38,8 +38,8 @@ export default function ShuttleSection() {
 
   const filteredSchedules = schedules.filter((schedule) =>
     direction === 'airport-to-city'
-      ? schedule.from === 'Airport' && schedule.to === 'Majunga City'
-      : schedule.from === 'Majunga City' && schedule.to === 'Airport'
+      ? schedule.direction === 'airport-to-city' || (schedule.from?.toLowerCase().includes('airport') && !schedule.to?.toLowerCase().includes('airport'))
+      : schedule.direction === 'city-to-airport' || (schedule.to?.toLowerCase().includes('airport') && !schedule.from?.toLowerCase().includes('airport'))
   );
 
   const highlights = [

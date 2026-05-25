@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import React, { useState } from 'react'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
 import { Lock, AlertCircle, CheckCircle } from 'lucide-react'
 
 export default function ResetPasswordPage() {
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const token = searchParams.get('token') || ''
   const { updatePassword } = useAuth()
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
@@ -16,6 +18,12 @@ export default function ResetPasswordPage() {
     e.preventDefault()
     setLoading(true)
     setError('')
+
+    if (!token) {
+      setError('Token de réinitialisation manquant dans l\'URL')
+      setLoading(false)
+      return
+    }
 
     if (password !== confirmPassword) {
       setError('Les mots de passe ne correspondent pas')
@@ -30,7 +38,7 @@ export default function ResetPasswordPage() {
     }
 
     try {
-      const { error } = await updatePassword(password)
+      const { error } = await updatePassword(password, undefined, token)
 
       if (error) {
         setError(error.message)
@@ -40,7 +48,7 @@ export default function ResetPasswordPage() {
           navigate('/admin')
         }, 2000)
       }
-    } catch (err) {
+    } catch {
       setError('Une erreur inattendue s\'est produite')
     } finally {
       setLoading(false)

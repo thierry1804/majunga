@@ -15,6 +15,7 @@ import ToursManagement from './components/admin/ToursManagement';
 import BookingsManagement from './components/admin/BookingsManagement';
 import ShuttleManagement from './components/admin/ShuttleManagement';
 import SettingsManagement from './components/admin/SettingsManagement';
+import UsersManagement from './components/admin/UsersManagement';
 import MaintenancePage from './components/MaintenancePage';
 import { useMaintenanceMode } from './hooks/useMaintenanceMode';
 import TrustBar from './components/sections/TrustBar';
@@ -91,10 +92,7 @@ function AppContent() {
         <Route path="/admin/users" element={
           <ProtectedRoute requireAdmin>
             <AdminLayout>
-              <div className="text-center py-12">
-                <h2 className="text-2xl font-bold text-gray-900">Gestion des Utilisateurs</h2>
-                <p className="mt-2 text-gray-600">Cette fonctionnalité sera bientôt disponible.</p>
-              </div>
+              <UsersManagement />
             </AdminLayout>
           </ProtectedRoute>
         } />
