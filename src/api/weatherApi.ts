@@ -1,7 +1,10 @@
 import i18n from '../i18n/i18n';
 
-// Service API pour OpenWeatherMap
-const API_KEY = 'e94faa4685cda7d067809c3f0101e91e';
+// Service API météo — proxy backend en priorité, fallback OpenMeteo
+const API_BASE_URL = import.meta.env.VITE_MADABOOKING_API_URL ||
+  (import.meta.env.DEV ? 'https://127.0.0.1:8000/api' : 'https://api.madabooking.mg/api');
+
+const API_KEY = import.meta.env.VITE_OPENWEATHER_API_KEY || '';
 const MAJUNGA_COORDS = {
   lat: import.meta.env.VITE_MAJUNGA_LAT || -15.7167,
   lon: import.meta.env.VITE_MAJUNGA_LON || 46.3167
@@ -149,6 +152,16 @@ class WeatherApiService {
   }
 
   async getCurrentWeather(): Promise<any> {
+    try {
+      const lang = this.getCurrentLanguage();
+      const response = await fetch(`${API_BASE_URL}/public/weather?city=Majunga&lang=${lang}`);
+      if (response.ok) {
+        return response.json();
+      }
+    } catch {
+      // fallback below
+    }
+
     const currentLang = this.getCurrentLanguage();
     const url = `https://api.openweathermap.org/data/2.5/weather?lat=${MAJUNGA_COORDS.lat}&lon=${MAJUNGA_COORDS.lon}&appid=${API_KEY}&units=metric&lang=${currentLang}`;
     return this.makeRequest(url);

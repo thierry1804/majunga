@@ -4,111 +4,211 @@
     "navigation": {
         "home": "Home",
         "about": "About",
-        "contact": "Contact"
+        "contact": "Contact",
+        "admin": "Admin",
+        "signOut": "Sign out",
+        "openMenu": "Open menu",
+        "closeMenu": "Close menu",
+        "skipToContent": "Skip to content"
+    },
+    "trust": {
+        "ariaLabel": "Why trust us",
+        "since2015": "Since 2015",
+        "since2015Detail": "A team rooted in Majunga",
+        "localGuides": "Local guides",
+        "localGuidesDetail": "Born and trained here",
+        "reliableShuttle": "Reliable shuttle",
+        "reliableShuttleDetail": "7 days a week, year-round",
+        "languages": "FR · EN · IT",
+        "languagesDetail": "Multilingual welcome"
     },
     "hero": {
-        "title": "Discover the Magic of",
-        "subtitle": "Experience breathtaking beaches, vibrant culture, and unforgettable adventures with our premium tours and airport shuttle service",
-        "discoverTours": "Discover our Tours",
-        "bookShuttle": "Book Shuttle",
+        "title": "Discover",
+        "city": "Majunga",
+        "subtitle": "Wild beaches, ancient baobabs, and authentic Malagasy culture. Local-guided tours and reliable airport shuttle.",
+        "discoverTours": "Browse tours",
+        "bookShuttle": "Airport shuttle",
         "scrollDown": "Scroll down"
     },
     "about": {
         "title": "About Majunga",
-        "description": "Majunga, or Mahajanga, is a fascinating port city located on the northwest coast of Madagascar. With its pleasant tropical climate and rich cultural heritage, it's an ideal destination for travelers seeking adventure and authenticity.",
-        "sectionTitle": "Welcome to Mada Booking",
-        "intro": "Since 2015, we have been dedicated to sharing the natural beauty and rich culture of Majunga, Madagascar with travelers from around the world. Our passion is to create authentic experiences that connect visitors with the real Madagascar.",
-        "distinction": "What sets us apart is our deep local knowledge and commitment to sustainable tourism. All our guides are native to Majunga with an in-depth understanding of the region's history, culture, and hidden treasures.",
+        "description": "Majunga, or Mahajanga, is a fascinating port city on Madagascar's northwest coast.",
+        "sectionTitle": "Guides who know every corner",
+        "intro": "Since 2015, we have been sharing Majunga's natural beauty and culture with travelers worldwide. Every tour is designed to connect you with the real Madagascar.",
+        "distinction": "Our guides were born here. They know the history, traditions, and hidden gems that passing guides would never find.",
+        "since": "Serving travelers since",
+        "imageAlt": {
+            "main": "Traditional pirogue on the Majunga coast",
+            "secondary": "Coastal landscape of Mahajanga"
+        },
         "mission": {
-            "title": "Our Mission",
-            "description": "To showcase the beauty of Majunga while supporting local communities and preserving natural environments."
+            "title": "Our mission",
+            "description": "Showcase Majunga while supporting local communities and preserving natural environments."
         },
         "experience": {
-            "title": "Local Experience",
-            "description": "All our tours are designed and guided by local guides who share authentic perspectives and stories."
+            "title": "Local experience",
+            "description": "All our tours are designed and guided by Majunga natives who share authentic stories."
         }
     },
     "tours": {
-        "title": "Our Tours",
-        "description": "Discover our carefully selected tours to provide you with an unforgettable experience in Majunga",
-        "viewDetails": "View details",
+        "title": "Tours",
+        "description": "Discover our carefully selected tours for an unforgettable experience in Majunga",
+        "viewDetails": "Details",
         "bookNow": "Book now",
-        "sectionTitle": "Our Popular Tours",
-        "sectionSubtitle": "Explore with Us",
-        "sectionDescription": "Discover the most beautiful and exciting sites around Majunga with our carefully crafted tours",
-        "loadingError": "Unable to load tours. Please try again later.",
+        "sectionTitle": "Popular tours",
+        "sectionSubtitle": "Explore the region",
+        "sectionDescription": "Baobabs, mangroves, fishing villages: our tours take you where Majunga reveals its true nature.",
+        "loadingError": "Unable to load tours. Please try again.",
         "retry": "Retry",
-        "bookTour": "Book Your Tour"
+        "bookTour": "Book this tour",
+        "empty": "No tours available at the moment.",
+        "region": "Majunga region",
+        "perPerson": "/ person",
+        "aboutTour": "About this tour",
+        "duration": "Duration",
+        "priceLabel": "Price",
+        "highlights": "Highlights",
+        "closeDetails": "Close",
+        "previousImage": "Previous image",
+        "nextImage": "Next image",
+        "viewImage": "View image {{number}}",
+        "featured": "Recommended"
     },
     "shuttle": {
-        "title": "Airport Shuttle Service",
-        "description": "Comfortable and reliable transportation between the airport and your destination",
-        "bookShuttle": "Book Shuttle",
+        "title": "Airport shuttle",
+        "description": "Comfortable and reliable transport between the airport and your destination",
+        "bookShuttle": "Book",
         "pickupLocation": "Pickup location",
         "dropoffLocation": "Dropoff location",
         "date": "Date",
         "time": "Time",
         "passengers": "Number of passengers",
         "submit": "Book",
-        "sectionSubtitle": "Convenient Transport",
-        "sectionDescription": "Our comfortable and reliable shuttle service connects Majunga Airport to the city center daily, making your arrival and departure stress-free",
+        "sectionSubtitle": "Stress-free arrival",
+        "sectionDescription": "Our shuttle connects Amborovy Airport (MJN) to downtown Majunga, every day of the year.",
         "direction": {
-            "airportToCity": "Airport to City",
-            "cityToAirport": "City to Airport"
+            "airportToCity": "Airport → City",
+            "cityToAirport": "City → Airport"
         },
         "highlights": {
             "reliableSchedule": {
-                "title": "Reliable Schedule",
-                "description": "Multiple daily departures to fit your travel plans"
+                "title": "Regular schedule",
+                "description": "Multiple daily departures aligned with flights"
             },
             "convenientStops": {
-                "title": "Convenient Stops",
-                "description": "Direct service between the airport and major city locations"
+                "title": "Direct routes",
+                "description": "From the airport to major city districts"
             },
             "easyBooking": {
-                "title": "Easy Booking",
-                "description": "Book your seat online or call us for assistance"
+                "title": "Simple booking",
+                "description": "Online in a few clicks or by phone"
             }
         },
         "schedule": {
             "title": {
-                "airportToCity": "Airport to City Schedule",
-                "cityToAirport": "City to Airport Schedule"
+                "airportToCity": "Airport → city schedule",
+                "cityToAirport": "City → airport schedule"
             },
             "columns": {
                 "departure": "Departure",
                 "arrival": "Arrival",
                 "price": "Price",
-                "availableSeats": "Available Seats",
+                "availableSeats": "Seats",
                 "action": "Action"
             },
             "noSchedules": "No schedules available for this direction.",
             "full": "Full"
         },
         "importantInfo": {
-            "title": "Important information",
+            "title": "Practical information",
             "items": [
-                "Our shuttle service operates 7 days a week, including holidays",
-                "For special assistance or group bookings, please contact us directly"
+                "Service available 7 days a week, including holidays",
+                "For groups or special needs, contact us directly"
             ]
         },
-        "loadingError": "Unable to load schedules. Please try again later.",
+        "loadingError": "Unable to load schedules.",
         "retry": "Retry"
     },
     "booking": {
-        "title": "Book your Experience",
-        "description": "Plan your trip to Majunga today",
-        "contactUs": "Contact us"
+        "title": "Book",
+        "description": "Plan your trip to Majunga",
+        "contactUs": "Contact us",
+        "sectionLabel": "Booking",
+        "sectionTitle": "Plan your visit",
+        "sectionDescription": "Choose a tour or airport shuttle and confirm your spot in minutes.",
+        "reassurance": {
+            "title": "Book with confidence",
+            "items": [
+                "Instant email confirmation",
+                "Certified local guides since 2015",
+                "WhatsApp and phone support",
+                "Secure online payment"
+            ],
+            "whatsapp": "Message us on WhatsApp",
+            "phone": "Or call us"
+        },
+        "form": {
+            "title": "Make a booking",
+            "tourTab": "Tour",
+            "shuttleTab": "Airport shuttle",
+            "selectTour": "Choose a tour",
+            "selectShuttle": "Choose a shuttle",
+            "selectPlaceholderTour": "Select a tour",
+            "selectPlaceholderShuttle": "Select a shuttle",
+            "date": "Date",
+            "guests": "Number of guests",
+            "name": "Full name",
+            "email": "Email",
+            "phone": "Phone",
+            "specialRequests": "Special requests (optional)",
+            "submit": "Proceed to payment",
+            "paymentTitle": "Payment",
+            "summaryTitle": "Summary",
+            "summaryService": "Service",
+            "summaryDate": "Date",
+            "summaryGuests": "Guests",
+            "summaryReference": "Reference",
+            "summaryPending": "Awaiting payment",
+            "summaryTotal": "Total",
+            "backToForm": "Back to form",
+            "confirmedTitle": "Booking confirmed",
+            "confirmedBody": "Your booking is confirmed. A confirmation email has been sent.",
+            "failedTitle": "Payment failed",
+            "failedBody": "There was a problem processing your payment. Please try again.",
+            "bookAnother": "Book another",
+            "retry": "Try again",
+            "shuttleRoute": "Shuttle {{from}} to {{to}}",
+            "perPerson": "/ person",
+            "seatsAvailable": "{{count}} seats",
+            "errors": {
+                "name": "Please enter your name.",
+                "email": "Please enter a valid email address.",
+                "phone": "Please enter your phone number.",
+                "date": "Please select a date.",
+                "serviceTour": "Please select a tour.",
+                "serviceShuttle": "Please select a shuttle.",
+                "network": "Network error. Please try again.",
+                "payment": "Payment failed. Please try again."
+            }
+        }
     },
     "weather": {
-        "forecastTitle": "Today + 3 days",
+        "forecastTitle": "Weather in Majunga",
         "unavailable": "Weather unavailable",
         "apiError": "Configure your API key in .env",
         "feelsLike": "Feels like"
     },
     "footer": {
-        "copyright": "© 2024 Majunga Tours. All rights reserved.",
-        "privacy": "Privacy Policy",
-        "terms": "Terms of Use"
+        "tagline": "Your gateway to Majunga: authentic tours, airport shuttle, and local experiences since 2015.",
+        "quickLinks": "Navigation",
+        "contact": "Contact",
+        "address": "Boulevard Joffre, Mahajanga 401, Madagascar",
+        "copyright": "© {{year}} Mada Booking. All rights reserved.",
+        "privacy": "Privacy",
+        "terms": "Terms of use",
+        "whatsapp": "WhatsApp",
+        "ctaTitle": "Ready to discover Majunga?",
+        "ctaDescription": "Book your tour or airport shuttle in just a few minutes.",
+        "ctaButton": "Book now"
     }
 }

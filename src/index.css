@@ -2,7 +2,149 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Classes utilitaires personnalisées */
+@layer base {
+  :root {
+    --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+    --ease-in-out-sine: cubic-bezier(0.37, 0, 0.63, 1);
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+
+  body {
+    @apply font-sans text-ink bg-sand-50 antialiased;
+  }
+
+  ::selection {
+    @apply bg-ocean-500/20 text-ocean-800;
+  }
+}
+
+@layer components {
+  .section-padding {
+    @apply py-20 md:py-32;
+  }
+
+  .section-label {
+    @apply text-xs font-medium uppercase tracking-[0.12em] text-ocean-600;
+  }
+
+  .heading-display {
+    @apply font-display text-ink tracking-tight text-balance;
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .prose-body {
+    @apply text-ink-muted leading-relaxed max-w-[65ch];
+  }
+
+  .skip-link {
+    @apply sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:bg-ocean-700 focus:text-sand-50 focus:rounded-lg focus:shadow-soft focus:outline-none;
+  }
+
+  .field-label {
+    @apply block text-sm font-medium text-ink-muted mb-1;
+  }
+
+  .field-input {
+    @apply block w-full rounded-lg border border-sand-300 bg-sand-50 text-ink text-sm p-2.5 transition-colors duration-200;
+    @apply focus:outline-none focus:border-ocean-500 focus:ring-2 focus:ring-ocean-500/20;
+    @apply disabled:opacity-60 disabled:cursor-not-allowed;
+  }
+
+  .field-error {
+    @apply p-3 bg-terracotta-50 text-terracotta-600 rounded-lg text-sm border border-terracotta-100;
+  }
+
+  .field-success {
+    @apply p-3 bg-ocean-50 text-ocean-800 rounded-lg text-sm border border-ocean-100;
+  }
+
+  .grain-overlay {
+    pointer-events: none;
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    opacity: 0.038;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  }
+
+  .cinematic-scanlines {
+    background-image: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(250, 247, 242, 0.15) 2px,
+      rgba(250, 247, 242, 0.15) 3px
+    );
+    background-size: 100% 4px;
+  }
+
+  .scroll-hint {
+    animation: scrollHint 2.4s var(--ease-out-quart) infinite;
+  }
+
+  @keyframes scrollHint {
+    0%, 100% { opacity: 0.45; transform: translate3d(0, 0, 0); }
+    50% { opacity: 1; transform: translate3d(0, 6px, 0); }
+  }
+
+  @keyframes dividerReveal {
+    from { opacity: 0; transform: translate3d(0, 20px, 0); }
+    to { opacity: 1; transform: translate3d(0, 0, 0); }
+  }
+
+  @keyframes waveDrift {
+    0%, 100% { transform: translate3d(0, 0, 0); }
+    50% { transform: translate3d(-2.5%, 0, 0); }
+  }
+
+  @keyframes waveDriftSlow {
+    0%, 100% { transform: translate3d(0, 0, 0); }
+    50% { transform: translate3d(2%, 0, 0); }
+  }
+
+  .motion-safe\:animate-divider-reveal {
+    animation: dividerReveal 0.9s var(--ease-out-expo) both;
+  }
+
+  .motion-safe\:animate-wave-drift {
+    animation: waveDrift 8s var(--ease-in-out-sine) infinite;
+  }
+
+  .motion-safe\:animate-wave-drift-slow {
+    animation: waveDriftSlow 12s var(--ease-in-out-sine) infinite;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scroll-hint,
+  .motion-safe\:animate-divider-reveal,
+  .motion-safe\:animate-wave-drift,
+  .motion-safe\:animate-wave-drift-slow,
+  .motion-safe\:animate-ken-burns,
+  .motion-safe\:animate-glow-pulse,
+  .animate-fade-up,
+  .animate-fade-in {
+    animation: none !important;
+  }
+
+  * {
+    transition-duration: 0.01ms !important;
+  }
+}
+
 .line-clamp-3 {
   display: -webkit-box;
   -webkit-line-clamp: 3;

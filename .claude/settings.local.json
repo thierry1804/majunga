@@ -1,8 +1,11 @@
 {
   "permissions": {
     "allow": [
-      "Bash(npm run build)",
-      "Bash(npm run dev)"
+      "Bash(mkdir:*)",
+      "Bash(composer create-project:*)",
+      "Bash(composer require:*)",
+      "Bash(npm run build:*)",
+      "Bash(dir:*)"
     ],
     "deny": [],
     "ask": []

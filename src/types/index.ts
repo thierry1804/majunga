@@ -1,6 +1,7 @@
 // Types pour l'interface publique (compatibilité avec l'existant)
 export interface Tour {
   id: number;
+  supabaseId?: string; // UUID original de Supabase pour les réservations
   title: string;
   shortDescription: string;
   fullDescription: string;
@@ -27,10 +28,12 @@ export interface SupabaseTour {
 
 export interface ShuttleSchedule {
   id: number;
+  apiId?: string;
   departureTime: string;
   arrivalTime: string;
   from: string;
   to: string;
+  direction?: 'airport-to-city' | 'city-to-airport';
   price: number;
   currency: string;
   availableSeats: number;

@@ -1,0 +1,263 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-05-25T12:07:00.000Z",
+  "title": "Design System: Mada Booking",
+  "extensions": {
+    "colorMeta": {
+      "warm-sand-cream": {
+        "role": "neutral",
+        "displayName": "Warm Sand Cream",
+        "canonical": "oklch(97% 0.012 85)",
+        "tonalRamp": [
+          "oklch(18% 0.01 65)",
+          "oklch(30% 0.015 80)",
+          "oklch(45% 0.02 82)",
+          "oklch(58% 0.025 84)",
+          "oklch(70% 0.02 85)",
+          "oklch(82% 0.015 86)",
+          "oklch(92% 0.012 85)",
+          "oklch(97% 0.012 85)"
+        ]
+      },
+      "deep-ocean-teal": {
+        "role": "primary",
+        "displayName": "Deep Ocean Teal",
+        "canonical": "oklch(35% 0.06 195)",
+        "tonalRamp": [
+          "oklch(15% 0.04 195)",
+          "oklch(22% 0.05 195)",
+          "oklch(28% 0.055 195)",
+          "oklch(35% 0.06 195)",
+          "oklch(42% 0.065 195)",
+          "oklch(55% 0.06 195)",
+          "oklch(72% 0.04 195)",
+          "oklch(92% 0.015 195)"
+        ]
+      },
+      "terracotta-clay": {
+        "role": "secondary",
+        "displayName": "Terracotta Clay",
+        "canonical": "oklch(55% 0.14 35)",
+        "tonalRamp": [
+          "oklch(25% 0.08 35)",
+          "oklch(35% 0.10 35)",
+          "oklch(45% 0.12 35)",
+          "oklch(55% 0.14 35)",
+          "oklch(62% 0.13 35)",
+          "oklch(72% 0.10 35)",
+          "oklch(88% 0.05 35)",
+          "oklch(96% 0.02 35)"
+        ]
+      },
+      "ink-charcoal": {
+        "role": "neutral",
+        "displayName": "Ink Charcoal",
+        "canonical": "oklch(18% 0.01 65)",
+        "tonalRamp": [
+          "oklch(12% 0.008 65)",
+          "oklch(18% 0.01 65)",
+          "oklch(28% 0.012 65)",
+          "oklch(38% 0.012 60)",
+          "oklch(48% 0.01 58)",
+          "oklch(58% 0.008 55)",
+          "oklch(72% 0.006 55)",
+          "oklch(88% 0.004 55)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Hero H1 only. Fraunces semibold with optional italic terracotta place name."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Section titles via SectionHeader component."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Descriptions, forms, tables. Max 65ch for prose blocks."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Section eyebrows, footer column titles. Uppercase, 0.12em tracking."
+      }
+    },
+    "shadows": [
+      {
+        "name": "soft",
+        "value": "0 2px 12px rgba(42, 37, 32, 0.06)",
+        "purpose": "Navbar on scroll, subtle hover states."
+      },
+      {
+        "name": "card",
+        "value": "0 4px 24px rgba(42, 37, 32, 0.08)",
+        "purpose": "Mobile nav panel, booking form container."
+      },
+      {
+        "name": "elevated",
+        "value": "0 8px 32px rgba(42, 37, 32, 0.12)",
+        "purpose": "Tour detail offcanvas panel."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-out-expo",
+        "value": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "Entrances, scroll reveals, modal slide-in."
+      },
+      {
+        "name": "ease-out-quart",
+        "value": "cubic-bezier(0.25, 1, 0.5, 1)",
+        "purpose": "Scroll hint ambient loop, divider reveal."
+      },
+      {
+        "name": "reveal-duration",
+        "value": "700ms",
+        "purpose": "RevealOnScroll fade + translate."
+      },
+      {
+        "name": "hero-stagger",
+        "value": "0-400ms",
+        "purpose": "HeroEntrance choreography steps."
+      }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "md", "value": "768px" },
+      { "name": "lg", "value": "1024px" },
+      { "name": "xl", "value": "1280px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Default action on forms, nav CTA when scrolled, shuttle table booking.",
+      "html": "<button class=\"ds-btn-primary\">Réserver</button>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: #145555; color: #faf7f2; font-family: 'DM Sans', system-ui, sans-serif; font-size: 0.875rem; font-weight: 500; padding: 10px 20px; border: none; border-radius: 0.625rem; cursor: pointer; transition: background 0.2s, transform 0.2s; } .ds-btn-primary:hover { background: #0f4444; } .ds-btn-primary:focus-visible { outline: none; box-shadow: 0 0 0 2px #faf7f2, 0 0 0 4px #1a6b6b; } .ds-btn-primary:active { transform: scale(0.98); }"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Hero primary CTA, high-intent conversion actions.",
+      "html": "<button class=\"ds-btn-secondary\">Voir les circuits</button>",
+      "css": ".ds-btn-secondary { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: #c45c3e; color: #faf7f2; font-family: 'DM Sans', system-ui, sans-serif; font-size: 1rem; font-weight: 500; padding: 12px 24px; border: none; border-radius: 0.625rem; cursor: pointer; transition: background 0.2s, transform 0.2s; } .ds-btn-secondary:hover { background: #a84d34; } .ds-btn-secondary:focus-visible { outline: none; box-shadow: 0 0 0 2px #faf7f2, 0 0 0 4px #c45c3e; } .ds-btn-secondary:active { transform: scale(0.98); }"
+    },
+    {
+      "name": "Outline Button",
+      "kind": "button",
+      "refersTo": "button-outline",
+      "description": "Tour card details, secondary actions on light surfaces.",
+      "html": "<button class=\"ds-btn-outline\">Détails</button>",
+      "css": ".ds-btn-outline { display: inline-flex; align-items: center; justify-content: center; background: transparent; color: #0f4444; font-family: 'DM Sans', system-ui, sans-serif; font-size: 0.875rem; font-weight: 500; padding: 10px 20px; border: 1px solid #145555; border-radius: 0.625rem; cursor: pointer; transition: background 0.2s, transform 0.2s; } .ds-btn-outline:hover { background: #edf5f5; } .ds-btn-outline:focus-visible { outline: none; box-shadow: 0 0 0 2px #faf7f2, 0 0 0 4px #1a6b6b; } .ds-btn-outline:active { transform: scale(0.98); }"
+    },
+    {
+      "name": "Section Label",
+      "kind": "custom",
+      "refersTo": "section-label",
+      "description": "Eyebrow above section headlines. Uppercase tracked label.",
+      "html": "<p class=\"ds-section-label\">Explorez la région</p>",
+      "css": ".ds-section-label { font-family: 'DM Sans', system-ui, sans-serif; font-size: 0.75rem; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: #145555; margin-bottom: 0.75rem; }"
+    },
+    {
+      "name": "Section Headline",
+      "kind": "custom",
+      "description": "Fraunces section title paired with section label.",
+      "html": "<h2 class=\"ds-headline\">Circuits populaires</h2>",
+      "css": ".ds-headline { font-family: 'Fraunces', Georgia, serif; font-size: clamp(1.875rem, 4vw, 2.75rem); font-weight: 600; line-height: 1.1; letter-spacing: -0.01em; color: #2a2520; }"
+    },
+    {
+      "name": "Tour Card",
+      "kind": "card",
+      "description": "Circuit listing with image, meta, price, outline CTA. No shadow at rest.",
+      "html": "<article class=\"ds-tour-card\"><div class=\"ds-tour-card-image\"></div><div class=\"ds-tour-card-body\"><h3 class=\"ds-tour-card-title\">Baobabs de Majunga</h3><p class=\"ds-tour-card-desc\">Demi-journée parmi les arbres centenaires.</p><div class=\"ds-tour-card-footer\"><span class=\"ds-tour-card-price\">45 000 MGA</span><button class=\"ds-btn-outline\">Détails</button></div></div></article>",
+      "css": ".ds-tour-card { display: flex; flex-direction: column; } .ds-tour-card-image { aspect-ratio: 4/3; background: #e8dcc8; border-radius: 0.75rem; overflow: hidden; } .ds-tour-card-body { padding-top: 1.25rem; flex: 1; display: flex; flex-direction: column; } .ds-tour-card-title { font-family: 'Fraunces', Georgia, serif; font-size: 1.25rem; font-weight: 600; color: #2a2520; margin-bottom: 0.5rem; } .ds-tour-card-desc { font-family: 'DM Sans', system-ui, sans-serif; font-size: 0.875rem; color: #5c5349; line-height: 1.5; flex: 1; } .ds-tour-card-footer { display: flex; justify-content: space-between; align-items: center; padding-top: 1rem; margin-top: auto; border-top: 1px solid #e8dcc8; } .ds-tour-card-price { font-family: 'Fraunces', Georgia, serif; font-size: 1.25rem; font-weight: 600; color: #0f4444; }"
+    },
+    {
+      "name": "Navigation Bar (scrolled)",
+      "kind": "nav",
+      "description": "Fixed top nav after 40px scroll. Sand background with blur.",
+      "html": "<nav class=\"ds-nav\"><a class=\"ds-nav-brand\" href=\"#\">Mada<span>Booking</span></a><a class=\"ds-nav-link ds-nav-link-active\" href=\"#tours\">Circuits</a></nav>",
+      "css": ".ds-nav { display: flex; align-items: center; gap: 2rem; padding: 0.75rem 1.25rem; background: rgba(250, 247, 242, 0.95); backdrop-filter: blur(12px); border-bottom: 1px solid #e8dcc8; box-shadow: 0 2px 12px rgba(42, 37, 32, 0.06); font-family: 'DM Sans', system-ui, sans-serif; } .ds-nav-brand { font-family: 'Fraunces', Georgia, serif; font-weight: 600; color: #0f4444; text-decoration: none; } .ds-nav-brand span { color: #d4704f; font-family: 'DM Sans', system-ui, sans-serif; font-weight: 500; } .ds-nav-link { font-size: 0.875rem; font-weight: 500; color: #2a2520; text-decoration: none; padding: 0.5rem 0.75rem; transition: color 0.2s; } .ds-nav-link:hover { color: #145555; } .ds-nav-link-active { color: #145555; }"
+    },
+    {
+      "name": "Weather Widget",
+      "kind": "custom",
+      "description": "Hero-only glass panel. Never reuse on other surfaces.",
+      "html": "<div class=\"ds-weather\"><p class=\"ds-weather-label\">Météo à Majunga</p><div class=\"ds-weather-current\"><span class=\"ds-weather-temp\">28°</span><span class=\"ds-weather-desc\">Ensoleillé</span></div></div>",
+      "css": ".ds-weather { background: rgba(10, 51, 51, 0.4); backdrop-filter: blur(8px); border: 1px solid rgba(250, 247, 242, 0.2); border-radius: 0.75rem; padding: 1.25rem; color: #faf7f2; font-family: 'DM Sans', system-ui, sans-serif; } .ds-weather-label { font-size: 0.75rem; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: #a8cfcf; margin-bottom: 1rem; } .ds-weather-temp { font-family: 'Fraunces', Georgia, serif; font-size: 1.875rem; font-weight: 600; } .ds-weather-desc { font-size: 0.875rem; opacity: 0.85; margin-left: 0.5rem; }"
+    },
+    {
+      "name": "Text Input",
+      "kind": "input",
+      "description": "Booking form fields. Label above, sand border, ocean focus.",
+      "html": "<div class=\"ds-field\"><label class=\"ds-field-label\" for=\"name\">Nom complet</label><input class=\"ds-input\" id=\"name\" type=\"text\" placeholder=\"Jean Rakoto\" /></div>",
+      "css": ".ds-field { display: flex; flex-direction: column; gap: 0.25rem; } .ds-field-label { font-family: 'DM Sans', system-ui, sans-serif; font-size: 0.875rem; font-weight: 500; color: #5c5349; } .ds-input { font-family: 'DM Sans', system-ui, sans-serif; font-size: 0.875rem; padding: 0.625rem; border: 1px solid #e8dcc8; border-radius: 0.5rem; background: #faf7f2; color: #2a2520; transition: border-color 0.2s, box-shadow 0.2s; } .ds-input:focus { outline: none; border-color: #1a6b6b; box-shadow: 0 0 0 2px rgba(26, 107, 107, 0.2); } .ds-input::placeholder { color: #8a8078; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Coastal Gazette",
+    "overview": "Mada Booking reads like a local travel gazette, not a resort booking engine. Warm sand surfaces, deep ocean teal for trust and navigation, terracotta for the moments that ask for action. Typography splits editorial display (Fraunces) from practical body copy (DM Sans). Sections breathe with generous vertical rhythm; depth comes from tonal shifts (sand-50, white, sand-100) and ink-tinted shadows, not from stacked card shells.",
+    "keyCharacteristics": [
+      "Full palette: sand neutrals + ocean primary + terracotta action accent",
+      "Editorial serif headlines with humanist sans body (max 65ch for prose)",
+      "Tonal section layering over nested card grids",
+      "Ink-tinted shadows instead of pure black",
+      "Scroll-driven reveals and hero parallax; no bounce easing",
+      "i18n-first copy (FR / EN / IT)"
+    ],
+    "rules": [
+      {
+        "name": "The Two-Accent Rule",
+        "body": "Ocean carries navigation and structure. Terracotta carries conversion. They never compete on the same element.",
+        "section": "colors"
+      },
+      {
+        "name": "The Sand Floor Rule",
+        "body": "At least 60% of any public page surface is sand-family neutrals. Ocean and terracotta are accents, not wallpaper.",
+        "section": "colors"
+      },
+      {
+        "name": "The One Serif Rule",
+        "body": "Fraunces appears only on display and headline levels. UI chrome, buttons, and forms stay DM Sans.",
+        "section": "typography"
+      },
+      {
+        "name": "The 65ch Rule",
+        "body": "Prose blocks cap at 65 characters wide. Wider text reads like a template, not a guide.",
+        "section": "typography"
+      },
+      {
+        "name": "The Ink-Tinted Shadow Rule",
+        "body": "All shadows use warm ink rgba(42, 37, 32, ...), never rgba(0,0,0,...).",
+        "section": "elevation"
+      },
+      {
+        "name": "The Flat-By-Default Rule",
+        "body": "Tour cards, tables, and highlight rows have no shadow at rest. Elevation responds to state.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do use sand-50 as the default canvas and alternate white / sand-100 for section rhythm.",
+      "Do pair Fraunces headlines with DM Sans body text and cap prose at 65ch.",
+      "Do tint shadows with ink charcoal rgba(42, 37, 32, ...).",
+      "Do use terracotta exclusively for conversion CTAs and brand accent wordmark.",
+      "Do animate with transform and opacity only; honor prefers-reduced-motion.",
+      "Do use real Majunga-specific copy and i18n keys for all public strings."
+    ],
+    "donts": [
+      "Don't use corporate blue (#2563eb) or generic orange (#f97316) accents.",
+      "Don't use border-left or border-right greater than 1px as colored stripes on callouts.",
+      "Don't apply glassmorphism outside the hero weather widget.",
+      "Don't use gradient text, pill-shaped badges, or centered hero-only layouts.",
+      "Don't use bounce or elastic easing curves.",
+      "Don't nest cards inside cards.",
+      "Don't use pure #000 or #fff anywhere in the system.",
+      "Don't add decorative parallax blobs or circular gradient orbs."
+    ]
+  }
+}

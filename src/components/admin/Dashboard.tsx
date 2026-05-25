@@ -1,5 +1,9 @@
 import React, { useState, useEffect } from 'react'
-import { supabase } from '../../lib/supabase'
+import {
+  getTours,
+  getBookings,
+  getShuttleSchedules
+} from '../../api/madabookingApi'
 import { 
   Users, 
   MapPin, 
@@ -9,7 +13,6 @@ import {
   DollarSign,
   Clock
 } from 'lucide-react'
-import ErrorMessage from '../ui/ErrorMessage'
 
 interface DashboardStats {
   totalTours: number
@@ -34,7 +37,6 @@ export default function Dashboard() {
     recentBookings: []
   })
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     fetchDashboardData()
@@ -42,70 +44,61 @@ export default function Dashboard() {
 
   const fetchDashboardData = async () => {
     try {
-      setError(null)
-      setLoading(true)
-
       // Récupérer les statistiques des tours
-      const { data: tours, error: toursError } = await supabase
-        .from('tours')
-        .select('*')
-
-      if (toursError) {
-        console.error('Erreur lors du chargement des tours:', toursError)
-        throw new Error(`Erreur de connexion à la base de données (tours): ${toursError.message}`)
-      }
+      const apiTours = await getTours().catch(err => {
+        console.error('Erreur lors du chargement des tours:', err)
+        return []
+      })
 
       // Récupérer les statistiques des réservations
-      const { data: bookings, error: bookingsError } = await supabase
-        .from('bookings')
-        .select('*')
-
-      if (bookingsError) {
-        console.error('Erreur lors du chargement des réservations:', bookingsError)
-        throw new Error(`Erreur de connexion à la base de données (réservations): ${bookingsError.message}`)
-      }
+      const apiBookings = await getBookings().catch(err => {
+        console.error('Erreur lors du chargement des réservations:', err)
+        return []
+      })
 
       // Récupérer les statistiques des navettes
-      const { data: shuttles, error: shuttlesError } = await supabase
-        .from('shuttle_schedules')
-        .select('*')
+      const apiShuttles = await getShuttleSchedules().catch(err => {
+        console.error('Erreur lors du chargement des navettes:', err)
+        return []
+      })
 
-      if (shuttlesError) {
-        console.error('Erreur lors du chargement des navettes:', shuttlesError)
-        throw new Error(`Erreur de connexion à la base de données (navettes): ${shuttlesError.message}`)
-      }
+      // Calculer les statistiques
+      const totalRevenue = apiBookings.reduce((sum, booking) =>
+        sum + (parseFloat(booking.totalPrice) || 0), 0
+      )
+      const pendingBookings = apiBookings.filter(b => b.status === 'pending').length
+      const confirmedBookings = apiBookings.filter(b => b.status === 'confirmed').length
+      const activeTours = apiTours.filter(t => t.isActive !== false).length
 
-      // Récupérer les réservations récentes (sans jointure pour éviter les erreurs)
-      const { data: recentBookings, error: recentBookingsError } = await supabase
-        .from('bookings')
-        .select('*')
-        .order('created_at', { ascending: false })
-        .limit(5)
-
-      if (recentBookingsError) {
-        console.error('Erreur lors du chargement des réservations récentes:', recentBookingsError)
-        throw new Error(`Erreur de connexion à la base de données (réservations récentes): ${recentBookingsError.message}`)
-      }
-
-      // Calculer les statistiques avec des valeurs par défaut
-      const totalRevenue = (bookings || []).reduce((sum, booking) => sum + booking.total_price, 0)
-      const pendingBookings = (bookings || []).filter(b => b.status === 'pending').length
-      const confirmedBookings = (bookings || []).filter(b => b.status === 'confirmed').length
-      const activeTours = (tours || []).filter(t => t.is_active).length
+      // Récupérer les réservations récentes (trier et limiter)
+      const recentBookings = apiBookings
+        .sort((a, b) => {
+          const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0
+          const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0
+          return dateB - dateA
+        })
+        .slice(0, 5)
+        .map(booking => ({
+          id: booking.id || '',
+          tour_id: booking.tour ? extractIdFromIri(booking.tour) : '',
+          user_name: booking.userName,
+          booking_date: booking.bookingDate,
+          participants: booking.participants,
+          status: booking.status || 'pending'
+        }))
 
       setStats({
-        totalTours: (tours || []).length,
-        totalBookings: (bookings || []).length,
+        totalTours: apiTours.length,
+        totalBookings: apiBookings.length,
         totalRevenue,
-        totalShuttles: (shuttles || []).length,
+        totalShuttles: apiShuttles.length,
         activeTours,
         pendingBookings,
         confirmedBookings,
-        recentBookings: recentBookings || []
+        recentBookings
       })
     } catch (error) {
       console.error('Erreur lors du chargement des données:', error)
-      setError(error instanceof Error ? error.message : 'Une erreur inattendue s\'est produite')
       // Définir des statistiques par défaut en cas d'erreur
       setStats({
         totalTours: 0,
@@ -120,6 +113,13 @@ export default function Dashboard() {
     } finally {
       setLoading(false)
     }
+  }
+
+  // Helper pour extraire l'ID depuis un IRI
+  const extractIdFromIri = (iri?: string): string => {
+    if (!iri) return ''
+    const parts = iri.split('/')
+    return parts[parts.length - 1] || ''
   }
 
   const formatCurrency = (amount: number) => {
@@ -141,24 +141,6 @@ export default function Dashboard() {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-      </div>
-    )
-  }
-
-  if (error) {
-    return (
-      <div className="space-y-6">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
-          <p className="mt-1 text-sm text-gray-500">
-            Vue d'ensemble de votre activité MadaBooking
-          </p>
-        </div>
-        <ErrorMessage
-          error={error}
-          onRetry={fetchDashboardData}
-          title="Erreur de chargement du dashboard"
-        />
       </div>
     )
   }

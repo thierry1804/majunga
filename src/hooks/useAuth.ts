@@ -1,6 +1,15 @@
 import { useState, useEffect } from 'react'
-import { User, Session } from '@supabase/supabase-js'
-import { supabase } from '../lib/supabase'
+import { 
+  login as apiLogin, 
+  logout as apiLogout, 
+  getCurrentUser, 
+  getMe,
+  isAuthenticated,
+  ApiUser 
+} from '../api/madabookingApi'
+// Types pour compatibilité
+type User = ApiUser
+type Session = { user: ApiUser | null } | null
 
 export interface Profile {
   id: string
@@ -11,194 +20,158 @@ export interface Profile {
   updated_at: string
 }
 
+// Fonction helper pour convertir les rôles de l'API en format attendu
+function convertApiRoleToProfileRole(apiRoles?: string[]): 'admin' | 'editor' | 'user' {
+  if (!apiRoles || apiRoles.length === 0) {
+    return 'user';
+  }
+  
+  // Vérifier les rôles dans l'ordre de priorité
+  if (apiRoles.includes('ROLE_ADMIN')) {
+    return 'admin';
+  }
+  if (apiRoles.includes('ROLE_EDITOR')) {
+    return 'editor';
+  }
+  // Par défaut, même si ROLE_USER est présent, on retourne 'user'
+  return 'user';
+}
+
 export function useAuth() {
   const [user, setUser] = useState<User | null>(null)
   const [profile, setProfile] = useState<Profile | null>(null)
   const [loading, setLoading] = useState(true)
   const [session, setSession] = useState<Session | null>(null)
-  const [timedOut, setTimedOut] = useState(false)
+
+  // Fonction helper pour créer ou récupérer le profil avec timeout
+  // DÉSACTIVÉ - Supabase supprimé
+  const fetchOrCreateProfile = async (user: User): Promise<Profile | null> => {
+    console.warn('[useAuth] Supabase supprimé - authentification désactivée')
+    return null
+  }
+
+  // Fonction pour rafraîchir le profil depuis l'API
+  const refreshProfile = async () => {
+    try {
+      if (isAuthenticated()) {
+        const currentUser = await getMe();
+        if (currentUser) {
+          setUser(currentUser);
+          setProfile({
+            id: currentUser.id || '',
+            email: currentUser.email,
+            full_name: null,
+            role: convertApiRoleToProfileRole(currentUser.roles),
+            created_at: '',
+            updated_at: ''
+          });
+          setSession({ user: currentUser });
+        }
+      }
+    } catch (error) {
+      console.error('[useAuth] Erreur lors du rafraîchissement du profil:', error);
+      throw error;
+    }
+  }
 
   useEffect(() => {
-    let mounted = true
-    let timeoutId: NodeJS.Timeout
-
-    const getSession = async () => {
+    // Vérifier si l'utilisateur est déjà authentifié
+    const checkAuth = async () => {
       try {
-        // Vérifier si Supabase est configuré
-        if (!supabase || !supabase.auth) {
-          console.warn('Supabase non configuré - arrêt du chargement')
-          setLoading(false)
-          return
-        }
-
-        // Définir un timeout de 10 secondes pour éviter le chargement infini
-        timeoutId = setTimeout(() => {
-          if (mounted) {
-            console.warn('Timeout lors de la vérification de la session - arrêt du chargement')
-            setTimedOut(true)
-            setLoading(false)
-          }
-        }, 10000)
-
-        const { data: { session }, error } = await supabase.auth.getSession()
-        
-        // Annuler le timeout si la requête se termine
-        clearTimeout(timeoutId)
-
-        if (!mounted) return
-
-        if (error) {
-          console.error('Erreur de session:', error)
-          setLoading(false)
-          return
-        }
-
-        setSession(session)
-        setUser(session?.user ?? null)
-        
-        if (session?.user) {
-          // Essayer de récupérer le profil depuis la base de données
+        if (isAuthenticated()) {
+          // Essayer d'abord de récupérer depuis /me pour avoir les rôles à jour
           try {
-            const { data: profileData, error } = await supabase
-              .from('profiles')
-              .select('*')
-              .eq('id', session.user.id)
-              .single()
-
-            if (profileData && !error) {
-              setProfile(profileData)
-            } else {
-              // Créer un profil par défaut si pas trouvé
-              const defaultProfile: Profile = {
-                id: session.user.id,
-                email: session.user.email || '',
-                full_name: session.user.user_metadata?.full_name || null,
-                role: 'user',
-                created_at: new Date().toISOString(),
-                updated_at: new Date().toISOString()
-              }
-              setProfile(defaultProfile)
+            const currentUser = await getMe();
+            if (currentUser) {
+              setUser(currentUser);
+              setProfile({
+                id: currentUser.id || '',
+                email: currentUser.email,
+                full_name: null,
+                role: convertApiRoleToProfileRole(currentUser.roles),
+                created_at: '',
+                updated_at: ''
+              });
+              setSession({ user: currentUser });
             }
           } catch (error) {
-            console.error('Erreur lors de la récupération du profil:', error)
-            // Créer un profil par défaut en cas d'erreur
-            const defaultProfile: Profile = {
-              id: session.user.id,
-              email: session.user.email || '',
-              full_name: session.user.user_metadata?.full_name || null,
-              role: 'user',
-              created_at: new Date().toISOString(),
-              updated_at: new Date().toISOString()
+            // Fallback: utiliser l'utilisateur stocké
+            console.log('[useAuth] Impossible de récupérer via /me, utilisation de l\'utilisateur stocké');
+            const currentUser = getCurrentUser();
+            if (currentUser) {
+              setUser(currentUser);
+              setProfile({
+                id: currentUser.id || '',
+                email: currentUser.email,
+                full_name: null,
+                role: convertApiRoleToProfileRole(currentUser.roles),
+                created_at: '',
+                updated_at: ''
+              });
+              setSession({ user: currentUser });
             }
-            setProfile(defaultProfile)
           }
-        } else {
-          setProfile(null)
         }
-        
-        setLoading(false)
       } catch (error) {
-        console.error('Erreur lors de la récupération de la session:', error)
-        if (mounted) {
-          setLoading(false)
-        }
+        console.error('[useAuth] Erreur lors de la vérification de l\'authentification:', error);
+      } finally {
+        setLoading(false);
       }
-    }
+    };
 
-    getSession()
-
-    // Vérifier si Supabase est configuré avant d'écouter les changements
-    if (!supabase || !supabase.auth) {
-      console.warn('Supabase non configuré - pas d\'écoute des changements d\'auth')
-      return
-    }
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (_, session) => {
-        if (!mounted) return
-
-        setSession(session)
-        setUser(session?.user ?? null)
-        
-        if (session?.user) {
-          // Récupérer le profil depuis la base de données comme dans getSession
-          try {
-            const { data: profileData, error } = await supabase
-              .from('profiles')
-              .select('*')
-              .eq('id', session.user.id)
-              .single()
-
-            if (profileData && !error) {
-              setProfile(profileData)
-            } else {
-              // Créer un profil par défaut si pas trouvé
-              const defaultProfile: Profile = {
-                id: session.user.id,
-                email: session.user.email || '',
-                full_name: session.user.user_metadata?.full_name || null,
-                role: 'user',
-                created_at: new Date().toISOString(),
-                updated_at: new Date().toISOString()
-              }
-              setProfile(defaultProfile)
-            }
-          } catch (error) {
-            console.error('Erreur lors de la récupération du profil:', error)
-            // Créer un profil par défaut en cas d'erreur
-            const defaultProfile: Profile = {
-              id: session.user.id,
-              email: session.user.email || '',
-              full_name: session.user.user_metadata?.full_name || null,
-              role: 'user',
-              created_at: new Date().toISOString(),
-              updated_at: new Date().toISOString()
-            }
-            setProfile(defaultProfile)
-          }
-        } else {
-          setProfile(null)
-        }
-        
-        setLoading(false)
-      }
-    )
-
-    return () => {
-      mounted = false
-      if (timeoutId) {
-        clearTimeout(timeoutId)
-      }
-      if (subscription) {
-        subscription.unsubscribe()
-      }
-    }
+    checkAuth();
   }, [])
 
   const signIn = async (email: string, password: string) => {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    })
-    return { data, error }
+    try {
+      const { user, token } = await apiLogin({ email, password });
+      
+      setUser(user);
+      setProfile({
+        id: user.id || '',
+        email: user.email,
+        full_name: null,
+        role: convertApiRoleToProfileRole(user.roles),
+        created_at: '',
+        updated_at: ''
+      });
+      setSession({ user });
+      
+      return { data: { user, session: { user } }, error: null };
+    } catch (error: any) {
+      console.error('[useAuth] Erreur de connexion:', error);
+      return { 
+        data: null, 
+        error: { 
+          message: error.message || 'Email ou mot de passe incorrect' 
+        } 
+      };
+    }
   }
 
   const signUp = async (email: string, password: string, fullName?: string) => {
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: {
-          full_name: fullName,
-        },
-      },
-    })
-    return { data, error }
+    // Pour l'instant, l'API ne supporte que la création d'utilisateur
+    // L'inscription peut être gérée via createUser si nécessaire
+    console.warn('[useAuth] Inscription non implémentée via API Madabooking');
+    return { data: null, error: { message: 'Inscription non disponible' } };
   }
 
   const signOut = async () => {
-    const { error } = await supabase.auth.signOut()
-    return { error }
+    apiLogout();
+    setUser(null)
+    setProfile(null)
+    setSession(null)
+    return { error: null }
+  }
+
+  const resetPassword = async (email: string) => {
+    console.warn('[useAuth] Réinitialisation de mot de passe non implémentée');
+    return { data: null, error: { message: 'Réinitialisation de mot de passe non disponible' } };
+  }
+
+  const updatePassword = async (newPassword: string) => {
+    console.warn('[useAuth] Mise à jour de mot de passe non implémentée');
+    return { data: null, error: { message: 'Mise à jour de mot de passe non disponible' } };
   }
 
   const isAdmin = () => profile?.role === 'admin'
@@ -210,12 +183,14 @@ export function useAuth() {
     profile,
     session,
     loading,
-    timedOut,
     signIn,
     signUp,
     signOut,
+    resetPassword,
+    updatePassword,
     isAdmin,
     isEditor,
     canAccessAdmin,
+    refreshProfile,
   }
 }
