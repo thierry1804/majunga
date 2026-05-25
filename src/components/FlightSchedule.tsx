@@ -272,13 +272,13 @@ const FlightSchedule = () => {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'scheduled': return 'text-green-600 bg-green-100';
-      case 'delayed': return 'text-orange-600 bg-orange-100';
-      case 'cancelled': return 'text-red-600 bg-red-100';
-      case 'boarding': return 'text-blue-600 bg-blue-100';
-      case 'departed': return 'text-gray-600 bg-gray-100';
-      case 'arrived': return 'text-purple-600 bg-purple-100';
-      default: return 'text-gray-600 bg-gray-100';
+      case 'scheduled': return 'text-ocean-700 bg-ocean-50';
+      case 'delayed': return 'text-terracotta-600 bg-terracotta-50';
+      case 'cancelled': return 'text-red-700 bg-red-50';
+      case 'boarding': return 'text-ocean-600 bg-ocean-100';
+      case 'departed': return 'text-ink-muted bg-sand-200';
+      case 'arrived': return 'text-ocean-800 bg-ocean-50';
+      default: return 'text-ink-muted bg-sand-200';
     }
   };
 
@@ -318,8 +318,8 @@ const FlightSchedule = () => {
   const sortedFlights = sortFlightsByTime(filteredFlights);
 
   return (
-    <div className="bg-white rounded-lg shadow-md overflow-hidden">
-      <div className="px-6 py-4 bg-blue-600 text-white">
+    <div className="rounded-xl border border-sand-300 bg-sand-50 overflow-hidden">
+      <div className="px-5 py-4 bg-ocean-700 text-sand-50">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <Plane className="w-6 h-6" />
@@ -330,8 +330,8 @@ const FlightSchedule = () => {
               onClick={() => setViewType('all')}
               className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
                 viewType === 'all' 
-                  ? 'bg-white text-blue-600' 
-                  : 'bg-white/20 text-white hover:bg-white/30'
+                  ? 'bg-sand-50 text-ocean-700' 
+                  : 'bg-sand-50/20 text-sand-50 hover:bg-sand-50/30'
               }`}
             >
               Tous
@@ -340,8 +340,8 @@ const FlightSchedule = () => {
               onClick={() => setViewType('departures')}
               className={`px-3 py-1 rounded text-sm font-medium transition-colors flex items-center space-x-1 ${
                 viewType === 'departures' 
-                  ? 'bg-white text-blue-600' 
-                  : 'bg-white/20 text-white hover:bg-white/30'
+                  ? 'bg-sand-50 text-ocean-700' 
+                  : 'bg-sand-50/20 text-sand-50 hover:bg-sand-50/30'
               }`}
             >
               <ArrowUp className="w-3 h-3" />
@@ -351,8 +351,8 @@ const FlightSchedule = () => {
               onClick={() => setViewType('arrivals')}
               className={`px-3 py-1 rounded text-sm font-medium transition-colors flex items-center space-x-1 ${
                 viewType === 'arrivals' 
-                  ? 'bg-white text-blue-600' 
-                  : 'bg-white/20 text-white hover:bg-white/30'
+                  ? 'bg-sand-50 text-ocean-700' 
+                  : 'bg-sand-50/20 text-sand-50 hover:bg-sand-50/30'
               }`}
             >
               <ArrowDown className="w-3 h-3" />
@@ -364,7 +364,7 @@ const FlightSchedule = () => {
 
       {loading ? (
         <div className="flex justify-center items-center h-64">
-          <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-blue-600"></div>
+          <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-ocean-600"></div>
         </div>
       ) : error ? (
         <div className="text-center text-red-500 py-8">
@@ -374,24 +374,24 @@ const FlightSchedule = () => {
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="bg-gray-50">
-                <th className="py-3 px-4 text-left text-sm font-medium text-gray-600">Type</th>
-                <th className="py-3 px-4 text-left text-sm font-medium text-gray-600">Compagnie</th>
-                <th className="py-3 px-4 text-left text-sm font-medium text-gray-600">Vol</th>
-                <th className="py-3 px-4 text-left text-sm font-medium text-gray-600">
+              <tr className="bg-sand-100">
+                <th className="py-3 px-4 text-left text-sm font-medium text-ink-muted">Type</th>
+                <th className="py-3 px-4 text-left text-sm font-medium text-ink-muted">Compagnie</th>
+                <th className="py-3 px-4 text-left text-sm font-medium text-ink-muted">Vol</th>
+                <th className="py-3 px-4 text-left text-sm font-medium text-ink-muted">
                   {viewType === 'arrivals' ? 'Origine' : viewType === 'departures' ? 'Destination' : 'Direction'}
                 </th>
-                <th className="py-3 px-4 text-left text-sm font-medium text-gray-600">Heure</th>
-                <th className="py-3 px-4 text-left text-sm font-medium text-gray-600">Statut</th>
+                <th className="py-3 px-4 text-left text-sm font-medium text-ink-muted">Heure</th>
+                <th className="py-3 px-4 text-left text-sm font-medium text-ink-muted">Statut</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200">
+            <tbody className="divide-y divide-sand-200">
               {sortedFlights.length > 0 ? (
                 sortedFlights.map(flight => (
-                  <tr key={flight.id} className="hover:bg-gray-50">
+                  <tr key={flight.id} className="hover:bg-white/60">
                     <td className="py-3 px-4">
                       <div className={`flex items-center space-x-1 ${
-                        flight.type === 'departure' ? 'text-blue-600' : 'text-green-600'
+                        flight.type === 'departure' ? 'text-ocean-600' : 'text-ocean-500'
                       }`}>
                         {flight.type === 'departure' ? (
                           <ArrowUp className="w-4 h-4" />
@@ -403,24 +403,24 @@ const FlightSchedule = () => {
                         </span>
                       </div>
                     </td>
-                    <td className="py-3 px-4 text-sm text-gray-900 font-medium">
+                    <td className="py-3 px-4 text-sm text-ink font-medium">
                       {flight.airline}
                     </td>
-                    <td className="py-3 px-4 text-sm text-gray-900 font-mono">
+                    <td className="py-3 px-4 text-sm text-ink font-mono">
                       {flight.flightNumber}
                     </td>
-                    <td className="py-3 px-4 text-sm text-gray-900">
+                    <td className="py-3 px-4 text-sm text-ink">
                       {flight.destination}
                     </td>
-                    <td className="py-3 px-4 text-sm text-gray-900 font-mono">
+                    <td className="py-3 px-4 text-sm text-ink font-mono">
                       {flight.type === 'departure' ? flight.departureTime : flight.arrivalTime}
                       {flight.type === 'departure' && flight.actualDeparture && flight.actualDeparture !== flight.departureTime && (
-                        <div className="text-xs text-orange-600">
+                        <div className="text-xs text-terracotta-500">
                           Réel: {flight.actualDeparture}
                         </div>
                       )}
                       {flight.type === 'arrival' && flight.actualArrival && flight.actualArrival !== flight.arrivalTime && (
-                        <div className="text-xs text-orange-600">
+                        <div className="text-xs text-terracotta-500">
                           Réel: {flight.actualArrival}
                         </div>
                       )}
@@ -434,7 +434,7 @@ const FlightSchedule = () => {
                 ))
               ) : (
                 <tr>
-                  <td colSpan={6} className="py-6 text-center text-gray-500">
+                  <td colSpan={6} className="py-6 text-center text-ink-light">
                     Aucun vol programmé pour cette date
                   </td>
                 </tr>
@@ -444,8 +444,8 @@ const FlightSchedule = () => {
         </div>
       )}
 
-      <div className="px-6 py-4 bg-gray-50 border-t">
-        <div className="flex items-center justify-between text-sm text-gray-600">
+      <div className="px-5 py-3 bg-sand-100 border-t border-sand-300">
+        <div className="flex items-center justify-between text-sm text-ink-muted">
           <div className="text-xs">
             Dernière mise à jour: {new Date().toLocaleTimeString('fr-FR')}
           </div>

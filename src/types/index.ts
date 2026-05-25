@@ -1,6 +1,7 @@
 // Types pour l'interface publique (compatibilité avec l'existant)
 export interface Tour {
   id: number;
+  supabaseId?: string; // UUID original de Supabase pour les réservations
   title: string;
   shortDescription: string;
   fullDescription: string;

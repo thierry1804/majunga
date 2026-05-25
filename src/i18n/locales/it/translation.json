@@ -4,111 +4,211 @@
     "navigation": {
         "home": "Home",
         "about": "Chi siamo",
-        "contact": "Contatti"
+        "contact": "Contatti",
+        "admin": "Admin",
+        "signOut": "Esci",
+        "openMenu": "Apri menu",
+        "closeMenu": "Chiudi menu",
+        "skipToContent": "Vai al contenuto"
+    },
+    "trust": {
+        "ariaLabel": "Perché fidarsi di noi",
+        "since2015": "Dal 2015",
+        "since2015Detail": "Un team radicato a Majunga",
+        "localGuides": "Guide locali",
+        "localGuidesDetail": "Nati e formati sul posto",
+        "reliableShuttle": "Navetta affidabile",
+        "reliableShuttleDetail": "7 giorni su 7, tutto l'anno",
+        "languages": "FR · EN · IT",
+        "languagesDetail": "Accoglienza multilingue"
     },
     "hero": {
-        "title": "Scopri la Magia di",
-        "subtitle": "Vivi spiagge mozzafiato, una cultura vibrante e avventure indimenticabili con i nostri tour premium e il servizio navetta aeroportuale",
-        "discoverTours": "Scopri i nostri Tour",
-        "bookShuttle": "Prenota la Navetta",
+        "title": "Scopri",
+        "city": "Majunga",
+        "subtitle": "Spiagge selvagge, baobab secolari e cultura malgascia autentica. Tour guidati da locali e navetta aeroportuale affidabile.",
+        "discoverTours": "Vedi i tour",
+        "bookShuttle": "Navetta aeroporto",
         "scrollDown": "Scorri in basso"
     },
     "about": {
         "title": "Su Majunga",
-        "description": "Majunga, o Mahajanga, è un'affascinante città portuale situata sulla costa nord-occidentale del Madagascar. Con il suo piacevole clima tropicale e il ricco patrimonio culturale, è una destinazione ideale per i viaggiatori in cerca di avventura e autenticità.",
-        "sectionTitle": "Benvenuto a Mada Booking",
-        "intro": "Dal 2015, ci dedichiamo a condividere la bellezza naturale e la ricca cultura di Majunga, Madagascar con viaggiatori da tutto il mondo. La nostra passione è creare esperienze autentiche che connettono i visitatori con il vero Madagascar.",
-        "distinction": "Ciò che ci distingue è la nostra profonda conoscenza locale e il nostro impegno per il turismo sostenibile. Tutte le nostre guide sono native di Majunga con una profonda comprensione della storia, della cultura e dei tesori nascosti della regione.",
+        "description": "Majunga, o Mahajanga, è un'affascinante città portuale sulla costa nord-occidentale del Madagascar.",
+        "sectionTitle": "Guide che conoscono ogni angolo",
+        "intro": "Dal 2015 condividiamo la bellezza naturale e la cultura di Majunga con viaggiatori da tutto il mondo. Ogni tour è pensato per connetterti al vero Madagascar.",
+        "distinction": "Le nostre guide sono nate qui. Conoscono la storia, le tradizioni e i tesori nascosti che le guide di passaggio non troverebbero mai.",
+        "since": "Al servizio dei viaggiatori",
+        "imageAlt": {
+            "main": "Piroga tradizionale sulla costa di Majunga",
+            "secondary": "Paesaggio costiero di Mahajanga"
+        },
         "mission": {
-            "title": "La Nostra Missione",
-            "description": "Valorizzare la bellezza di Majunga sostenendo le comunità locali e preservando gli ambienti naturali."
+            "title": "La nostra missione",
+            "description": "Valorizzare Majunga sostenendo le comunità locali e preservando gli ambienti naturali."
         },
         "experience": {
-            "title": "Esperienza Locale",
-            "description": "Tutti i nostri tour sono progettati e guidati da guide locali che condividono prospettive e storie autentiche."
+            "title": "Esperienza locale",
+            "description": "Tutti i nostri tour sono progettati e guidati da abitanti di Majunga che condividono storie autentiche."
         }
     },
     "tours": {
-        "title": "I nostri Tour",
-        "description": "Scopri i nostri tour accuratamente selezionati per offrirti un'esperienza indimenticabile a Majunga",
-        "viewDetails": "Vedi dettagli",
-        "bookNow": "Prenota ora",
-        "sectionTitle": "I nostri Tour Popolari",
-        "sectionSubtitle": "Esplora con Noi",
-        "sectionDescription": "Scopri i siti più belli ed emozionanti intorno a Majunga con i nostri tour accuratamente progettati",
-        "loadingError": "Impossibile caricare i tour. Si prega di riprovare più tardi.",
+        "title": "Tour",
+        "description": "Scopri i nostri tour accuratamente selezionati per un'esperienza indimenticabile a Majunga",
+        "viewDetails": "Dettagli",
+        "bookNow": "Prenota",
+        "sectionTitle": "Tour popolari",
+        "sectionSubtitle": "Esplora la regione",
+        "sectionDescription": "Baobab, mangrovie, villaggi di pescatori: i nostri tour ti portano dove Majunga rivela la sua vera natura.",
+        "loadingError": "Impossibile caricare i tour. Riprova.",
         "retry": "Riprova",
-        "bookTour": "Prenota il tuo Tour"
+        "bookTour": "Prenota questo tour",
+        "empty": "Nessun tour disponibile al momento.",
+        "region": "Regione di Majunga",
+        "perPerson": "/ pers.",
+        "aboutTour": "Informazioni sul tour",
+        "duration": "Durata",
+        "priceLabel": "Prezzo",
+        "highlights": "Punti salienti",
+        "closeDetails": "Chiudi",
+        "previousImage": "Immagine precedente",
+        "nextImage": "Immagine successiva",
+        "viewImage": "Vedi immagine {{number}}",
+        "featured": "Consigliato"
     },
     "shuttle": {
-        "title": "Servizio Navetta Aeroportuale",
+        "title": "Navetta aeroporto",
         "description": "Trasporto confortevole e affidabile tra l'aeroporto e la tua destinazione",
-        "bookShuttle": "Prenota la Navetta",
+        "bookShuttle": "Prenota",
         "pickupLocation": "Luogo di ritiro",
         "dropoffLocation": "Luogo di consegna",
         "date": "Data",
         "time": "Ora",
         "passengers": "Numero di passeggeri",
         "submit": "Prenota",
-        "sectionSubtitle": "Trasporto Comodo",
-        "sectionDescription": "Il nostro servizio navetta confortevole e affidabile collega ogni giorno l'aeroporto di Majunga al centro città, rendendo il tuo arrivo e la tua partenza senza stress.",
+        "sectionSubtitle": "Arrivo senza stress",
+        "sectionDescription": "La nostra navetta collega l'aeroporto Amborovy (MJN) al centro di Majunga, tutti i giorni dell'anno.",
         "direction": {
-            "airportToCity": "Aeroporto verso Città",
-            "cityToAirport": "Città verso Aeroporto"
+            "airportToCity": "Aeroporto → Città",
+            "cityToAirport": "Città → Aeroporto"
         },
         "highlights": {
             "reliableSchedule": {
-                "title": "Orari Affidabili",
-                "description": "Partenze giornaliere multiple per adattarsi ai tuoi piani di viaggio"
+                "title": "Orari regolari",
+                "description": "Più partenze al giorno in linea con i voli"
             },
             "convenientStops": {
-                "title": "Fermate Comode",
-                "description": "Servizio diretto tra l'aeroporto e le principali località della città"
+                "title": "Tragitti diretti",
+                "description": "Dall'aeroporto ai principali quartieri della città"
             },
             "easyBooking": {
-                "title": "Prenotazione Facile",
-                "description": "Prenota il tuo posto online o chiamaci per assistenza"
+                "title": "Prenotazione semplice",
+                "description": "Online in pochi clic o per telefono"
             }
         },
         "schedule": {
             "title": {
-                "airportToCity": "Orari Aeroporto verso Città",
-                "cityToAirport": "Orari Città verso Aeroporto"
+                "airportToCity": "Orari aeroporto → città",
+                "cityToAirport": "Orari città → aeroporto"
             },
             "columns": {
                 "departure": "Partenza",
                 "arrival": "Arrivo",
                 "price": "Prezzo",
-                "availableSeats": "Posti Disponibili",
+                "availableSeats": "Posti",
                 "action": "Azione"
             },
             "noSchedules": "Nessun orario disponibile per questa direzione.",
             "full": "Completo"
         },
         "importantInfo": {
-            "title": "Informazioni importanti",
+            "title": "Informazioni pratiche",
             "items": [
-                "Il nostro servizio navetta opera 7 giorni su 7, inclusi i giorni festivi",
-                "Per assistenza speciale o prenotazioni di gruppo, contattaci direttamente"
+                "Servizio disponibile 7 giorni su 7, festivi inclusi",
+                "Per gruppi o esigenze speciali, contattaci direttamente"
             ]
         },
-        "loadingError": "Impossibile caricare gli orari. Si prega di riprovare più tardi.",
+        "loadingError": "Impossibile caricare gli orari.",
         "retry": "Riprova"
     },
     "booking": {
-        "title": "Prenota la tua Esperienza",
-        "description": "Pianifica oggi il tuo viaggio a Majunga",
-        "contactUs": "Contattaci"
+        "title": "Prenota",
+        "description": "Pianifica il tuo viaggio a Majunga",
+        "contactUs": "Contattaci",
+        "sectionLabel": "Prenotazione",
+        "sectionTitle": "Pianifica la tua visita",
+        "sectionDescription": "Scegli un tour o una navetta aeroportuale e conferma il tuo posto in pochi minuti.",
+        "reassurance": {
+            "title": "Prenota con fiducia",
+            "items": [
+                "Conferma immediata via email",
+                "Guide locali certificate dal 2015",
+                "Assistenza WhatsApp e telefono",
+                "Pagamento online sicuro"
+            ],
+            "whatsapp": "Scrivici su WhatsApp",
+            "phone": "O chiamaci"
+        },
+        "form": {
+            "title": "Effettua una prenotazione",
+            "tourTab": "Tour",
+            "shuttleTab": "Navetta aeroporto",
+            "selectTour": "Scegli un tour",
+            "selectShuttle": "Scegli una navetta",
+            "selectPlaceholderTour": "Seleziona un tour",
+            "selectPlaceholderShuttle": "Seleziona una navetta",
+            "date": "Data",
+            "guests": "Numero di persone",
+            "name": "Nome completo",
+            "email": "Email",
+            "phone": "Telefono",
+            "specialRequests": "Richieste speciali (opzionale)",
+            "submit": "Procedi al pagamento",
+            "paymentTitle": "Pagamento",
+            "summaryTitle": "Riepilogo",
+            "summaryService": "Servizio",
+            "summaryDate": "Data",
+            "summaryGuests": "Partecipanti",
+            "summaryReference": "Riferimento",
+            "summaryPending": "In attesa di pagamento",
+            "summaryTotal": "Totale",
+            "backToForm": "Torna al modulo",
+            "confirmedTitle": "Prenotazione confermata",
+            "confirmedBody": "La prenotazione è confermata. Ti abbiamo inviato un'email di riepilogo.",
+            "failedTitle": "Pagamento fallito",
+            "failedBody": "Si è verificato un problema con il pagamento. Riprova.",
+            "bookAnother": "Nuova prenotazione",
+            "retry": "Riprova",
+            "shuttleRoute": "Navetta {{from}} verso {{to}}",
+            "perPerson": "/ pers.",
+            "seatsAvailable": "{{count}} posti",
+            "errors": {
+                "name": "Inserisci il tuo nome.",
+                "email": "Inserisci un indirizzo email valido.",
+                "phone": "Inserisci il tuo numero di telefono.",
+                "date": "Seleziona una data.",
+                "serviceTour": "Seleziona un tour.",
+                "serviceShuttle": "Seleziona una navetta.",
+                "network": "Errore di rete. Riprova.",
+                "payment": "Pagamento fallito. Riprova."
+            }
+        }
     },
     "weather": {
-        "forecastTitle": "Oggi + 3 giorni",
+        "forecastTitle": "Meteo a Majunga",
         "unavailable": "Meteo non disponibile",
-        "apiError": "Configura la tua chiave API in .env",
+        "apiError": "Configura la chiave API in .env",
         "feelsLike": "Percepita"
     },
     "footer": {
-        "copyright": "© 2024 Majunga Tours. Tutti i diritti riservati.",
-        "privacy": "Informativa sulla privacy",
-        "terms": "Termini di utilizzo"
+        "tagline": "La tua porta d'accesso a Majunga: tour autentici, navetta aeroportuale ed esperienze locali dal 2015.",
+        "quickLinks": "Navigazione",
+        "contact": "Contatti",
+        "address": "Boulevard Joffre, Mahajanga 401, Madagascar",
+        "copyright": "© {{year}} Mada Booking. Tutti i diritti riservati.",
+        "privacy": "Privacy",
+        "terms": "Termini di utilizzo",
+        "whatsapp": "WhatsApp",
+        "ctaTitle": "Pronto a scoprire Majunga?",
+        "ctaDescription": "Prenota il tuo tour o navetta aeroportuale in pochi minuti.",
+        "ctaButton": "Prenota ora"
     }
 }

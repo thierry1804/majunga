@@ -1,6 +1,9 @@
+import { useEffect, useState } from 'react';
 import { X } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { Tour } from '../../types';
 import Button from '../ui/Button';
+import { usePrefersReducedMotion } from '../../hooks/usePrefersReducedMotion';
 
 interface TourDetailsModalProps {
   tour: Tour | null;
@@ -9,93 +12,123 @@ interface TourDetailsModalProps {
 }
 
 export default function TourDetailsModal({ tour, onClose, onBookNow }: TourDetailsModalProps) {
+  const { t } = useTranslation();
+  const reduced = usePrefersReducedMotion();
+  const [visible, setVisible] = useState(reduced);
+
+  useEffect(() => {
+    if (!tour) return;
+    if (reduced) {
+      setVisible(true);
+      return;
+    }
+    setVisible(false);
+    const id = requestAnimationFrame(() => setVisible(true));
+    return () => cancelAnimationFrame(id);
+  }, [tour, reduced]);
+
+  useEffect(() => {
+    if (!tour) return;
+
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [tour, onClose]);
+
   if (!tour) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
-      <div 
-        className="bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col"
-        onClick={(e) => e.stopPropagation()}
+    <>
+      <div
+        className="fixed inset-0 z-50 bg-ocean-900/50 backdrop-blur-sm transition-opacity duration-300"
+        style={{ opacity: visible ? 1 : 0 }}
+        onClick={onClose}
+        aria-hidden="true"
+      />
+
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="tour-modal-title"
+        className="fixed right-0 top-0 bottom-0 z-50 w-full max-w-xl bg-sand-50 shadow-elevated flex flex-col transition-transform duration-500"
+        style={{
+          transform: visible ? 'translate3d(0, 0, 0)' : 'translate3d(100%, 0, 0)',
+          transitionTimingFunction: 'var(--ease-out-expo)',
+        }}
       >
-        {/* Header with close button */}
-        <div className="flex justify-between items-center p-4 border-b">
-          <h2 className="text-2xl font-bold text-gray-900">{tour.title}</h2>
+        <div className="flex justify-between items-start gap-4 p-5 border-b border-sand-200 shrink-0">
+          <h2 id="tour-modal-title" className="font-display text-xl font-semibold text-ink">
+            {tour.title}
+          </h2>
           <button
             onClick={onClose}
-            className="text-gray-500 hover:text-gray-700 transition-colors"
-            aria-label="Fermer les détails"
+            className="text-ink-light hover:text-ink transition-colors p-1"
+            aria-label={t('tours.closeDetails')}
           >
-            <X size={24} />
+            <X size={20} />
           </button>
         </div>
-        
-        {/* Scrollable content */}
-        <div className="overflow-y-auto flex-grow p-4">
-          {/* Image gallery */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+
+        <div className="overflow-y-auto flex-1 p-5">
+          <div className="space-y-3 mb-6">
             {tour.images.map((image, index) => (
-              <div 
-                key={index} 
-                className={`rounded-lg overflow-hidden ${index === 0 ? 'md:col-span-2 h-64 md:h-80' : 'h-48'}`}
+              <div
+                key={index}
+                className={`rounded-lg overflow-hidden ${index === 0 ? 'aspect-[16/9]' : 'aspect-[3/2]'}`}
               >
-                <img 
-                  src={image} 
-                  alt={`${tour.title} - vue ${index + 1}`} 
+                <img
+                  src={image}
+                  alt={`${tour.title} — ${index + 1}`}
                   className="w-full h-full object-cover"
+                  loading="lazy"
                 />
               </div>
             ))}
           </div>
-          
-          {/* Tour details */}
+
           <div className="mb-6">
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">À Propos de ce Tour</h3>
-            <p className="text-gray-700 mb-4 leading-relaxed">
-              {tour.fullDescription}
-            </p>
-            
-            <div className="grid grid-cols-2 gap-4 mb-4">
-              <div className="bg-blue-50 p-3 rounded">
-                <span className="block text-sm text-gray-500">Durée</span>
-                <span className="font-medium">{tour.duration}</span>
-              </div>
-              
-              <div className="bg-blue-50 p-3 rounded">
-                <span className="block text-sm text-gray-500">Prix</span>
-                <span className="font-medium">{tour.price} {tour.currency} par personne</span>
-              </div>
+            <h3 className="font-medium text-ink mb-2">{t('tours.aboutTour')}</h3>
+            <p className="text-sm text-ink-muted leading-relaxed">{tour.fullDescription}</p>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3 mb-6">
+            <div className="bg-white border border-sand-200 rounded-lg p-3">
+              <span className="block text-xs text-ink-light mb-0.5">{t('tours.duration')}</span>
+              <span className="text-sm font-medium text-ink">{tour.duration}</span>
+            </div>
+            <div className="bg-white border border-sand-200 rounded-lg p-3">
+              <span className="block text-xs text-ink-light mb-0.5">{t('tours.priceLabel')}</span>
+              <span className="text-sm font-medium text-ink">
+                {tour.price} {tour.currency} {t('tours.perPerson')}
+              </span>
             </div>
           </div>
-          
-          {/* Highlights */}
+
           <div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-3">Points Forts du Tour</h3>
-            <ul className="grid grid-cols-1 md:grid-cols-2 gap-2">
+            <h3 className="font-medium text-ink mb-3">{t('tours.highlights')}</h3>
+            <ul className="space-y-2">
               {tour.highlights.map((highlight, index) => (
-                <li key={index} className="flex items-start">
-                  <svg className="text-green-500 w-5 h-5 mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-                  </svg>
-                  <span className="text-gray-700">{highlight}</span>
+                <li key={index} className="flex items-start gap-2 text-sm text-ink-muted">
+                  <span className="text-ocean-600 mt-0.5 shrink-0">—</span>
+                  {highlight}
                 </li>
               ))}
             </ul>
           </div>
         </div>
-        
-        {/* Footer with action buttons */}
-        <div className="border-t p-4 bg-gray-50 flex justify-end space-x-4">
-          <Button variant="outline" onClick={onClose}>
-            Fermer
+
+        <div className="border-t border-sand-200 p-5 flex gap-3 shrink-0 bg-white">
+          <Button variant="ghost" onClick={onClose} className="flex-1">
+            {t('tours.closeDetails')}
           </Button>
-          <Button 
-            variant="primary"
-            onClick={() => onBookNow(tour)}
-          >
-            Réserver ce Tour
+          <Button variant="primary" onClick={() => onBookNow(tour)} className="flex-1">
+            {t('tours.bookNow')}
           </Button>
         </div>
       </div>
-    </div>
+    </>
   );
 }

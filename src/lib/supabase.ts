@@ -1,13 +1,7 @@
-import { createClient } from '@supabase/supabase-js'
+// Supabase a été complètement supprimé - l'application utilise maintenant uniquement l'API Madabooking
+// Ce fichier est conservé pour la compatibilité avec les imports existants mais ne fait plus rien
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
-
-if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error('Variables d\'environnement Supabase manquantes. Veuillez configurer VITE_SUPABASE_URL et VITE_SUPABASE_ANON_KEY')
-}
-
-export const supabase = createClient(supabaseUrl, supabaseAnonKey)
+export const supabase = null
 
 // Types pour la base de données
 export interface Database {

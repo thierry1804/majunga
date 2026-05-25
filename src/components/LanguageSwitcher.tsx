@@ -1,59 +1,75 @@
 import { useTranslation } from 'react-i18next';
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
+import { ChevronDown } from 'lucide-react';
 
-const LanguageSwitcher = () => {
-    const { i18n } = useTranslation();
-    const [isOpen, setIsOpen] = useState(false);
+const languages = [
+  { code: 'fr', label: 'FR' },
+  { code: 'en', label: 'EN' },
+  { code: 'it', label: 'IT' },
+];
 
-    const changeLanguage = (lng: string) => {
-        i18n.changeLanguage(lng);
+interface LanguageSwitcherProps {
+  variant?: 'light' | 'dark';
+}
+
+export default function LanguageSwitcher({ variant = 'light' }: LanguageSwitcherProps) {
+  const { i18n } = useTranslation();
+  const [isOpen, setIsOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) {
         setIsOpen(false);
+      }
     };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
-    const languages = [
-        { code: 'fr', flag: '🇫🇷', name: 'Français' },
-        { code: 'en', flag: '🇬🇧', name: 'English' },
-        { code: 'it', flag: '🇮🇹', name: 'Italiano' }
-    ];
+  const current = languages.find((l) => l.code === i18n.language) || languages[0];
 
-    const currentLanguage = languages.find(lang => lang.code === i18n.language) || languages[0];
+  const triggerClass =
+    variant === 'dark'
+      ? 'text-sand-50 border-sand-50/30 hover:bg-sand-50/10'
+      : 'text-ink border-sand-300 hover:bg-sand-100';
 
-    return (
-        <div className="relative">
-            <button
-                onClick={() => setIsOpen(!isOpen)}
-                className="flex items-center gap-2 px-3 py-2 rounded text-lg hover:bg-gray-100 transition-colors"
-                title="Changer de langue"
-            >
-                <span>{currentLanguage.flag}</span>
-            </button>
+  return (
+    <div ref={ref} className="relative">
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className={`flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold border rounded-md transition-colors ${triggerClass}`}
+        aria-haspopup="listbox"
+        aria-expanded={isOpen}
+      >
+        {current.label}
+        <ChevronDown size={12} className={`transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+      </button>
 
-            {isOpen && (
-                <div className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 min-w-[60px]">
-                    {languages.map((language) => (
-                        <button
-                            key={language.code}
-                            onClick={() => changeLanguage(language.code)}
-                            className={`w-full flex items-center justify-center px-3 py-2 hover:bg-gray-50 transition-colors ${
-                                i18n.language === language.code ? 'bg-blue-50 text-blue-600' : 'text-gray-700'
-                            }`}
-                            title={language.name}
-                        >
-                            <span className="text-lg">{language.flag}</span>
-                        </button>
-                    ))}
-                </div>
-            )}
-
-            {/* Overlay pour fermer le menu en cliquant à l'extérieur */}
-            {isOpen && (
-                <div 
-                    className="fixed inset-0 z-40" 
-                    onClick={() => setIsOpen(false)}
-                />
-            )}
-        </div>
-    );
-};
-
-export default LanguageSwitcher; 
+      {isOpen && (
+        <ul
+          role="listbox"
+          className="absolute top-full right-0 mt-1 bg-sand-50 border border-sand-200 rounded-lg shadow-card z-50 overflow-hidden min-w-[56px]"
+        >
+          {languages.map((lang) => (
+            <li key={lang.code} role="option" aria-selected={i18n.language === lang.code}>
+              <button
+                onClick={() => {
+                  i18n.changeLanguage(lang.code);
+                  setIsOpen(false);
+                }}
+                className={`w-full px-3 py-2 text-xs font-semibold text-left transition-colors ${
+                  i18n.language === lang.code
+                    ? 'bg-ocean-50 text-ocean-700'
+                    : 'text-ink hover:bg-sand-100'
+                }`}
+              >
+                {lang.label}
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}

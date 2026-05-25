@@ -1,6 +1,15 @@
 import { useState, useEffect } from 'react'
-import { User, Session } from '@supabase/supabase-js'
-import { supabase } from '../lib/supabase'
+import { 
+  login as apiLogin, 
+  logout as apiLogout, 
+  getCurrentUser, 
+  getMe,
+  isAuthenticated,
+  ApiUser 
+} from '../api/madabookingApi'
+// Types pour compatibilité
+type User = ApiUser
+type Session = { user: ApiUser | null } | null
 
 export interface Profile {
   id: string
@@ -11,6 +20,23 @@ export interface Profile {
   updated_at: string
 }
 
+// Fonction helper pour convertir les rôles de l'API en format attendu
+function convertApiRoleToProfileRole(apiRoles?: string[]): 'admin' | 'editor' | 'user' {
+  if (!apiRoles || apiRoles.length === 0) {
+    return 'user';
+  }
+  
+  // Vérifier les rôles dans l'ordre de priorité
+  if (apiRoles.includes('ROLE_ADMIN')) {
+    return 'admin';
+  }
+  if (apiRoles.includes('ROLE_EDITOR')) {
+    return 'editor';
+  }
+  // Par défaut, même si ROLE_USER est présent, on retourne 'user'
+  return 'user';
+}
+
 export function useAuth() {
   const [user, setUser] = useState<User | null>(null)
   const [profile, setProfile] = useState<Profile | null>(null)
@@ -18,239 +44,134 @@ export function useAuth() {
   const [session, setSession] = useState<Session | null>(null)
 
   // Fonction helper pour créer ou récupérer le profil avec timeout
+  // DÉSACTIVÉ - Supabase supprimé
   const fetchOrCreateProfile = async (user: User): Promise<Profile | null> => {
-    const timeoutMs = 30000 // 30 secondes timeout (augmenté pour gérer le service worker)
+    console.warn('[useAuth] Supabase supprimé - authentification désactivée')
+    return null
+  }
 
+  // Fonction pour rafraîchir le profil depuis l'API
+  const refreshProfile = async () => {
     try {
-      // Créer une promesse avec timeout
-      const timeoutPromise = new Promise<never>((_, reject) => {
-        setTimeout(() => reject(new Error('Timeout lors de la récupération du profil')), timeoutMs)
-      })
-
-      // Essayer de récupérer le profil avec timeout
-      const fetchPromise = supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', user.id)
-        .single()
-
-      const { data: profileData, error: fetchError } = await Promise.race([
-        fetchPromise,
-        timeoutPromise
-      ])
-
-      if (profileData && !fetchError) {
-        console.log('Profil récupéré avec succès')
-        return profileData
-      }
-
-      // Si le profil n'existe pas, essayer de le créer
-      if (fetchError?.code === 'PGRST116') {
-        console.log('Profil non trouvé, tentative de création...')
-
-        const newProfile = {
-          id: user.id,
-          email: user.email || '',
-          full_name: user.user_metadata?.full_name || null,
-          role: 'user'
-        }
-
-        const createPromise = supabase
-          .from('profiles')
-          .insert([newProfile])
-          .select()
-          .single()
-
-        const { data: createdProfile, error: createError } = await Promise.race([
-          createPromise,
-          timeoutPromise
-        ])
-
-        if (createdProfile && !createError) {
-          console.log('Profil créé avec succès')
-          return createdProfile
-        } else {
-          console.error('Erreur lors de la création du profil:', createError)
-          return null
+      if (isAuthenticated()) {
+        const currentUser = await getMe();
+        if (currentUser) {
+          setUser(currentUser);
+          setProfile({
+            id: currentUser.id || '',
+            email: currentUser.email,
+            full_name: null,
+            role: convertApiRoleToProfileRole(currentUser.roles),
+            created_at: '',
+            updated_at: ''
+          });
+          setSession({ user: currentUser });
         }
       }
-
-      console.error('Erreur lors de la récupération du profil:', fetchError)
-      return null
     } catch (error) {
-      // Ne logger que si ce n'est pas un timeout bénin
-      if (error instanceof Error && !error.message.includes('Timeout')) {
-        console.error('Erreur lors de la récupération/création du profil:', error)
-      }
-      return null
+      console.error('[useAuth] Erreur lors du rafraîchissement du profil:', error);
+      throw error;
     }
   }
 
   useEffect(() => {
-    let mounted = true
-    let initialLoadComplete = false
-
-    const getSession = async () => {
+    // Vérifier si l'utilisateur est déjà authentifié
+    const checkAuth = async () => {
       try {
-        console.log('[useAuth] Initializing auth check...')
-
-        // Vérifier si Supabase est configuré
-        if (!supabase || !supabase.auth) {
-          console.warn('[useAuth] Supabase non configuré - arrêt du chargement')
-          if (mounted) {
-            setLoading(false)
+        if (isAuthenticated()) {
+          // Essayer d'abord de récupérer depuis /me pour avoir les rôles à jour
+          try {
+            const currentUser = await getMe();
+            if (currentUser) {
+              setUser(currentUser);
+              setProfile({
+                id: currentUser.id || '',
+                email: currentUser.email,
+                full_name: null,
+                role: convertApiRoleToProfileRole(currentUser.roles),
+                created_at: '',
+                updated_at: ''
+              });
+              setSession({ user: currentUser });
+            }
+          } catch (error) {
+            // Fallback: utiliser l'utilisateur stocké
+            console.log('[useAuth] Impossible de récupérer via /me, utilisation de l\'utilisateur stocké');
+            const currentUser = getCurrentUser();
+            if (currentUser) {
+              setUser(currentUser);
+              setProfile({
+                id: currentUser.id || '',
+                email: currentUser.email,
+                full_name: null,
+                role: convertApiRoleToProfileRole(currentUser.roles),
+                created_at: '',
+                updated_at: ''
+              });
+              setSession({ user: currentUser });
+            }
           }
-          return
-        }
-
-        console.log('[useAuth] Fetching session...')
-
-        // Ajouter un timeout à la récupération de session (30 secondes pour gérer le service worker)
-        const timeoutPromise = new Promise<never>((_, reject) => {
-          setTimeout(() => reject(new Error('Timeout lors de la récupération de la session')), 30000)
-        })
-
-        const sessionPromise = supabase.auth.getSession()
-
-        const { data: { session }, error } = await Promise.race([
-          sessionPromise,
-          timeoutPromise
-        ])
-
-        if (!mounted) {
-          console.log('[useAuth] Component unmounted, aborting')
-          return
-        }
-
-        if (error) {
-          console.error('[useAuth] Erreur de session:', error)
-          if (mounted) {
-            setLoading(false)
-          }
-          return
-        }
-
-        console.log('[useAuth] Session fetched:', session ? 'User logged in' : 'No session')
-
-        setSession(session)
-        setUser(session?.user ?? null)
-
-        if (session?.user) {
-          console.log('[useAuth] Fetching profile for user:', session.user.email)
-          const profile = await fetchOrCreateProfile(session.user)
-          if (mounted) {
-            setProfile(profile)
-            console.log('[useAuth] Profile set:', profile ? `Role: ${profile.role}` : 'No profile')
-          }
-        } else {
-          setProfile(null)
-        }
-
-        if (mounted) {
-          setLoading(false)
-          initialLoadComplete = true
-          console.log('[useAuth] Auth initialization complete')
         }
       } catch (error) {
-        // Ne logger que si le composant est toujours monté et ce n'est pas un simple timeout
-        if (mounted) {
-          if (!(error instanceof Error && error.message.includes('Timeout'))) {
-            console.error('[useAuth] Erreur lors de la récupération de la session:', error)
-          }
-          setLoading(false)
-          initialLoadComplete = true
-        }
+        console.error('[useAuth] Erreur lors de la vérification de l\'authentification:', error);
+      } finally {
+        setLoading(false);
       }
-    }
+    };
 
-    getSession()
-
-    // Vérifier si Supabase est configuré avant d'écouter les changements
-    if (!supabase || !supabase.auth) {
-      console.warn('Supabase non configuré - pas d\'écoute des changements d\'auth')
-      return
-    }
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        if (!mounted) return
-
-        console.log('[useAuth] Auth state changed:', event, '| Initial load complete:', initialLoadComplete)
-
-        try {
-          setSession(session)
-          setUser(session?.user ?? null)
-
-          if (session?.user) {
-            const profile = await fetchOrCreateProfile(session.user)
-            if (mounted) {
-              setProfile(profile)
-            }
-          } else {
-            setProfile(null)
-          }
-        } catch (error) {
-          console.error('[useAuth] Erreur dans onAuthStateChange:', error)
-          if (mounted) {
-            setProfile(null)
-          }
-        } finally {
-          // Ne mettre loading à false que si l'initialisation est terminée
-          // Sinon, c'est getSession() qui le fera
-          if (mounted && initialLoadComplete) {
-            setLoading(false)
-            console.log('[useAuth] Auth state change handled')
-          }
-        }
-      }
-    )
-
-    return () => {
-      mounted = false
-      if (subscription) {
-        subscription.unsubscribe()
-      }
-    }
+    checkAuth();
   }, [])
 
   const signIn = async (email: string, password: string) => {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    })
-    return { data, error }
+    try {
+      const { user, token } = await apiLogin({ email, password });
+      
+      setUser(user);
+      setProfile({
+        id: user.id || '',
+        email: user.email,
+        full_name: null,
+        role: convertApiRoleToProfileRole(user.roles),
+        created_at: '',
+        updated_at: ''
+      });
+      setSession({ user });
+      
+      return { data: { user, session: { user } }, error: null };
+    } catch (error: any) {
+      console.error('[useAuth] Erreur de connexion:', error);
+      return { 
+        data: null, 
+        error: { 
+          message: error.message || 'Email ou mot de passe incorrect' 
+        } 
+      };
+    }
   }
 
   const signUp = async (email: string, password: string, fullName?: string) => {
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: {
-          full_name: fullName,
-        },
-      },
-    })
-    return { data, error }
+    // Pour l'instant, l'API ne supporte que la création d'utilisateur
+    // L'inscription peut être gérée via createUser si nécessaire
+    console.warn('[useAuth] Inscription non implémentée via API Madabooking');
+    return { data: null, error: { message: 'Inscription non disponible' } };
   }
 
   const signOut = async () => {
-    const { error } = await supabase.auth.signOut()
-    return { error }
+    apiLogout();
+    setUser(null)
+    setProfile(null)
+    setSession(null)
+    return { error: null }
   }
 
   const resetPassword = async (email: string) => {
-    const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/reset-password`,
-    })
-    return { data, error }
+    console.warn('[useAuth] Réinitialisation de mot de passe non implémentée');
+    return { data: null, error: { message: 'Réinitialisation de mot de passe non disponible' } };
   }
 
   const updatePassword = async (newPassword: string) => {
-    const { data, error } = await supabase.auth.updateUser({
-      password: newPassword,
-    })
-    return { data, error }
+    console.warn('[useAuth] Mise à jour de mot de passe non implémentée');
+    return { data: null, error: { message: 'Mise à jour de mot de passe non disponible' } };
   }
 
   const isAdmin = () => profile?.role === 'admin'
@@ -270,5 +191,6 @@ export function useAuth() {
     isAdmin,
     isEditor,
     canAccessAdmin,
+    refreshProfile,
   }
 }

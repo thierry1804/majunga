@@ -1,6 +1,13 @@
 import React, { useState, useEffect } from 'react'
-import { supabase } from '../../lib/supabase'
-import { Plus, Edit, Trash2, Eye, EyeOff, Clock, MapPin, Bus } from 'lucide-react'
+import {
+  getShuttleSchedules,
+  createShuttleSchedule,
+  updateShuttleSchedule,
+  deleteShuttleSchedule,
+  patchShuttleSchedule,
+  ApiShuttleSchedule
+} from '../../api/madabookingApi'
+import { Plus, Edit, Trash2, Eye, EyeOff, Clock, MapPin, Bus, X } from 'lucide-react'
 
 interface ShuttleSchedule {
   id: string
@@ -32,13 +39,19 @@ export default function ShuttleManagement() {
 
   const fetchSchedules = async () => {
     try {
-      const { data, error } = await supabase
-        .from('shuttle_schedules')
-        .select('*')
-        .order('departure_time', { ascending: true })
-
-      if (error) throw error
-      setSchedules(data || [])
+      const apiSchedules = await getShuttleSchedules()
+      // Convertir ApiShuttleSchedule vers le format interne
+      const convertedSchedules = apiSchedules.map(schedule => ({
+        id: schedule.id || extractIdFromIri(schedule['@id']) || '',
+        departure_time: schedule.departureTime,
+        arrival_time: schedule.arrivalTime,
+        route: schedule.route,
+        price: parseFloat(schedule.price) || 0,
+        is_active: schedule.isActive !== false,
+        created_at: schedule.createdAt || '',
+        updated_at: schedule.updatedAt || ''
+      }))
+      setSchedules(convertedSchedules)
     } catch (error) {
       console.error('Erreur lors du chargement des horaires:', error)
     } finally {
@@ -46,28 +59,29 @@ export default function ShuttleManagement() {
     }
   }
 
+  // Helper pour extraire l'ID depuis un IRI
+  const extractIdFromIri = (iri?: string): string => {
+    if (!iri) return ''
+    const parts = iri.split('/')
+    return parts[parts.length - 1] || ''
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     
     try {
       const scheduleData = {
-        ...formData,
-        price: parseFloat(formData.price)
+        departureTime: formData.departure_time,
+        arrivalTime: formData.arrival_time,
+        route: formData.route,
+        price: String(parseFloat(formData.price)),
+        isActive: formData.is_active
       }
 
       if (editingSchedule) {
-        const { error } = await supabase
-          .from('shuttle_schedules')
-          .update(scheduleData)
-          .eq('id', editingSchedule.id)
-
-        if (error) throw error
+        await updateShuttleSchedule(editingSchedule.id, scheduleData)
       } else {
-        const { error } = await supabase
-          .from('shuttle_schedules')
-          .insert([scheduleData])
-
-        if (error) throw error
+        await createShuttleSchedule(scheduleData)
       }
 
       await fetchSchedules()
@@ -93,12 +107,7 @@ export default function ShuttleManagement() {
     if (!confirm('Êtes-vous sûr de vouloir supprimer cet horaire ?')) return
 
     try {
-      const { error } = await supabase
-        .from('shuttle_schedules')
-        .delete()
-        .eq('id', id)
-
-      if (error) throw error
+      await deleteShuttleSchedule(id)
       await fetchSchedules()
     } catch (error) {
       console.error('Erreur lors de la suppression:', error)
@@ -107,12 +116,7 @@ export default function ShuttleManagement() {
 
   const toggleActive = async (schedule: ShuttleSchedule) => {
     try {
-      const { error } = await supabase
-        .from('shuttle_schedules')
-        .update({ is_active: !schedule.is_active })
-        .eq('id', schedule.id)
-
-      if (error) throw error
+      await patchShuttleSchedule(schedule.id, { isActive: !schedule.is_active })
       await fetchSchedules()
     } catch (error) {
       console.error('Erreur lors de la mise à jour:', error)
@@ -398,15 +402,34 @@ export default function ShuttleManagement() {
         </div>
       )}
 
-      {/* Modal */}
+      {/* Offcanvas */}
       {showModal && (
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-          <div className="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-1/2 shadow-lg rounded-md bg-white">
-            <div className="mt-3">
-              <h3 className="text-lg font-medium text-gray-900 mb-4">
+        <>
+          {/* Overlay */}
+          <div
+            className="fixed inset-0 bg-gray-600 bg-opacity-50 z-50 transition-opacity"
+            onClick={resetForm}
+          />
+
+          {/* Offcanvas Panel */}
+          <div className="fixed right-0 top-0 bottom-0 z-50 w-full max-w-2xl bg-white shadow-xl flex flex-col transform transition-transform duration-300 ease-in-out">
+            {/* Header - Fixed */}
+            <div className="flex justify-between items-center p-6 border-b flex-shrink-0 bg-white">
+              <h3 className="text-lg font-medium text-gray-900">
                 {editingSchedule ? 'Modifier l\'horaire' : 'Nouvel horaire'}
               </h3>
-              <form onSubmit={handleSubmit} className="space-y-4">
+              <button
+                onClick={resetForm}
+                className="text-gray-400 hover:text-gray-600 transition-colors"
+                aria-label="Fermer"
+              >
+                <X className="h-6 w-6" />
+              </button>
+            </div>
+
+            {/* Scrollable content */}
+            <div className="overflow-y-auto flex-grow p-6">
+              <form id="shuttle-form" onSubmit={handleSubmit} className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700">
                     Itinéraire
@@ -474,26 +497,28 @@ export default function ShuttleManagement() {
                     Horaire actif
                   </label>
                 </div>
-
-                <div className="flex justify-end space-x-3 pt-4">
-                  <button
-                    type="button"
-                    onClick={resetForm}
-                    className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                  >
-                    Annuler
-                  </button>
-                  <button
-                    type="submit"
-                    className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                  >
-                    {editingSchedule ? 'Mettre à jour' : 'Créer'}
-                  </button>
-                </div>
               </form>
             </div>
+
+            {/* Footer - Fixed */}
+            <div className="border-t p-6 bg-gray-50 flex justify-end space-x-3 flex-shrink-0">
+              <button
+                type="button"
+                onClick={resetForm}
+                className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              >
+                Annuler
+              </button>
+              <button
+                type="submit"
+                form="shuttle-form"
+                className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              >
+                {editingSchedule ? 'Mettre à jour' : 'Créer'}
+              </button>
+            </div>
           </div>
-        </div>
+        </>
       )}
     </div>
   )

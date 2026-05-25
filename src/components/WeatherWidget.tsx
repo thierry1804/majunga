@@ -2,28 +2,53 @@ import { Droplets, Thermometer, Wind } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useWeather } from '../hooks/useWeather';
 import { WeatherIcon } from './ui/WeatherIcon';
+import { Skeleton } from './ui/Skeleton';
 
-const WeatherWidget = () => {
+interface WeatherWidgetProps {
+  variant?: 'full' | 'compact';
+}
+
+export default function WeatherWidget({ variant = 'full' }: WeatherWidgetProps) {
   const { weather, loading, error } = useWeather();
   const { t } = useTranslation();
 
+  if (variant === 'compact') {
+    if (loading) {
+      return (
+        <span className="inline-flex items-center gap-2 text-sand-100/70 text-sm">
+          <Skeleton className="w-4 h-4 rounded bg-sand-50/20" />
+          <Skeleton className="h-3 w-16 bg-sand-50/20" />
+        </span>
+      );
+    }
+
+    if (error && !weather) return null;
+
+    return (
+      <span className="inline-flex items-center gap-2 text-sm text-sand-100/80">
+        {weather && <WeatherIcon iconCode={weather.current.icon} className="w-4 h-4 shrink-0" />}
+        <span className="tabular-nums">{weather?.current.temperature}°</span>
+        <span className="hidden sm:inline text-sand-100/50">·</span>
+        <span className="hidden sm:inline capitalize text-sand-100/70">
+          {weather?.current.description}
+        </span>
+      </span>
+    );
+  }
+
   if (loading) {
     return (
-      <div className="bg-white/10 backdrop-blur-md rounded-lg p-4 border border-white/20 animate-pulse">
-        <div className="flex items-center justify-center space-x-6">
-          <div className="flex items-center space-x-3">
-            <div className="w-5 h-5 bg-white/20 rounded"></div>
-            <div className="space-y-1">
-              <div className="w-12 h-4 bg-white/20 rounded"></div>
-              <div className="w-16 h-3 bg-white/20 rounded"></div>
-            </div>
+      <div className="rounded-xl border border-sand-50/20 bg-ocean-800/40 backdrop-blur-sm p-5">
+        <div className="flex items-center gap-4 mb-4">
+          <Skeleton className="w-10 h-10 rounded-lg bg-sand-50/20" />
+          <div className="space-y-2 flex-1">
+            <Skeleton className="h-6 w-16 bg-sand-50/20" />
+            <Skeleton className="h-3 w-24 bg-sand-50/20" />
           </div>
+        </div>
+        <div className="grid grid-cols-3 gap-2">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="flex flex-col items-center space-y-1">
-              <div className="w-8 h-3 bg-white/20 rounded"></div>
-              <div className="w-5 h-5 bg-white/20 rounded"></div>
-              <div className="w-10 h-3 bg-white/20 rounded"></div>
-            </div>
+            <Skeleton key={i} className="h-20 rounded-lg bg-sand-50/10" />
           ))}
         </div>
       </div>
@@ -32,39 +57,31 @@ const WeatherWidget = () => {
 
   if (error && !weather) {
     return (
-      <div className="bg-white/10 backdrop-blur-md rounded-lg p-4 border border-white/20 text-white">
-        <div className="text-center">
-          <div className="text-sm opacity-75">{t('weather.unavailable')}</div>
-          {error && (
-            <div className="text-xs opacity-50 mt-1">
-              {error.includes('Clé API') ? t('weather.apiError') : error}
-            </div>
-          )}
-        </div>
+      <div className="rounded-xl border border-sand-50/20 bg-ocean-800/40 backdrop-blur-sm p-5 text-sand-100">
+        <p className="text-sm opacity-80">{t('weather.unavailable')}</p>
       </div>
     );
   }
 
   return (
-    <div className="bg-white/10 backdrop-blur-md rounded-lg p-4 border border-white/20 text-white">
-      <div className="flex items-center justify-center space-x-6">
-        {/* Météo actuelle */}
-        <div className="flex items-center space-x-3">
-          {weather && <WeatherIcon iconCode={weather.current.icon} className="w-6 h-6" />}
-          <div>
-            <div className="text-xl font-bold">{weather?.current.temperature}°C</div>
-            <div className="text-xs opacity-90 capitalize">{weather?.current.description}</div>
-            {weather?.current.feelsLike && (
-              <div className="text-xs opacity-75 flex items-center gap-1">
-                <Thermometer className="w-3 h-3" />
-                {t('weather.feelsLike')}: {weather.current.feelsLike}°C
-              </div>
-            )}
-          </div>
-        </div>
+    <div className="rounded-xl border border-sand-50/20 bg-ocean-800/40 backdrop-blur-sm p-5 text-sand-50">
+      <p className="text-xs font-medium uppercase tracking-[0.1em] text-ocean-200 mb-4">
+        {t('weather.forecastTitle')}
+      </p>
 
-        {/* Informations supplémentaires */}
-        <div className="flex flex-col space-y-1 text-xs opacity-75">
+      <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 mb-5 pb-5 border-b border-sand-50/10">
+        {weather && <WeatherIcon iconCode={weather.current.icon} className="w-8 h-8 shrink-0" />}
+        <div>
+          <div className="font-display text-3xl font-semibold">{weather?.current.temperature}°</div>
+          <div className="text-sm text-sand-100/70 capitalize">{weather?.current.description}</div>
+        </div>
+        <div className="sm:ml-auto flex flex-wrap gap-x-4 gap-y-1 text-xs text-sand-100/60">
+          {weather?.current.feelsLike && (
+            <div className="flex items-center gap-1">
+              <Thermometer className="w-3 h-3" />
+              {weather.current.feelsLike}°
+            </div>
+          )}
           <div className="flex items-center gap-1">
             <Droplets className="w-3 h-3" />
             {weather?.current.humidity}%
@@ -74,33 +91,17 @@ const WeatherWidget = () => {
             {weather?.current.windSpeed} km/h
           </div>
         </div>
-        
-        {/* Prévisions sur 3 jours - Améliorées */}
-        <div className="flex space-x-4">
-          {weather?.forecast.map((day, index) => (
-            <div key={index} className="flex flex-col items-center space-y-2 bg-white/5 rounded-lg p-2 min-w-[60px]">
-              <div className="text-xs font-medium opacity-90">{day.date}</div>
-              <WeatherIcon iconCode={day.icon} className="w-6 h-6" />
-              <div className="text-sm font-bold">{day.temperature}°C</div>
-              <div className="text-xs opacity-75 text-center capitalize">
-                {day.description}
-              </div>
-              <div className="flex flex-col space-y-1 text-xs opacity-60">
-                <div className="flex items-center gap-1">
-                  <Droplets className="w-2 h-2" />
-                  {day.humidity}%
-                </div>
-                <div className="flex items-center gap-1">
-                  <Wind className="w-2 h-2" />
-                  {day.windSpeed} km/h
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
+      </div>
+
+      <div className="grid grid-cols-3 gap-2">
+        {weather?.forecast.map((day, index) => (
+          <div key={index} className="rounded-lg bg-sand-50/5 p-3 text-center">
+            <div className="text-xs text-sand-100/70 mb-1">{day.date}</div>
+            <WeatherIcon iconCode={day.icon} className="w-5 h-5 mx-auto mb-1" />
+            <div className="text-sm font-semibold">{day.temperature}°</div>
+          </div>
+        ))}
       </div>
     </div>
   );
-};
-
-export default WeatherWidget;
+}

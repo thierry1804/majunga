@@ -1,70 +1,116 @@
-import { supabase } from '../lib/supabase'
+/**
+ * Service pour récupérer les données depuis l'API Madabooking
+ * Remplace l'ancien service Supabase
+ */
+import {
+  getTours as getToursFromApi,
+  getShuttleSchedules as getShuttleSchedulesFromApi,
+  createBooking as createBookingInApi,
+  ApiTour,
+  ApiShuttleSchedule,
+  ApiBooking,
+  getImageUrl
+} from './madabookingApi'
 import { Tour, ShuttleSchedule } from '../types'
 
-// Service pour récupérer les tours depuis Supabase
+// Fonction helper pour extraire l'ID depuis un IRI
+function extractIdFromIri(iri?: string): string | null {
+  if (!iri) return null
+  const parts = iri.split('/')
+  return parts[parts.length - 1] || null
+}
+
+// Convertir ApiTour vers Tour
+function convertApiTourToTour(apiTour: ApiTour, index: number): Tour {
+  const tourId = apiTour.id || extractIdFromIri(apiTour['@id']) || String(index + 1)
+
+  // Construire les URLs des images en utilisant l'endpoint GET /api/images/{filename}
+  let images: string[] = []
+  if (apiTour.imageUrl) {
+    // Si l'URL contient déjà /api/images/, utiliser directement
+    if (apiTour.imageUrl.includes('/api/images/')) {
+      images = [apiTour.imageUrl]
+    } else {
+      // Extraire le filename de l'URL et construire l'URL complète
+      const urlParts = apiTour.imageUrl.split('/')
+      let filename = urlParts[urlParts.length - 1] || ''
+      // Enlever les paramètres de query si présents
+      filename = filename.split('?')[0]
+
+      if (filename) {
+        // Utiliser l'endpoint GET /api/images/{filename} pour récupérer l'image
+        images = [getImageUrl(filename)]
+      } else {
+        // Si on ne peut pas extraire le filename, utiliser l'URL telle quelle
+        images = [apiTour.imageUrl]
+      }
+    }
+  }
+
+  return {
+    id: index + 1, // ID numérique pour la compatibilité avec l'interface
+    supabaseId: tourId, // ID original de l'API pour les réservations
+    title: apiTour.title,
+    shortDescription: apiTour.description.length > 150
+      ? apiTour.description.substring(0, 150) + '...'
+      : apiTour.description,
+    fullDescription: apiTour.description,
+    duration: apiTour.duration,
+    price: parseFloat(apiTour.price) || 0,
+    currency: 'EUR',
+    images: images,
+    highlights: apiTour.highlights || []
+  }
+}
+
+// Convertir ApiShuttleSchedule vers ShuttleSchedule
+function convertApiShuttleToShuttle(apiSchedule: ApiShuttleSchedule, index: number): ShuttleSchedule {
+// Parser l'itinéraire pour extraire from/to
+  const routeParts = apiSchedule.route.split(' - ')
+  const from = routeParts[0] || 'Majunga'
+  const to = routeParts[1] || 'Antananarivo'
+
+  return {
+    id: index + 1, // ID numérique pour la compatibilité
+    departureTime: apiSchedule.departureTime,
+    arrivalTime: apiSchedule.arrivalTime,
+    from,
+    to,
+    price: parseFloat(apiSchedule.price) || 0,
+    currency: 'EUR',
+    availableSeats: 20 // Valeur par défaut
+  }
+}
+
+// Service pour récupérer les tours depuis l'API Madabooking
 export async function getToursFromSupabase(): Promise<Tour[]> {
   try {
-    const { data, error } = await supabase
-      .from('tours')
-      .select('*')
-      .eq('is_active', true)
-      .order('created_at', { ascending: false })
+    const apiTours = await getToursFromApi()
 
-    if (error) {
-      console.error('Erreur lors de la récupération des tours:', error)
-      return []
-    }
+    // Filtrer uniquement les tours actifs
+    const activeTours = apiTours.filter(tour => tour.isActive !== false)
 
-    // Convertir les données Supabase vers le format attendu par l'interface publique
-    return data.map((tour, index) => ({
-      id: index + 1, // ID numérique pour la compatibilité
-      title: tour.title,
-      shortDescription: tour.description.substring(0, 150) + '...',
-      fullDescription: tour.description,
-      duration: tour.duration,
-      price: tour.price,
-      currency: 'EUR',
-      images: tour.image_url ? [tour.image_url] : [],
-      highlights: tour.highlights
-    }))
+    // Convertir et retourner
+    return activeTours.map((tour, index) => convertApiTourToTour(tour, index))
   } catch (error) {
     console.error('Erreur lors de la récupération des tours:', error)
     return []
   }
 }
 
-// Service pour récupérer les horaires de navette depuis Supabase
+// Service pour récupérer les horaires de navette depuis l'API Madabooking
 export async function getShuttleSchedulesFromSupabase(): Promise<ShuttleSchedule[]> {
   try {
-    const { data, error } = await supabase
-      .from('shuttle_schedules')
-      .select('*')
-      .eq('is_active', true)
-      .order('departure_time', { ascending: true })
+    const apiSchedules = await getShuttleSchedulesFromApi()
 
-    if (error) {
-      console.error('Erreur lors de la récupération des horaires:', error)
-      return []
-    }
+    // Filtrer uniquement les horaires actifs
+    const activeSchedules = apiSchedules.filter(schedule => schedule.isActive !== false)
 
-    // Convertir les données Supabase vers le format attendu par l'interface publique
-    return data.map((schedule, index) => {
-      // Parser l'itinéraire pour extraire from/to
-      const routeParts = schedule.route.split(' - ')
-      const from = routeParts[0] || 'Majunga'
-      const to = routeParts[1] || 'Antananarivo'
+    // Trier par heure de départ
+    activeSchedules.sort((a, b) => a.departureTime.localeCompare(b.departureTime))
 
-      return {
-        id: index + 1, // ID numérique pour la compatibilité
-        departureTime: schedule.departure_time,
-        arrivalTime: schedule.arrival_time,
-        from,
-        to,
-        price: schedule.price,
-        currency: 'EUR',
-        availableSeats: 20 // Valeur par défaut
-      }
-    })
+    // Convertir et retourner
+    return activeSchedules.map((schedule, index) => convertApiShuttleToShuttle(schedule, index))
   } catch (error) {
     console.error('Erreur lors de la récupération des horaires:', error)
     return []
@@ -82,21 +128,32 @@ export async function createBooking(bookingData: {
   payment_id?: string
 }) {
   try {
-    const { data, error } = await supabase
-      .from('bookings')
-      .insert([{
-        ...bookingData,
-        status: 'pending'
-      }])
-      .select()
+    console.log('Tentative de création de réservation dans l\'API Madabooking:', bookingData)
 
-    if (error) {
-      console.error('Erreur lors de la création de la réservation:', error)
-      throw error
-    }
+    // Construire l'IRI du tour si tour_id est fourni
+    const tourIri = bookingData.tour_id
+      ? `/api/tours/${bookingData.tour_id}`
+      : undefined
 
-    return data
-  } catch (error) {
+    const apiBooking = await createBookingInApi({
+      tour: tourIri,
+      userEmail: bookingData.user_email,
+      userName: bookingData.user_name,
+      bookingDate: bookingData.booking_date,
+      participants: bookingData.participants,
+      totalPrice: String(bookingData.total_price),
+      status: 'pending',
+      paymentId: bookingData.payment_id
+    })
+
+    console.log('Réservation créée avec succès dans l\'API Madabooking:', apiBooking)
+
+    // Retourner dans le format attendu (tableau pour compatibilité)
+    return [{
+      id: apiBooking.id || extractIdFromIri(apiBooking['@id']) || '',
+      ...apiBooking
+    }]
+  } catch (error: any) {
     console.error('Erreur lors de la création de la réservation:', error)
     throw error
   }

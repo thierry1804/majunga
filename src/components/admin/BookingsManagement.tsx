@@ -1,6 +1,12 @@
 import React, { useState, useEffect } from 'react'
-import { supabase } from '../../lib/supabase'
-import { Search, Filter, CheckCircle, XCircle, Clock, Eye } from 'lucide-react'
+import {
+  getBookings,
+  patchBooking,
+  getTour,
+  ApiBooking,
+  ApiTour
+} from '../../api/madabookingApi'
+import { Search, Filter, CheckCircle, XCircle, Clock, Eye, X } from 'lucide-react'
 
 interface Booking {
   id: string
@@ -32,33 +38,71 @@ export default function BookingsManagement() {
 
   const fetchBookings = async () => {
     try {
-      const { data, error } = await supabase
-        .from('bookings')
-        .select(`
-          *,
-          tours (
-            title
-          )
-        `)
-        .order('created_at', { ascending: false })
+      console.log('Tentative de récupération des réservations depuis l\'API Madabooking...');
 
-      if (error) throw error
-      setBookings(data || [])
-    } catch (error) {
+      const apiBookings = await getBookings()
+
+      // Pour chaque réservation, récupérer les détails du tour si disponible
+      const bookingsWithTours = await Promise.all(
+        apiBookings.map(async (apiBooking) => {
+          let tourTitle = 'Tour supprimé'
+
+          if (apiBooking.tour) {
+            try {
+              // Extraire l'ID du tour depuis l'IRI
+              const tourId = extractIdFromIri(apiBooking.tour)
+              if (tourId) {
+                const tour = await getTour(tourId)
+                tourTitle = tour.title
+              }
+            } catch (error) {
+              console.warn('Impossible de récupérer le tour pour la réservation:', error)
+            }
+          }
+
+          return {
+            id: apiBooking.id || extractIdFromIri(apiBooking['@id']) || '',
+            tour_id: extractIdFromIri(apiBooking.tour) || '',
+            user_email: apiBooking.userEmail,
+            user_name: apiBooking.userName,
+            booking_date: apiBooking.bookingDate,
+            participants: apiBooking.participants,
+            total_price: parseFloat(apiBooking.totalPrice) || 0,
+            status: (apiBooking.status || 'pending') as 'pending' | 'confirmed' | 'cancelled',
+            payment_id: apiBooking.paymentId || null,
+            created_at: apiBooking.createdAt || '',
+            updated_at: apiBooking.updatedAt || '',
+            tours: {
+              title: tourTitle
+            }
+          }
+        })
+      )
+
+      // Trier par date de création (plus récent en premier)
+      bookingsWithTours.sort((a, b) =>
+        new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      )
+
+      console.log('Réservations récupérées:', bookingsWithTours.length, 'réservation(s)');
+      setBookings(bookingsWithTours)
+    } catch (error: any) {
       console.error('Erreur lors du chargement des réservations:', error)
     } finally {
       setLoading(false)
     }
   }
 
+  // Helper pour extraire l'ID depuis un IRI
+  const extractIdFromIri = (iri?: string): string => {
+    if (!iri) return ''
+    const parts = iri.split('/')
+    return parts[parts.length - 1] || ''
+  }
+
   const updateBookingStatus = async (id: string, status: 'confirmed' | 'cancelled') => {
     try {
-      const { error } = await supabase
-        .from('bookings')
-        .update({ status })
-        .eq('id', id)
-
-      if (error) throw error
+      await patchBooking(id, { status })
       await fetchBookings()
     } catch (error) {
       console.error('Erreur lors de la mise à jour:', error)
@@ -141,11 +185,19 @@ export default function BookingsManagement() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">Gestion des Réservations</h1>
-        <p className="mt-1 text-sm text-gray-500">
-          Gérez toutes les réservations de tours
-        </p>
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Gestion des Réservations</h1>
+          <p className="mt-1 text-sm text-gray-500">
+            Gérez toutes les réservations de tours
+          </p>
+        </div>
+        <button
+          onClick={fetchBookings}
+          className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm font-medium"
+        >
+          Actualiser
+        </button>
       </div>
 
       {/* Stats */}
@@ -342,23 +394,33 @@ export default function BookingsManagement() {
         </div>
       )}
 
-      {/* Booking Details Modal */}
+      {/* Booking Details Offcanvas */}
       {selectedBooking && (
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-          <div className="relative top-20 mx-auto p-5 border w-11/12 md:w-2/3 lg:w-1/2 shadow-lg rounded-md bg-white">
-            <div className="mt-3">
-              <div className="flex justify-between items-start mb-4">
-                <h3 className="text-lg font-medium text-gray-900">
-                  Détails de la réservation
-                </h3>
-                <button
-                  onClick={() => setSelectedBooking(null)}
-                  className="text-gray-400 hover:text-gray-600"
-                >
-                  <XCircle className="h-6 w-6" />
-                </button>
-              </div>
-              
+        <>
+          {/* Overlay */}
+          <div
+            className="fixed inset-0 bg-gray-600 bg-opacity-50 z-50 transition-opacity"
+            onClick={() => setSelectedBooking(null)}
+          />
+
+          {/* Offcanvas Panel */}
+          <div className="fixed right-0 top-0 bottom-0 z-50 w-full max-w-2xl bg-white shadow-xl flex flex-col transform transition-transform duration-300 ease-in-out">
+            {/* Header - Fixed */}
+            <div className="flex justify-between items-start p-6 border-b flex-shrink-0 bg-white">
+              <h3 className="text-lg font-medium text-gray-900">
+                Détails de la réservation
+              </h3>
+              <button
+                onClick={() => setSelectedBooking(null)}
+                className="text-gray-400 hover:text-gray-600 transition-colors"
+                aria-label="Fermer"
+              >
+                <X className="h-6 w-6" />
+              </button>
+            </div>
+
+            {/* Scrollable content */}
+            <div className="overflow-y-auto flex-grow p-6">
               <div className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
@@ -421,40 +483,41 @@ export default function BookingsManagement() {
                   )}
                 </div>
               </div>
+            </div>
 
-              <div className="mt-6 flex justify-end space-x-3">
-                <button
-                  onClick={() => setSelectedBooking(null)}
-                  className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                >
-                  Fermer
-                </button>
-                {selectedBooking.status === 'pending' && (
-                  <>
-                    <button
-                      onClick={() => {
-                        updateBookingStatus(selectedBooking.id, 'confirmed')
-                        setSelectedBooking(null)
-                      }}
-                      className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
-                    >
-                      Confirmer
-                    </button>
-                    <button
-                      onClick={() => {
-                        updateBookingStatus(selectedBooking.id, 'cancelled')
-                        setSelectedBooking(null)
-                      }}
-                      className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-                    >
-                      Annuler
-                    </button>
-                  </>
-                )}
-              </div>
+            {/* Footer - Fixed */}
+            <div className="border-t p-6 bg-gray-50 flex justify-end space-x-3 flex-shrink-0">
+              <button
+                onClick={() => setSelectedBooking(null)}
+                className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              >
+                Fermer
+              </button>
+              {selectedBooking.status === 'pending' && (
+                <>
+                  <button
+                    onClick={() => {
+                      updateBookingStatus(selectedBooking.id, 'confirmed')
+                      setSelectedBooking(null)
+                    }}
+                    className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                  >
+                    Confirmer
+                  </button>
+                  <button
+                    onClick={() => {
+                      updateBookingStatus(selectedBooking.id, 'cancelled')
+                      setSelectedBooking(null)
+                    }}
+                    className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                  >
+                    Annuler
+                  </button>
+                </>
+              )}
             </div>
           </div>
-        </div>
+        </>
       )}
     </div>
   )

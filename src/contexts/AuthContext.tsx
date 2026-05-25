@@ -1,6 +1,15 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react'
-import { User, Session } from '@supabase/supabase-js'
-import { supabase } from '../lib/supabase'
+import { 
+  login as apiLogin, 
+  logout as apiLogout, 
+  getCurrentUser, 
+  getMe,
+  isAuthenticated,
+  ApiUser 
+} from '../api/madabookingApi'
+// Types pour compatibilité
+type User = ApiUser
+type Session = { user: ApiUser | null } | null
 
 export interface Profile {
   id: string
@@ -9,6 +18,23 @@ export interface Profile {
   role: 'admin' | 'editor' | 'user'
   created_at: string
   updated_at: string
+}
+
+// Fonction helper pour convertir les rôles de l'API en format attendu
+function convertApiRoleToProfileRole(apiRoles?: string[]): 'admin' | 'editor' | 'user' {
+  if (!apiRoles || apiRoles.length === 0) {
+    return 'user';
+  }
+  
+  // Vérifier les rôles dans l'ordre de priorité
+  if (apiRoles.includes('ROLE_ADMIN')) {
+    return 'admin';
+  }
+  if (apiRoles.includes('ROLE_EDITOR')) {
+    return 'editor';
+  }
+  // Par défaut, même si ROLE_USER est présent, on retourne 'user'
+  return 'user';
 }
 
 interface AuthContextType {
@@ -21,6 +47,7 @@ interface AuthContextType {
   signOut: () => Promise<{ error: any }>
   resetPassword: (email: string) => Promise<{ data: any; error: any }>
   updatePassword: (newPassword: string) => Promise<{ data: any; error: any }>
+  refreshProfile: () => Promise<void>
   isAdmin: () => boolean
   isEditor: () => boolean
   canAccessAdmin: () => boolean
@@ -34,236 +61,126 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true)
   const [session, setSession] = useState<Session | null>(null)
 
-  // Fonction helper pour créer ou récupérer le profil avec timeout
-  const fetchOrCreateProfile = async (user: User): Promise<Profile | null> => {
-    const timeoutMs = 30000
-
+  // Fonction pour rafraîchir le profil depuis l'API
+  const refreshProfile = async () => {
     try {
-      const timeoutPromise = new Promise<never>((_, reject) => {
-        setTimeout(() => reject(new Error('Timeout lors de la récupération du profil')), timeoutMs)
-      })
-
-      const fetchPromise = supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', user.id)
-        .single()
-
-      const { data: profileData, error: fetchError } = await Promise.race([
-        fetchPromise,
-        timeoutPromise
-      ])
-
-      if (profileData && !fetchError) {
-        console.log('Profil récupéré avec succès')
-        return profileData
-      }
-
-      if (fetchError?.code === 'PGRST116') {
-        console.log('Profil non trouvé, tentative de création...')
-
-        const newProfile = {
-          id: user.id,
-          email: user.email || '',
-          full_name: user.user_metadata?.full_name || null,
-          role: 'user'
-        }
-
-        const createPromise = supabase
-          .from('profiles')
-          .insert([newProfile])
-          .select()
-          .single()
-
-        const { data: createdProfile, error: createError } = await Promise.race([
-          createPromise,
-          timeoutPromise
-        ])
-
-        if (createdProfile && !createError) {
-          console.log('Profil créé avec succès')
-          return createdProfile
-        } else {
-          console.error('Erreur lors de la création du profil:', createError)
-          return null
+      if (isAuthenticated()) {
+        const currentUser = await getMe();
+        if (currentUser) {
+          setUser(currentUser);
+          setProfile({
+            id: currentUser.id || '',
+            email: currentUser.email,
+            full_name: null,
+            role: convertApiRoleToProfileRole(currentUser.roles),
+            created_at: '',
+            updated_at: ''
+          });
+          setSession({ user: currentUser });
         }
       }
-
-      console.error('Erreur lors de la récupération du profil:', fetchError)
-      return null
     } catch (error) {
-      if (error instanceof Error && !error.message.includes('Timeout')) {
-        console.error('Erreur lors de la récupération/création du profil:', error)
-      }
-      return null
+      console.error('[AuthContext] Erreur lors du rafraîchissement du profil:', error);
+      throw error;
     }
   }
 
   useEffect(() => {
-    let mounted = true
-    let initialLoadComplete = false
-
-    const getSession = async () => {
+    // Vérifier si l'utilisateur est déjà authentifié
+    const checkAuth = async () => {
       try {
-        console.log('[AuthContext] Initializing auth check...')
-
-        if (!supabase || !supabase.auth) {
-          console.warn('[AuthContext] Supabase non configuré')
-          if (mounted) {
-            setLoading(false)
+        if (isAuthenticated()) {
+          // Essayer d'abord de récupérer depuis /me pour avoir les rôles à jour
+          try {
+            const currentUser = await getMe();
+            if (currentUser) {
+              setUser(currentUser);
+              setProfile({
+                id: currentUser.id || '',
+                email: currentUser.email,
+                full_name: null,
+                role: convertApiRoleToProfileRole(currentUser.roles),
+                created_at: '',
+                updated_at: ''
+              });
+              setSession({ user: currentUser });
+            }
+          } catch (error) {
+            // Fallback: utiliser l'utilisateur stocké
+            console.log('[AuthContext] Impossible de récupérer via /me, utilisation de l\'utilisateur stocké');
+            const currentUser = getCurrentUser();
+            if (currentUser) {
+              setUser(currentUser);
+              setProfile({
+                id: currentUser.id || '',
+                email: currentUser.email,
+                full_name: null,
+                role: convertApiRoleToProfileRole(currentUser.roles),
+                created_at: '',
+                updated_at: ''
+              });
+              setSession({ user: currentUser });
+            }
           }
-          return
-        }
-
-        console.log('[AuthContext] Fetching session...')
-
-        const timeoutPromise = new Promise<never>((_, reject) => {
-          setTimeout(() => reject(new Error('Timeout lors de la récupération de la session')), 30000)
-        })
-
-        const sessionPromise = supabase.auth.getSession()
-
-        const { data: { session }, error } = await Promise.race([
-          sessionPromise,
-          timeoutPromise
-        ])
-
-        if (!mounted) {
-          console.log('[AuthContext] Component unmounted, aborting')
-          return
-        }
-
-        if (error) {
-          console.error('[AuthContext] Erreur de session:', error)
-          if (mounted) {
-            setLoading(false)
-          }
-          return
-        }
-
-        console.log('[AuthContext] Session fetched:', session ? 'User logged in' : 'No session')
-
-        setSession(session)
-        setUser(session?.user ?? null)
-
-        if (session?.user) {
-          console.log('[AuthContext] Fetching profile for user:', session.user.email)
-          const profile = await fetchOrCreateProfile(session.user)
-          if (mounted) {
-            setProfile(profile)
-            console.log('[AuthContext] Profile set:', profile ? `Role: ${profile.role}` : 'No profile')
-          }
-        } else {
-          setProfile(null)
-        }
-
-        if (mounted) {
-          setLoading(false)
-          initialLoadComplete = true
-          console.log('[AuthContext] Auth initialization complete')
         }
       } catch (error) {
-        if (mounted) {
-          if (!(error instanceof Error && error.message.includes('Timeout'))) {
-            console.error('[AuthContext] Erreur lors de la récupération de la session:', error)
-          }
-          setLoading(false)
-          initialLoadComplete = true
-        }
+        console.error('[AuthContext] Erreur lors de la vérification de l\'authentification:', error);
+      } finally {
+        setLoading(false);
       }
-    }
+    };
 
-    getSession()
-
-    if (!supabase || !supabase.auth) {
-      console.warn('[AuthContext] Supabase non configuré - pas d\'écoute des changements d\'auth')
-      return
-    }
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        if (!mounted) return
-
-        console.log('[AuthContext] Auth state changed:', event, '| Initial load complete:', initialLoadComplete)
-
-        // Ne pas changer loading pendant l'initialisation
-        if (!initialLoadComplete) {
-          console.log('[AuthContext] Skipping state change during initialization')
-          return
-        }
-
-        try {
-          setSession(session)
-          setUser(session?.user ?? null)
-
-          if (session?.user) {
-            const profile = await fetchOrCreateProfile(session.user)
-            if (mounted) {
-              setProfile(profile)
-            }
-          } else {
-            setProfile(null)
-          }
-        } catch (error) {
-          console.error('[AuthContext] Erreur dans onAuthStateChange:', error)
-          if (mounted) {
-            setProfile(null)
-          }
-        } finally {
-          // Toujours mettre loading à false après avoir traité le changement
-          if (mounted) {
-            console.log('[AuthContext] Auth state change handled')
-          }
-        }
-      }
-    )
-
-    return () => {
-      mounted = false
-      if (subscription) {
-        subscription.unsubscribe()
-      }
-    }
+    checkAuth();
   }, [])
 
   const signIn = async (email: string, password: string) => {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    })
-    return { data, error }
+    try {
+      const { user, token } = await apiLogin({ email, password });
+      
+      setUser(user);
+      setProfile({
+        id: user.id || '',
+        email: user.email,
+        full_name: null,
+        role: convertApiRoleToProfileRole(user.roles),
+        created_at: '',
+        updated_at: ''
+      });
+      setSession({ user });
+      
+      return { data: { user, session: { user } }, error: null };
+    } catch (error: any) {
+      console.error('[signIn] Erreur de connexion:', error);
+      return { 
+        data: null, 
+        error: { 
+          message: error.message || 'Email ou mot de passe incorrect' 
+        } 
+      };
+    }
   }
 
   const signUp = async (email: string, password: string, fullName?: string) => {
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: {
-          full_name: fullName,
-        },
-      },
-    })
-    return { data, error }
+    console.warn('[signUp] Authentification désactivée - Supabase supprimé')
+    return { data: null, error: { message: 'Authentification désactivée - Supabase a été supprimé' } }
   }
 
   const signOut = async () => {
-    const { error } = await supabase.auth.signOut()
-    return { error }
+    apiLogout();
+    setUser(null)
+    setProfile(null)
+    setSession(null)
+    return { error: null }
   }
 
   const resetPassword = async (email: string) => {
-    const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/reset-password`,
-    })
-    return { data, error }
+    console.warn('[resetPassword] Authentification désactivée - Supabase supprimé')
+    return { data: null, error: { message: 'Authentification désactivée - Supabase a été supprimé' } }
   }
 
   const updatePassword = async (newPassword: string) => {
-    const { data, error } = await supabase.auth.updateUser({
-      password: newPassword,
-    })
-    return { data, error }
+    console.warn('[updatePassword] Authentification désactivée - Supabase supprimé')
+    return { data: null, error: { message: 'Authentification désactivée - Supabase a été supprimé' } }
   }
 
   const isAdmin = () => profile?.role === 'admin'
@@ -280,6 +197,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     signOut,
     resetPassword,
     updatePassword,
+    refreshProfile,
     isAdmin,
     isEditor,
     canAccessAdmin,

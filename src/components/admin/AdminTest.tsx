@@ -1,30 +1,29 @@
 import React, { useState, useEffect } from 'react'
-import { supabase } from '../../lib/supabase'
+import { getEntrypoint, getTours } from '../../api/madabookingApi'
 
 export default function AdminTest() {
   const [connectionStatus, setConnectionStatus] = useState<string>('Testing...')
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    testSupabaseConnection()
+    testApiConnection()
   }, [])
 
-  const testSupabaseConnection = async () => {
+  const testApiConnection = async () => {
     try {
-      // Test de connexion basique
-      const { data, error } = await supabase
-        .from('tours')
-        .select('count')
-        .limit(1)
+      // Test de connexion basique à l'API Madabooking
+      const entrypoint = await getEntrypoint()
+      const tours = await getTours()
 
-      if (error) {
-        setError(`Erreur Supabase: ${error.message}`)
-        setConnectionStatus('❌ Erreur de connexion')
+      if (entrypoint && tours !== undefined) {
+        setConnectionStatus(`✅ Connexion API Madabooking OK (${tours.length} tours disponibles)`)
+        setError(null)
       } else {
-        setConnectionStatus('✅ Connexion Supabase OK')
+        setError('Réponse API invalide')
+        setConnectionStatus('❌ Erreur de connexion')
       }
-    } catch (err) {
-      setError(`Erreur: ${err}`)
+    } catch (err: any) {
+      setError(`Erreur API: ${err.message || err}`)
       setConnectionStatus('❌ Erreur de connexion')
     }
   }
@@ -50,16 +49,16 @@ export default function AdminTest() {
           )}
 
           <div className="bg-blue-50 border border-blue-200 rounded-md p-4">
-            <h3 className="text-sm font-medium text-blue-800">Variables d'environnement :</h3>
+            <h3 className="text-sm font-medium text-blue-800">Configuration API :</h3>
             <div className="text-sm text-blue-700 mt-1 space-y-1">
-              <p>SUPABASE_URL: {import.meta.env.VITE_SUPABASE_URL ? '✅ Configurée' : '❌ Manquante'}</p>
-              <p>SUPABASE_ANON_KEY: {import.meta.env.VITE_SUPABASE_ANON_KEY ? '✅ Configurée' : '❌ Manquante'}</p>
+              <p>API_URL: {import.meta.env.VITE_MADABOOKING_API_URL || '✅ Auto (dev/prod)'}</p>
+              <p>Mode: {import.meta.env.DEV ? '🔧 Développement' : '🚀 Production'}</p>
             </div>
           </div>
 
           <div className="flex space-x-3">
             <button
-              onClick={testSupabaseConnection}
+              onClick={testApiConnection}
               className="flex-1 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
             >
               Tester à nouveau
