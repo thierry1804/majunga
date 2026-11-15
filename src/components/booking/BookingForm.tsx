@@ -1,11 +1,12 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Calendar, Users, Check, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { Tour, ShuttleSchedule, BookingFormData } from '../../types';
+import { Tour, ShuttleSchedule, BookingFormData, Location } from '../../types';
 import { getToursFromSupabase, getShuttleSchedulesFromSupabase, createBooking } from '../../api/supabaseService';
 import { getPublicSiteSettingByKey } from '../../api/madabookingApi';
 import Button from '../ui/Button';
 import PayPalButton from './PayPalButton';
+import MapSelector from './MapSelector';
 
 export default function BookingForm() {
   const { t, i18n } = useTranslation();
@@ -29,15 +30,18 @@ export default function BookingForm() {
   const [bookingId, setBookingId] = useState<string | null>(null);
   const [bookingEnabled, setBookingEnabled] = useState(true);
   const [maxParticipants, setMaxParticipants] = useState(20);
+  const [pricePerKm, setPricePerKm] = useState(0.5);
+  const [mapMode, setMapMode] = useState<'from' | 'to'>('from');
 
   useEffect(() => {
     const loadData = async () => {
       try {
-        const [toursData, schedulesData, enabledSetting, maxSetting] = await Promise.all([
+        const [toursData, schedulesData, enabledSetting, maxSetting, priceSetting] = await Promise.all([
           getToursFromSupabase(),
           getShuttleSchedulesFromSupabase(),
           getPublicSiteSettingByKey('booking_enabled'),
           getPublicSiteSettingByKey('max_booking_participants'),
+          getPublicSiteSettingByKey('price_per_km').catch(() => null),
         ]);
 
         setTours(toursData);
@@ -50,6 +54,13 @@ export default function BookingForm() {
           const max = parseInt(String(maxSetting.value), 10);
           if (!Number.isNaN(max) && max > 0) {
             setMaxParticipants(max);
+          }
+        }
+
+        if (priceSetting?.value) {
+          const price = parseFloat(String(priceSetting.value));
+          if (!Number.isNaN(price) && price > 0) {
+            setPricePerKm(price);
           }
         }
 
@@ -74,10 +85,17 @@ export default function BookingForm() {
     }));
   };
 
-  const handleServiceTypeChange = (type: 'tour' | 'shuttle') => {
+  const handleRouteCalculated = useCallback((cost: number) => {
+    setFormData((prev) => ({ ...prev, customPrice: cost > 0 ? Math.round(cost * 100) / 100 : undefined }));
+  }, []);
+
+  const handleServiceTypeChange = (type: 'tour' | 'shuttle' | 'custom-shuttle') => {
     setFormData((prev) => ({
       ...prev,
       service: type,
+      customFromLocation: type === 'custom-shuttle' ? prev.customFromLocation : undefined,
+      customToLocation: type === 'custom-shuttle' ? prev.customToLocation : undefined,
+      customPrice: type === 'custom-shuttle' ? prev.customPrice : undefined,
       serviceId:
         type === 'tour' && tours.length > 0
           ? tours[0].id
@@ -112,6 +130,21 @@ export default function BookingForm() {
       setErrorMessage(t('booking.form.errors.maxParticipants', { defaultValue: `Maximum ${maxParticipants} participants.` }));
       return false;
     }
+    if (formData.service === 'custom-shuttle') {
+      if (!formData.customFromLocation || !formData.customToLocation) {
+        setErrorMessage(t('booking.form.errors.customPoints', { defaultValue: 'Sélectionnez le départ et l\'arrivée sur la carte.' }));
+        return false;
+      }
+      if (!formData.customDepartureTime) {
+        setErrorMessage(t('booking.form.errors.customTime', { defaultValue: 'Indiquez l\'heure de départ souhaitée.' }));
+        return false;
+      }
+      if (!formData.customPrice) {
+        setErrorMessage(t('booking.form.errors.customPrice', { defaultValue: 'Le prix estimé n\'a pas pu être calculé.' }));
+        return false;
+      }
+      return true;
+    }
     if (formData.serviceId === 0) {
       setErrorMessage(
         t(formData.service === 'tour' ? 'booking.form.errors.serviceTour' : 'booking.form.errors.serviceShuttle')
@@ -140,6 +173,25 @@ export default function BookingForm() {
         result = await createBooking({
           service_type: 'tour',
           tour_id: selectedTour.supabaseId,
+          user_email: formData.email,
+          user_name: formData.name,
+          phone: formData.phone,
+          special_requests: formData.specialRequests,
+          booking_date: formData.date,
+          participants: formData.numberOfPeople,
+          total_price: amount,
+        });
+      } else if (formData.service === 'custom-shuttle') {
+        if (!formData.customFromLocation || !formData.customToLocation || !formData.customDepartureTime) {
+          throw new Error(t('booking.form.errors.customPoints', { defaultValue: 'Sélectionnez le départ et l\'arrivée sur la carte.' }));
+        }
+        result = await createBooking({
+          service_type: 'custom_shuttle',
+          custom_route: {
+            from: formData.customFromLocation,
+            to: formData.customToLocation,
+            departureTime: formData.customDepartureTime,
+          },
           user_email: formData.email,
           user_name: formData.name,
           phone: formData.phone,
@@ -201,7 +253,12 @@ export default function BookingForm() {
       date: '',
       numberOfPeople: 1,
       specialRequests: '',
+      customFromLocation: undefined,
+      customToLocation: undefined,
+      customDepartureTime: undefined,
+      customPrice: undefined,
     });
+    setMapMode('from');
     setPaymentStep(false);
     setSuccess(null);
     setErrorMessage(null);
@@ -209,6 +266,10 @@ export default function BookingForm() {
   };
 
   const getBookingAmount = (): number => {
+    // Navette sur mesure : le coût estimé du trajet est un forfait (non multiplié par le nombre de personnes)
+    if (formData.service === 'custom-shuttle') {
+      return formData.customPrice ?? 0;
+    }
     if (formData.service === 'tour') {
       const selectedTour = tours.find((tour) => tour.id === formData.serviceId);
       return selectedTour ? selectedTour.price * formData.numberOfPeople : 0;
@@ -218,6 +279,7 @@ export default function BookingForm() {
   };
 
   const getBookingCurrency = (): string => {
+    if (formData.service === 'custom-shuttle') return 'EUR';
     if (formData.service === 'tour') {
       return tours.find((tour) => tour.id === formData.serviceId)?.currency ?? 'EUR';
     }
@@ -225,6 +287,9 @@ export default function BookingForm() {
   };
 
   const getServiceLabel = () => {
+    if (formData.service === 'custom-shuttle') {
+      return `${formData.customFromLocation?.address ?? ''} → ${formData.customToLocation?.address ?? ''}`;
+    }
     if (formData.service === 'tour') {
       return tours.find((tour) => tour.id === formData.serviceId)?.title ?? '';
     }
@@ -261,7 +326,7 @@ export default function BookingForm() {
                   role="tablist"
                   aria-label={t('booking.form.title')}
                 >
-                  {(['tour', 'shuttle'] as const).map((type) => (
+                  {(['tour', 'shuttle', 'custom-shuttle'] as const).map((type) => (
                     <button
                       key={type}
                       type="button"
@@ -274,12 +339,64 @@ export default function BookingForm() {
                       }`}
                       onClick={() => handleServiceTypeChange(type)}
                     >
-                      {t(type === 'tour' ? 'booking.form.tourTab' : 'booking.form.shuttleTab')}
+                      {t(type === 'tour' ? 'booking.form.tourTab' : type === 'shuttle' ? 'booking.form.shuttleTab' : 'booking.form.customShuttleTab', { defaultValue: type === 'custom-shuttle' ? 'Navette sur mesure' : undefined })}
                     </button>
                   ))}
                 </div>
               </div>
 
+              {formData.service === 'custom-shuttle' ? (
+                <div className="mb-6">
+                  <span className="field-label">
+                    {t('booking.form.customMapLabel', { defaultValue: 'Choisissez le départ et l\'arrivée sur la carte' })}
+                  </span>
+                  <div className="flex gap-2 mb-4" role="group">
+                    {(['from', 'to'] as const).map((m) => (
+                      <button
+                        key={m}
+                        type="button"
+                        aria-pressed={mapMode === m}
+                        onClick={() => setMapMode(m)}
+                        className={`min-h-[44px] px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                          mapMode === m ? 'bg-ocean-600 text-sand-50' : 'bg-sand-50 border border-sand-300 text-ink-muted hover:text-ink'
+                        }`}
+                      >
+                        {m === 'from'
+                          ? t('booking.form.pickFrom', { defaultValue: 'Choisir le départ' })
+                          : t('booking.form.pickTo', { defaultValue: 'Choisir l\'arrivée' })}
+                      </button>
+                    ))}
+                  </div>
+                  <MapSelector
+                    mode={mapMode}
+                    pricePerKm={pricePerKm}
+                    fromLocation={formData.customFromLocation}
+                    toLocation={formData.customToLocation}
+                    onFromSelect={(location: Location) => setFormData((prev) => ({ ...prev, customFromLocation: location }))}
+                    onToSelect={(location: Location) => setFormData((prev) => ({ ...prev, customToLocation: location }))}
+                    onRouteCalculated={handleRouteCalculated}
+                  />
+                  <div className="mt-4">
+                    <label htmlFor="customDepartureTime" className="field-label">
+                      {t('booking.form.customTime', { defaultValue: 'Heure de départ souhaitée' })}
+                    </label>
+                    <input
+                      type="time"
+                      id="customDepartureTime"
+                      value={formData.customDepartureTime ?? ''}
+                      onChange={(e) => setFormData((prev) => ({ ...prev, customDepartureTime: e.target.value }))}
+                      className="field-input"
+                      required
+                    />
+                  </div>
+                  {formData.customPrice ? (
+                    <p className="mt-4 text-sm text-ink">
+                      {t('booking.form.customEstimate', { defaultValue: 'Prix estimé du trajet' })} :{' '}
+                      <strong>{formData.customPrice.toFixed(2)} EUR</strong>
+                    </p>
+                  ) : null}
+                </div>
+              ) : (
               <div className="mb-6">
                 <label htmlFor="serviceId" className="field-label">
                   {t(formData.service === 'tour' ? 'booking.form.selectTour' : 'booking.form.selectShuttle')}
@@ -313,6 +430,7 @@ export default function BookingForm() {
                       ))}
                 </select>
               </div>
+              )}
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
                 <div>
