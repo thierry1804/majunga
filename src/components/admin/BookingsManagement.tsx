@@ -3,14 +3,21 @@ import {
   getBookings,
   patchBooking,
   getTour,
+  getShuttleSchedule,
   ApiBooking,
   ApiTour
 } from '../../api/madabookingApi'
 import { Search, Filter, CheckCircle, XCircle, Clock, Eye, X } from 'lucide-react'
 
+type ServiceType = 'tour' | 'shuttle' | 'custom_shuttle'
+
 interface Booking {
   id: string
   tour_id: string
+  service_type: ServiceType
+  /** Nom du service réservé : titre du circuit, trajet de la navette ou « Navette sur mesure ». */
+  service_label: string
+  special_requests: string | null
   user_email: string
   user_name: string
   booking_date: string
@@ -20,9 +27,6 @@ interface Booking {
   payment_id: string | null
   created_at: string
   updated_at: string
-  tours?: {
-    title: string
-  }
 }
 
 export default function BookingsManagement() {
@@ -42,27 +46,57 @@ export default function BookingsManagement() {
 
       const apiBookings = await getBookings()
 
-      // Pour chaque réservation, récupérer les détails du tour si disponible
+      // Chaque circuit et chaque navette n'est demandé qu'une fois, même s'il est réservé plusieurs fois
+      const tourCache = new Map<string, Promise<string>>()
+      const shuttleCache = new Map<string, Promise<string>>()
+
+      const loadTourLabel = (id: string) => {
+        if (!tourCache.has(id)) {
+          tourCache.set(id, getTour(id).then((tour) => tour.title).catch(() => 'Circuit supprimé'))
+        }
+        return tourCache.get(id) as Promise<string>
+      }
+
+      const loadShuttleLabel = (id: string) => {
+        if (!shuttleCache.has(id)) {
+          shuttleCache.set(
+            id,
+            getShuttleSchedule(id)
+              .then((s) => {
+                const trip = s.from && s.to ? `${s.from} → ${s.to}` : s.route
+                return `Navette : ${trip}, ${s.departureTime}`
+              })
+              .catch(() => 'Navette supprimée')
+          )
+        }
+        return shuttleCache.get(id) as Promise<string>
+      }
+
+      // Pour chaque réservation, déterminer le service réservé selon son type
       const bookingsWithTours = await Promise.all(
         apiBookings.map(async (apiBooking) => {
-          let tourTitle = 'Tour supprimé'
+          const serviceType: ServiceType =
+            apiBooking.serviceType === 'shuttle' || apiBooking.serviceType === 'custom_shuttle'
+              ? apiBooking.serviceType
+              : 'tour'
 
-          if (apiBooking.tour) {
-            try {
-              // Extraire l'ID du tour depuis l'IRI
-              const tourId = extractIdFromIri(apiBooking.tour)
-              if (tourId) {
-                const tour = await getTour(tourId)
-                tourTitle = tour.title
-              }
-            } catch (error) {
-              console.warn('Impossible de récupérer le tour pour la réservation:', error)
-            }
+          let serviceLabel: string
+          if (serviceType === 'custom_shuttle') {
+            serviceLabel = 'Navette sur mesure'
+          } else if (serviceType === 'shuttle') {
+            const shuttleId = extractIdFromIri(apiBooking.shuttleSchedule)
+            serviceLabel = shuttleId ? await loadShuttleLabel(shuttleId) : 'Navette supprimée'
+          } else {
+            const tourId = extractIdFromIri(apiBooking.tour)
+            serviceLabel = tourId ? await loadTourLabel(tourId) : 'Circuit supprimé'
           }
 
           return {
             id: apiBooking.id || extractIdFromIri(apiBooking['@id']) || '',
             tour_id: extractIdFromIri(apiBooking.tour) || '',
+            service_type: serviceType,
+            service_label: serviceLabel,
+            special_requests: apiBooking.specialRequests || null,
             user_email: apiBooking.userEmail,
             user_name: apiBooking.userName,
             booking_date: apiBooking.bookingDate,
@@ -71,10 +105,7 @@ export default function BookingsManagement() {
             status: (apiBooking.status || 'pending') as 'pending' | 'confirmed' | 'cancelled',
             payment_id: apiBooking.paymentId || null,
             created_at: apiBooking.createdAt || '',
-            updated_at: apiBooking.updatedAt || '',
-            tours: {
-              title: tourTitle
-            }
+            updated_at: apiBooking.updatedAt || ''
           }
         })
       )
@@ -113,7 +144,7 @@ export default function BookingsManagement() {
     const matchesSearch = 
       booking.user_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       booking.user_email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      booking.tours?.title.toLowerCase().includes(searchTerm.toLowerCase())
+      booking.service_label.toLowerCase().includes(searchTerm.toLowerCase())
     
     const matchesStatus = statusFilter === 'all' || booking.status === statusFilter
     
@@ -189,7 +220,7 @@ export default function BookingsManagement() {
         <div>
           <h1 className="text-2xl font-bold text-ink">Gestion des Réservations</h1>
           <p className="mt-1 text-sm text-ink-light">
-            Gérez toutes les réservations de tours
+            Gérez toutes les réservations de circuits et de navettes
           </p>
         </div>
         <button
@@ -285,7 +316,7 @@ export default function BookingsManagement() {
               </div>
               <input
                 type="text"
-                placeholder="Rechercher par nom, email ou tour..."
+                placeholder="Rechercher par nom, email ou service..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="block w-full pl-10 pr-3 py-2 border border-sand-300 rounded-md leading-5 bg-white placeholder-ink-light focus:outline-none focus:placeholder-sand-300 focus:ring-1 focus:ring-ocean-500 focus:border-ocean-500"
@@ -328,7 +359,7 @@ export default function BookingsManagement() {
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="text-sm font-medium text-ocean-600 truncate">
-                          {booking.tours?.title || 'Tour supprimé'}
+                          {booking.service_label}
                         </p>
                         <p className="text-sm text-ink-light">
                           {booking.user_name} ({booking.user_email})
@@ -348,7 +379,7 @@ export default function BookingsManagement() {
                     </div>
                     <div className="mt-2 flex items-center justify-between">
                       <div className="flex items-center text-sm text-ink-light">
-                        <span>Date du tour: {formatDate(booking.booking_date)}</span>
+                        <span>Date prévue : {formatDate(booking.booking_date)}</span>
                         <span className="mx-2">•</span>
                         <span>Réservé le {formatDate(booking.created_at)}</span>
                       </div>
@@ -424,9 +455,9 @@ export default function BookingsManagement() {
               <div className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-ink-muted">Tour</label>
+                    <label className="block text-sm font-medium text-ink-muted">Service</label>
                     <p className="mt-1 text-sm text-ink">
-                      {selectedBooking.tours?.title || 'Tour supprimé'}
+                      {selectedBooking.service_label}
                     </p>
                   </div>
                   <div>
@@ -444,7 +475,7 @@ export default function BookingsManagement() {
                     <p className="text-sm text-ink-light">{selectedBooking.user_email}</p>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-ink-muted">Date du tour</label>
+                    <label className="block text-sm font-medium text-ink-muted">Date prévue</label>
                     <p className="mt-1 text-sm text-ink">
                       {formatDate(selectedBooking.booking_date)}
                     </p>
@@ -482,6 +513,17 @@ export default function BookingsManagement() {
                     </div>
                   )}
                 </div>
+
+                {selectedBooking.special_requests && (
+                  <div>
+                    <label className="block text-sm font-medium text-ink-muted">
+                      {selectedBooking.service_type === 'custom_shuttle' ? 'Trajet et demandes' : 'Demandes spéciales'}
+                    </label>
+                    <p className="mt-1 text-sm text-ink whitespace-pre-line">
+                      {selectedBooking.special_requests}
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
 
