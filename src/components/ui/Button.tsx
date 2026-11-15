@@ -35,7 +35,7 @@ const Button: React.FC<ButtonProps> = ({
 
   const variantStyles = {
     primary:
-      'bg-ocean-600 text-sand-50 hover:bg-ocean-700 disabled:bg-ocean-200 disabled:text-ocean-400',
+      'bg-ocean-600 text-sand-50 hover:bg-ocean-700 disabled:bg-ocean-200 disabled:text-ocean-500',
     secondary:
       'bg-terracotta-500 text-sand-50 hover:bg-terracotta-600 disabled:bg-terracotta-100 disabled:text-terracotta-400',
     outline:

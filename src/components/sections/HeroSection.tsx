@@ -20,28 +20,19 @@ export default function HeroSection() {
       <div className="absolute inset-0 z-0">
         <HeroBackground />
 
-        {/* Scrim uniforme — lisibilité garantie sur toute la surface */}
-        <div className="absolute inset-0 bg-ocean-900/50" aria-hidden="true" />
+        {/* Voile de lisibilité léger, uniquement sous le texte */}
         <div
           className="absolute inset-0"
           aria-hidden="true"
           style={{
             background:
-              'linear-gradient(to top, rgba(6,38,38,0.97) 0%, rgba(6,38,38,0.82) 38%, rgba(6,38,38,0.55) 68%, rgba(6,38,38,0.72) 100%)',
-          }}
-        />
-        <div
-          className="absolute inset-0"
-          aria-hidden="true"
-          style={{
-            background:
-              'linear-gradient(to right, rgba(6,38,38,0.75) 0%, rgba(6,38,38,0.35) 55%, rgba(6,38,38,0.15) 100%)',
+              'linear-gradient(to top, rgba(6,38,38,0.82) 0%, rgba(6,38,38,0.4) 34%, rgba(6,38,38,0) 62%)',
           }}
         />
       </div>
 
       <Container className="relative z-10 w-full pt-28 pb-16 md:pb-20 md:pt-32">
-        <div style={contentFadeStyle} className="max-w-2xl">
+        <div style={contentFadeStyle} className="max-w-xl lg:max-w-2xl">
           <HeroEntrance delay={0}>
             <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mb-6">
               <p className="section-label text-ocean-200 tracking-[0.16em]">
@@ -55,9 +46,9 @@ export default function HeroSection() {
           </HeroEntrance>
 
           <HeroEntrance delay={80}>
-            <h1 className="heading-display text-sand-50 text-[2.75rem] sm:text-5xl lg:text-[3.25rem] font-semibold leading-[1.04] mb-5">
-              {t('hero.title')}{' '}
-              <span className="italic text-terracotta-400">{t('hero.city')}</span>
+            <h1 className="heading-display text-sand-50 text-[3.25rem] sm:text-7xl lg:text-[5.5rem] font-semibold leading-[0.98] tracking-[-0.03em] mb-6">
+              {t('hero.title')}
+              <span className="block italic text-terracotta-400">{t('hero.city')}</span>
             </h1>
           </HeroEntrance>
 
@@ -91,19 +82,6 @@ export default function HeroSection() {
             </div>
           </HeroEntrance>
 
-          <HeroEntrance delay={360}>
-            <div className="flex flex-wrap gap-x-4 gap-y-1.5 text-xs text-sand-100/70">
-              <span>{t('trust.since2015')}</span>
-              <span className="text-sand-100/25" aria-hidden="true">
-                ·
-              </span>
-              <span>{t('trust.localGuides')}</span>
-              <span className="text-sand-100/25" aria-hidden="true">
-                ·
-              </span>
-              <span>{t('trust.languages')}</span>
-            </div>
-          </HeroEntrance>
         </div>
       </Container>
 

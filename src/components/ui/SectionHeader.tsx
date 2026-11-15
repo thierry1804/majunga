@@ -20,7 +20,7 @@ export default function SectionHeader({
       {label && (
         <div className={`flex items-center gap-3 mb-4 ${align === 'center' ? 'justify-center' : ''}`}>
           {align === 'left' && (
-            <span className="hidden sm:block w-8 h-px bg-ocean-300 shrink-0" aria-hidden="true" />
+            <span className="hidden sm:block w-8 h-px bg-ocean-200 shrink-0" aria-hidden="true" />
           )}
           <p className="section-label">{label}</p>
         </div>

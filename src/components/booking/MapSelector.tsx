@@ -3,6 +3,7 @@ import { MapContainer, TileLayer, Marker, Popup, useMapEvents, Polyline, useMap 
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { MapPin, Navigation } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 // Fix pour les icônes par défaut de Leaflet (uniquement côté client)
 if (typeof window !== 'undefined') {
@@ -178,6 +179,7 @@ export default function MapSelector({
   onRouteCalculated,
   pricePerKm = DEFAULT_PRICE_PER_KM,
 }: MapSelectorProps) {
+  const { t } = useTranslation();
   const [mapReady, setMapReady] = useState(false);
   const [routeInfo, setRouteInfo] = useState<RouteInfo | null>(null);
   const [loadingRoute, setLoadingRoute] = useState(false);
@@ -243,46 +245,34 @@ export default function MapSelector({
 
   if (typeof window === 'undefined' || !mapReady) {
     return (
-      <div className="w-full h-96 bg-gray-200 rounded-lg flex items-center justify-center">
-        <div className="text-gray-500">Chargement de la carte...</div>
+      <div className="w-full h-96 bg-sand-100 rounded-xl flex items-center justify-center">
+        <p className="text-ink-light text-sm">{t('booking.form.map.loading')}</p>
       </div>
     );
   }
 
-  // Créer des icônes personnalisées pour départ et arrivée
-  const fromIcon = L.divIcon({
-    className: 'custom-marker from-marker',
-    html: `<div style="background-color: #3b82f6; width: 30px; height: 30px; border-radius: 50% 50% 50% 0; transform: rotate(-45deg); border: 3px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);"></div>`,
-    iconSize: [30, 30],
-    iconAnchor: [15, 30],
-  });
+  // Repères de départ (océan) et d'arrivée (terracotta), aux couleurs du système
+  const pin = (color: string) =>
+    L.divIcon({
+      className: 'custom-marker',
+      html: `<div style="background-color: ${color}; width: 30px; height: 30px; border-radius: 50% 50% 50% 0; transform: rotate(-45deg); border: 3px solid #faf7f2; box-shadow: 0 2px 8px rgba(42,37,32,0.3);"></div>`,
+      iconSize: [30, 30],
+      iconAnchor: [15, 30],
+    });
+  const fromIcon = pin('#145555');
+  const toIcon = pin('#c45c3e');
 
-  const toIcon = L.divIcon({
-    className: 'custom-marker to-marker',
-    html: `<div style="background-color: #10b981; width: 30px; height: 30px; border-radius: 50% 50% 50% 0; transform: rotate(-45deg); border: 3px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);"></div>`,
-    iconSize: [30, 30],
-    iconAnchor: [15, 30],
-  });
+  const formatDistance = (m: number) => (m < 1000 ? `${Math.round(m)} m` : `${(m / 1000).toFixed(2)} km`);
+  const formatDuration = (s: number) =>
+    s < 3600 ? `${Math.max(1, Math.round(s / 60))} min` : `${Math.floor(s / 3600)} h ${Math.round((s % 3600) / 60)} min`;
 
   return (
     <div className="w-full">
-      <div className="mb-4 flex items-center gap-4 text-sm">
-        <div className="flex items-center gap-2">
-          <div className="w-4 h-4 rounded-full bg-blue-500"></div>
-          <span>Point de Départ</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="w-4 h-4 rounded-full bg-green-500"></div>
-          <span>Point d'Arrivée</span>
-        </div>
-        <div className="ml-auto text-gray-600">
-          {mode === 'from' 
-            ? 'Cliquez sur la carte pour sélectionner le point de départ' 
-            : 'Cliquez sur la carte pour sélectionner le point d\'arrivée'}
-        </div>
-      </div>
-      
-      <div className="relative w-full h-96 rounded-lg overflow-hidden border border-gray-300">
+      <p className="mb-3 text-sm text-ink-muted" aria-live="polite">
+        {mode === 'from' ? t('booking.form.map.hintFrom') : t('booking.form.map.hintTo')}
+      </p>
+
+      <div className="relative w-full h-80 md:h-96 rounded-xl overflow-hidden border border-sand-300">
         <MapContainer
           center={MAJUNGA_CENTER}
           zoom={13}
@@ -293,118 +283,83 @@ export default function MapSelector({
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
-          
-          {/* Ajuster la vue de la carte */}
+
           <MapBounds fromLocation={fromLocation} toLocation={toLocation} />
-          
-          {/* Gestionnaire de clics */}
-          <MapClickHandler
-            onLocationSelect={mode === 'from' ? onFromSelect : onToSelect}
-          />
-          
-          {/* Itinéraire entre les deux points */}
+
+          <MapClickHandler onLocationSelect={mode === 'from' ? onFromSelect : onToSelect} />
+
           {routeInfo && routeInfo.coordinates.length > 0 && (
-            <Polyline
-              positions={routeInfo.coordinates}
-              color="#3b82f6"
-              weight={5}
-              opacity={0.8}
-              smoothFactor={1}
-            />
+            <Polyline positions={routeInfo.coordinates} color="#145555" weight={5} opacity={0.85} smoothFactor={1} />
           )}
-          
-          {/* Marqueur de départ */}
+
           {fromLocation && (
             <Marker position={[fromLocation.lat, fromLocation.lng]} icon={fromIcon}>
               <Popup>
-                <div className="font-medium text-blue-600">Point de Départ</div>
-                <div className="text-sm text-gray-700">{fromLocation.address}</div>
+                <div className="font-medium text-ocean-700">{t('booking.form.map.from')}</div>
+                <div className="text-sm text-ink-muted">{fromLocation.address}</div>
               </Popup>
             </Marker>
           )}
-          
-          {/* Marqueur d'arrivée */}
+
           {toLocation && (
             <Marker position={[toLocation.lat, toLocation.lng]} icon={toIcon}>
               <Popup>
-                <div className="font-medium text-green-600">Point d'Arrivée</div>
-                <div className="text-sm text-gray-700">{toLocation.address}</div>
+                <div className="font-medium text-terracotta-600">{t('booking.form.map.to')}</div>
+                <div className="text-sm text-ink-muted">{toLocation.address}</div>
               </Popup>
             </Marker>
           )}
         </MapContainer>
       </div>
-      
-      {/* Affichage des adresses sélectionnées et informations de route */}
-      <div className="mt-4 space-y-2">
-        {fromLocation && (
-          <div className="flex items-start gap-2 p-3 bg-blue-50 rounded-lg">
-            <MapPin className="h-5 w-5 text-blue-600 mt-0.5" />
-            <div className="flex-1">
-              <div className="text-sm font-medium text-blue-900">Départ</div>
-              <div className="text-sm text-blue-700">{fromLocation.address}</div>
-            </div>
+
+      <dl className="mt-4 divide-y divide-sand-200 border-y border-sand-200 text-sm">
+        <div className="flex items-start gap-3 py-3">
+          <MapPin size={18} className="mt-0.5 shrink-0 text-ocean-600" aria-hidden="true" />
+          <div>
+            <dt className="font-medium text-ink">{t('booking.form.map.from')}</dt>
+            <dd className="text-ink-muted">{fromLocation ? fromLocation.address : t('booking.form.map.notSet')}</dd>
           </div>
-        )}
-        
-        {toLocation && (
-          <div className="flex items-start gap-2 p-3 bg-green-50 rounded-lg">
-            <MapPin className="h-5 w-5 text-green-600 mt-0.5" />
-            <div className="flex-1">
-              <div className="text-sm font-medium text-green-900">Arrivée</div>
-              <div className="text-sm text-green-700">{toLocation.address}</div>
-            </div>
+        </div>
+        <div className="flex items-start gap-3 py-3">
+          <MapPin size={18} className="mt-0.5 shrink-0 text-terracotta-500" aria-hidden="true" />
+          <div>
+            <dt className="font-medium text-ink">{t('booking.form.map.to')}</dt>
+            <dd className="text-ink-muted">{toLocation ? toLocation.address : t('booking.form.map.notSet')}</dd>
           </div>
-        )}
-        
-        {/* Informations de l'itinéraire */}
+        </div>
+
         {loadingRoute && (
-          <div className="flex items-center gap-2 p-3 bg-gray-50 rounded-lg">
-            <div className="animate-spin h-4 w-4 border-2 border-blue-600 border-t-transparent rounded-full"></div>
-            <div className="text-sm text-gray-600">Calcul de l'itinéraire...</div>
+          <div className="flex items-center gap-3 py-3 text-ink-muted" role="status">
+            <span className="h-4 w-4 animate-spin rounded-full border-2 border-ocean-600 border-t-transparent" aria-hidden="true" />
+            {t('booking.form.map.calculating')}
           </div>
         )}
-        
+
         {routeInfo && !loadingRoute && fromLocation && toLocation && (
-          <div className="flex items-start gap-2 p-3 bg-indigo-50 rounded-lg border border-indigo-200">
-            <Navigation className="h-5 w-5 text-indigo-600 mt-0.5" />
+          <div className="flex items-start gap-3 py-3">
+            <Navigation size={18} className="mt-0.5 shrink-0 text-ocean-600" aria-hidden="true" />
             <div className="flex-1">
-              <div className="text-sm font-medium text-indigo-900 mb-2">Informations de l'itinéraire</div>
-              {routeInfo.distance > 0 ? (
-                <div className="space-y-1">
-                  <div className="text-sm text-indigo-700">
-                    <strong>Distance :</strong> {routeInfo.distance < 1000 
-                      ? `${Math.round(routeInfo.distance)} m` 
-                      : `${(routeInfo.distance / 1000).toFixed(2)} km`}
-                  </div>
-                  {routeInfo.duration > 0 && (
-                    <div className="text-sm text-indigo-700">
-                      <strong>Durée estimée :</strong> {routeInfo.duration < 60 
-                        ? `${Math.round(routeInfo.duration)} sec` 
-                        : routeInfo.duration < 3600
-                        ? `${Math.round(routeInfo.duration / 60)} min`
-                        : `${Math.round(routeInfo.duration / 3600)}h ${Math.round((routeInfo.duration % 3600) / 60)}min`}
-                    </div>
-                  )}
-                  {routeInfo.estimatedCost !== undefined && (
-                    <div className="text-sm font-semibold text-indigo-900 mt-2 pt-2 border-t border-indigo-200">
-                      <strong>Coût estimé :</strong> {routeInfo.estimatedCost.toFixed(2)} EUR
-                      <span className="text-xs text-indigo-600 ml-1">
-                        ({pricePerKm.toFixed(2)} EUR/km)
-                      </span>
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <div className="text-sm text-indigo-700">
-                  Itinéraire tracé (ligne droite)
-                </div>
+              <dt className="font-medium text-ink">{t('booking.form.map.route')}</dt>
+              <dd className="text-ink-muted">
+                {routeInfo.distance > 0 ? (
+                  <>
+                    {formatDistance(routeInfo.distance)}
+                    {routeInfo.duration > 0 && <> · {formatDuration(routeInfo.duration)}</>}
+                  </>
+                ) : (
+                  t('booking.form.map.straightLine')
+                )}
+              </dd>
+              {routeInfo.estimatedCost !== undefined && (
+                <dd className="mt-1 text-ink">
+                  <span className="font-display text-xl font-semibold">{routeInfo.estimatedCost.toFixed(2)} EUR</span>{' '}
+                  <span className="text-xs text-ink-light">({pricePerKm.toFixed(2)} EUR/km)</span>
+                </dd>
               )}
             </div>
           </div>
         )}
-      </div>
+      </dl>
     </div>
   );
 }
-

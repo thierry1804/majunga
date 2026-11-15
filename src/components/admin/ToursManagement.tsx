@@ -462,7 +462,7 @@ export default function ToursManagement() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-ocean-600"></div>
       </div>
     )
   }
@@ -472,14 +472,14 @@ export default function ToursManagement() {
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Gestion des Tours</h1>
-          <p className="mt-1 text-sm text-gray-500">
+          <h1 className="text-2xl font-bold text-ink">Gestion des Tours</h1>
+          <p className="mt-1 text-sm text-ink-light">
             Gérez vos offres de tours et excursions
           </p>
         </div>
         <button
           onClick={() => setShowModal(true)}
-          className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+          className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-ocean-600 hover:bg-ocean-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ocean-500"
         >
           <Plus className="h-4 w-4 mr-2" />
           Nouveau tour
@@ -489,23 +489,23 @@ export default function ToursManagement() {
       {/* Search */}
       <div className="relative">
         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-          <Search className="h-5 w-5 text-gray-400" />
+          <Search className="h-5 w-5 text-ink-light" />
         </div>
         <input
           type="text"
           placeholder="Rechercher un tour..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+          className="block w-full pl-10 pr-3 py-2 border border-sand-300 rounded-md leading-5 bg-white placeholder-ink-light focus:outline-none focus:placeholder-sand-300 focus:ring-1 focus:ring-ocean-500 focus:border-ocean-500"
         />
       </div>
 
       {/* Tours Grid */}
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {filteredTours.map((tour) => (
-          <div key={tour.id} className="bg-white overflow-hidden shadow rounded-lg border border-gray-200">
+          <div key={tour.id} className="bg-white overflow-hidden shadow rounded-lg border border-sand-200">
             {tour.image_url && (
-              <div className="h-48 bg-gray-200">
+              <div className="h-48 bg-sand-200">
                 <img
                   src={tour.image_url}
                   alt={tour.title}
@@ -520,38 +520,38 @@ export default function ToursManagement() {
             )}
             <div className="p-6">
               <div className="flex items-center justify-between mb-3">
-                <h3 className="text-lg font-medium text-gray-900 truncate pr-2">{tour.title}</h3>
+                <h3 className="text-lg font-medium text-ink truncate pr-2">{tour.title}</h3>
                 <button
                   onClick={() => toggleActive(tour)}
                   className={`p-1 rounded-full flex-shrink-0 ${
                     tour.is_active 
-                      ? 'text-green-600 hover:bg-green-100' 
-                      : 'text-gray-400 hover:bg-gray-100'
+                      ? 'text-ocean-600 hover:bg-ocean-100' 
+                      : 'text-ink-light hover:bg-sand-100'
                   }`}
                 >
                   {tour.is_active ? <Eye className="h-5 w-5" /> : <EyeOff className="h-5 w-5" />}
                 </button>
               </div>
-              <p className="text-sm text-gray-600 mb-4 line-clamp-3">
+              <p className="text-sm text-ink-muted mb-4 line-clamp-3">
                 {tour.description}
               </p>
               <div className="flex items-center justify-between mb-4">
                 <div>
-                  <p className="text-lg font-semibold text-blue-600">
+                  <p className="text-lg font-semibold text-ocean-600">
                     {formatCurrency(tour.price)}
                   </p>
-                  <p className="text-sm text-gray-500">{tour.duration}</p>
+                  <p className="text-sm text-ink-light">{tour.duration}</p>
                 </div>
                 <div className="flex space-x-2">
                   <button
                     onClick={() => handleEdit(tour)}
-                    className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-full transition-colors"
+                    className="p-2 text-ink-light hover:text-ocean-600 hover:bg-ocean-50 rounded-full transition-colors"
                   >
                     <Edit className="h-4 w-4" />
                   </button>
                   <button
                     onClick={() => handleDelete(tour.id)}
-                    className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-full transition-colors"
+                    className="p-2 text-ink-light hover:text-terracotta-600 hover:bg-terracotta-50 rounded-full transition-colors"
                   >
                     <Trash2 className="h-4 w-4" />
                   </button>
@@ -561,13 +561,13 @@ export default function ToursManagement() {
                 {tour.highlights.slice(0, 3).map((highlight, index) => (
                   <span
                     key={index}
-                    className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
+                    className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-ocean-100 text-ocean-800"
                   >
                     {highlight}
                   </span>
                 ))}
                 {tour.highlights.length > 3 && (
-                  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-sand-100 text-ink">
                     +{tour.highlights.length - 3}
                   </span>
                 )}
@@ -579,7 +579,7 @@ export default function ToursManagement() {
 
       {filteredTours.length === 0 && (
         <div className="text-center py-12">
-          <p className="text-gray-500">Aucun tour trouvé</p>
+          <p className="text-ink-light">Aucun tour trouvé</p>
         </div>
       )}
 
@@ -588,7 +588,7 @@ export default function ToursManagement() {
         <>
           {/* Overlay */}
           <div
-            className="fixed inset-0 bg-gray-600 bg-opacity-50 z-50 transition-opacity"
+            className="fixed inset-0 bg-ink-muted bg-opacity-50 z-50 transition-opacity"
             onClick={resetForm}
           />
 
@@ -596,12 +596,12 @@ export default function ToursManagement() {
           <div className="fixed right-0 top-0 bottom-0 z-50 w-full max-w-2xl bg-white shadow-xl flex flex-col transform transition-transform duration-300 ease-in-out">
             {/* Header - Fixed */}
             <div className="flex justify-between items-center p-6 border-b flex-shrink-0 bg-white">
-              <h3 className="text-lg font-medium text-gray-900">
+              <h3 className="text-lg font-medium text-ink">
                 {editingTour ? 'Modifier le tour' : 'Nouveau tour'}
               </h3>
               <button
                 onClick={resetForm}
-                className="text-gray-400 hover:text-gray-600 transition-colors"
+                className="text-ink-light hover:text-ink-muted transition-colors"
                 aria-label="Fermer"
               >
                 <X className="h-6 w-6" />
@@ -612,7 +612,7 @@ export default function ToursManagement() {
             <div className="overflow-y-auto flex-grow p-6">
               <form id="tour-form" onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">
+                  <label className="block text-sm font-medium text-ink-muted">
                     Titre
                   </label>
                   <input
@@ -620,12 +620,12 @@ export default function ToursManagement() {
                     required
                     value={formData.title}
                     onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                    className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                    className="mt-1 block w-full border-sand-300 rounded-md shadow-sm focus:ring-ocean-500 focus:border-ocean-500"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">
+                  <label className="block text-sm font-medium text-ink-muted">
                     Description
                   </label>
                   <textarea
@@ -633,13 +633,13 @@ export default function ToursManagement() {
                     rows={3}
                     value={formData.description}
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                    className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                    className="mt-1 block w-full border-sand-300 rounded-md shadow-sm focus:ring-ocean-500 focus:border-ocean-500"
                   />
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">
+                    <label className="block text-sm font-medium text-ink-muted">
                       Prix (€)
                     </label>
                     <input
@@ -648,11 +648,11 @@ export default function ToursManagement() {
                       required
                       value={formData.price}
                       onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                      className="mt-1 block w-full border-sand-300 rounded-md shadow-sm focus:ring-ocean-500 focus:border-ocean-500"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">
+                    <label className="block text-sm font-medium text-ink-muted">
                       Durée
                     </label>
                     <input
@@ -661,13 +661,13 @@ export default function ToursManagement() {
                       value={formData.duration}
                       onChange={(e) => setFormData({ ...formData, duration: e.target.value })}
                       placeholder="ex: 1 jour, 2 jours"
-                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                      className="mt-1 block w-full border-sand-300 rounded-md shadow-sm focus:ring-ocean-500 focus:border-ocean-500"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">
+                  <label className="block text-sm font-medium text-ink-muted">
                     Points forts (un par ligne)
                   </label>
                   <textarea
@@ -675,21 +675,21 @@ export default function ToursManagement() {
                     value={formData.highlights}
                     onChange={(e) => setFormData({ ...formData, highlights: e.target.value })}
                     placeholder="Observation des baleines&#10;Plage paradisiaque&#10;Déjeuner traditionnel"
-                    className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                    className="mt-1 block w-full border-sand-300 rounded-md shadow-sm focus:ring-ocean-500 focus:border-ocean-500"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-ink-muted mb-2">
                     Images
                   </label>
 
                   {/* Input file pour upload */}
-                  <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md hover:border-blue-400 transition-colors">
+                  <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-sand-300 border-dashed rounded-md hover:border-ocean-500 transition-colors">
                     <div className="space-y-1 text-center">
-                      <Upload className="mx-auto h-12 w-12 text-gray-400" />
-                      <div className="flex text-sm text-gray-600">
-                        <label htmlFor="image-upload" className="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500">
+                      <Upload className="mx-auto h-12 w-12 text-ink-light" />
+                      <div className="flex text-sm text-ink-muted">
+                        <label htmlFor="image-upload" className="relative cursor-pointer bg-white rounded-md font-medium text-ocean-600 hover:text-ocean-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-ocean-500">
                           <span>Télécharger des images</span>
                           <input
                             id="image-upload"
@@ -704,7 +704,7 @@ export default function ToursManagement() {
                         </label>
                         <p className="pl-1">ou glissez-déposez</p>
                       </div>
-                      <p className="text-xs text-gray-500">
+                      <p className="text-xs text-ink-light">
                         PNG, JPG, GIF jusqu'à 10MB
                       </p>
                     </div>
@@ -715,7 +715,7 @@ export default function ToursManagement() {
                     <div className="mt-4 grid grid-cols-2 gap-4">
                       {images.map((image, index) => (
                         <div key={index} className="relative group">
-                          <div className="aspect-video bg-gray-200 rounded-md overflow-hidden">
+                          <div className="aspect-video bg-sand-200 rounded-md overflow-hidden">
                             <img
                               src={image.url}
                               alt={`Image ${index + 1}`}
@@ -731,7 +731,7 @@ export default function ToursManagement() {
                             type="button"
                             onClick={() => handleImageDelete(index)}
                             disabled={uploading}
-                            className="absolute top-2 right-2 p-1 bg-red-600 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-700"
+                            className="absolute top-2 right-2 p-1 bg-terracotta-600 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-terracotta-600"
                             title="Supprimer l'image"
                           >
                             <Trash2 className="h-4 w-4" />
@@ -754,9 +754,9 @@ export default function ToursManagement() {
                     id="is_active"
                     checked={formData.is_active}
                     onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
-                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                    className="h-4 w-4 text-ocean-600 focus:ring-ocean-500 border-sand-300 rounded"
                   />
-                  <label htmlFor="is_active" className="ml-2 block text-sm text-gray-900">
+                  <label htmlFor="is_active" className="ml-2 block text-sm text-ink">
                     Tour actif
                   </label>
                 </div>
@@ -764,11 +764,11 @@ export default function ToursManagement() {
             </div>
 
             {/* Footer - Fixed */}
-            <div className="border-t p-6 bg-gray-50 flex justify-end space-x-3 flex-shrink-0">
+            <div className="border-t p-6 bg-sand-50 flex justify-end space-x-3 flex-shrink-0">
               <button
                 type="button"
                 onClick={resetForm}
-                className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                className="px-4 py-2 border border-sand-300 rounded-md shadow-sm text-sm font-medium text-ink-muted bg-white hover:bg-sand-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ocean-500"
               >
                 Annuler
               </button>
@@ -776,7 +776,7 @@ export default function ToursManagement() {
                 type="submit"
                 form="tour-form"
                 disabled={uploading}
-                className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-ocean-600 hover:bg-ocean-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ocean-500 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {uploading ? 'Enregistrement...' : (editingTour ? 'Mettre à jour' : 'Créer')}
               </button>

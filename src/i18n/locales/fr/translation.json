@@ -157,6 +157,17 @@
             "pickTo": "Choisir l'arrivée",
             "customTime": "Heure de départ souhaitée",
             "customEstimate": "Prix estimé du trajet",
+            "map": {
+                "loading": "Chargement de la carte…",
+                "hintFrom": "Touchez la carte pour placer le point de départ.",
+                "hintTo": "Touchez la carte pour placer le point d'arrivée.",
+                "from": "Départ",
+                "to": "Arrivée",
+                "notSet": "Pas encore choisi",
+                "calculating": "Calcul de l'itinéraire…",
+                "route": "Itinéraire",
+                "straightLine": "Trajet à vol d'oiseau"
+            },
             "selectTour": "Choisir un circuit",
             "selectShuttle": "Choisir une navette",
             "selectPlaceholderTour": "Sélectionner un circuit",

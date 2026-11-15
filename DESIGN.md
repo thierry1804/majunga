@@ -17,10 +17,10 @@ colors:
 typography:
   display:
     fontFamily: "Fraunces, Georgia, serif"
-    fontSize: "clamp(2.25rem, 5vw, 3.5rem)"
+    fontSize: "clamp(3.25rem, 8vw, 5.5rem)"
     fontWeight: 600
-    lineHeight: 1.05
-    letterSpacing: "-0.02em"
+    lineHeight: 0.98
+    letterSpacing: "-0.03em"
   headline:
     fontFamily: "Fraunces, Georgia, serif"
     fontSize: "clamp(1.875rem, 4vw, 2.75rem)"
@@ -138,7 +138,7 @@ A warm coastal palette rooted in Majunga's sand, mangrove water, and laterite ea
 **Character:** Editorial warmth without luxury pretension. Fraunces gives headlines a local-guide personality; DM Sans keeps forms, tables, and nav readable under tropical sunlight on mobile.
 
 ### Hierarchy
-- **Display** (600, clamp 2.25–3.5rem, line-height 1.05): Hero H1 only. Italic terracotta for place names ("Majunga").
+- **Display** (600, clamp 3.25–5.5rem, line-height 0.98): Hero H1 only, set on two lines with the place name ("Majunga") in italic terracotta on its own line.
 - **Headline** (600, clamp 1.875–2.75rem, line-height 1.1): Section titles via `SectionHeader`. Fraunces.
 - **Title** (600, 1.25rem, line-height 1.3): Tour card titles, modal headers, table section labels.
 - **Body** (400, 1rem, line-height 1.625, max 65ch): Descriptions, form labels, footer copy. DM Sans.
@@ -193,6 +193,10 @@ Hybrid system: flat at rest, lifted on interaction. Depth between sections uses 
 ### Weather Widget (signature)
 - **Context:** Hero only. Purposeful glass: `bg-ocean-800/40 backdrop-blur-sm` over photography.
 - **Not reusable elsewhere.** No glassmorphism on admin or form surfaces.
+
+### Hero Scene (signature)
+- **BaobabScene** : illustration SVG en aplats par bandes (allée de baobabs, soleil terracotta coupé par l'horizon, pirogue), uniquement dans la palette ocean / terracotta / sand. Aucun dégradé ni photo, aucune dépendance réseau.
+- Sert aussi de repli (`SmartImage`) quand une photo manque ou ne charge pas. Les photos réelles, quand elles existent, passent avant.
 
 ### Section Dividers (signature)
 - SVG wave transitions between section background tones (hero→sand, sand→white, white→sand-100).

@@ -1090,6 +1090,15 @@ export async function deleteImage(filename: string): Promise<void> {
  */
 
 /**
+ * L'API renvoie soit une collection Hydra (`hydra:member` / `member`), soit un tableau JSON simple.
+ */
+function extractCollection<T>(collection: unknown): T[] {
+  if (Array.isArray(collection)) return collection as T[];
+  const c = (collection ?? {}) as Record<string, unknown>;
+  return ((c['hydra:member'] ?? c['member'] ?? []) as T[]);
+}
+
+/**
  * Récupère la collection de tous les paramètres du site
  */
 export async function getSiteSettings(): Promise<ApiSiteSetting[]> {
@@ -1098,8 +1107,8 @@ export async function getSiteSettings(): Promise<ApiSiteSetting[]> {
     headers: getHeaders(true),
   });
 
-  const collection = await handleResponse<any>(response);
-  return collection['hydra:member'] || collection['member'] || [];
+  const collection = await handleResponse<unknown>(response);
+  return extractCollection<ApiSiteSetting>(collection);
 }
 
 /**
@@ -1111,8 +1120,8 @@ export async function getPublicSiteSettings(): Promise<ApiSiteSetting[]> {
     headers: getHeaders(false), // Pas besoin d'authentification pour les paramètres publics
   });
 
-  const collection = await handleResponse<any>(response);
-  return collection['hydra:member'] || collection['member'] || [];
+  const collection = await handleResponse<unknown>(response);
+  return extractCollection<ApiSiteSetting>(collection);
 }
 
 export async function getPublicSiteSettingByKey(key: string): Promise<ApiSiteSetting | null> {

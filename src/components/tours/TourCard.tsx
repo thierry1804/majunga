@@ -3,6 +3,7 @@ import { Clock, MapPin, ChevronLeft, ChevronRight, ArrowUpRight } from 'lucide-r
 import { useTranslation } from 'react-i18next';
 import { Tour } from '../../types';
 import Button from '../ui/Button';
+import SmartImage from '../ui/SmartImage';
 
 interface TourCardProps {
   tour: Tour;
@@ -10,15 +11,12 @@ interface TourCardProps {
   featured?: boolean;
 }
 
-const PLACEHOLDER =
-  'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="300"%3E%3Crect width="400" height="300" fill="%23e8dcc8"/%3E%3Ctext x="50%25" y="50%25" text-anchor="middle" dy=".3em" fill="%238a8078" font-size="14"%3EImage%3C/text%3E%3C/svg%3E';
-
 export default function TourCard({ tour, onClick, featured = false }: TourCardProps) {
   const { t } = useTranslation();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   const displayImages =
-    tour.images && tour.images.length > 0 ? tour.images : [PLACEHOLDER];
+    tour.images && tour.images.length > 0 ? tour.images : [];
 
   const nextImage = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -40,14 +38,10 @@ export default function TourCard({ tour, onClick, featured = false }: TourCardPr
           className="relative overflow-hidden aspect-[16/10] md:aspect-auto md:min-h-[320px] w-full text-left"
           onClick={() => onClick(tour)}
         >
-          <img
+          <SmartImage
             src={displayImages[currentImageIndex]}
             alt={tour.title}
             className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
-            onError={(e) => {
-              (e.target as HTMLImageElement).src = PLACEHOLDER;
-            }}
-            loading="lazy"
           />
           <div className="absolute top-4 left-4 bg-ocean-700 text-sand-50 text-xs font-medium px-3 py-1 rounded-md">
             {t('tours.featured')}
@@ -100,14 +94,10 @@ export default function TourCard({ tour, onClick, featured = false }: TourCardPr
           className="block w-full h-full text-left"
           onClick={() => onClick(tour)}
         >
-          <img
+          <SmartImage
             src={displayImages[currentImageIndex]}
             alt={tour.title}
             className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04]"
-            onError={(e) => {
-              (e.target as HTMLImageElement).src = PLACEHOLDER;
-            }}
-            loading="lazy"
           />
         </button>
 
