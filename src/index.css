@@ -26,6 +26,27 @@
   ::selection {
     @apply bg-ocean-500/20 text-ocean-800;
   }
+
+  /* Détails de navigateur aux couleurs de la marque */
+  html {
+    scrollbar-color: #d4c4a8 #faf7f2;
+  }
+
+  input,
+  textarea,
+  select {
+    caret-color: #145555;
+    accent-color: #145555;
+  }
+
+  a {
+    text-underline-offset: 0.2em;
+  }
+
+  td,
+  th {
+    font-variant-numeric: tabular-nums;
+  }
 }
 
 @layer components {

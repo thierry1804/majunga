@@ -274,7 +274,7 @@ const FlightSchedule = () => {
     switch (status) {
       case 'scheduled': return 'text-ocean-700 bg-ocean-50';
       case 'delayed': return 'text-terracotta-600 bg-terracotta-50';
-      case 'cancelled': return 'text-red-700 bg-red-50';
+      case 'cancelled': return 'text-terracotta-600 bg-terracotta-50';
       case 'boarding': return 'text-ocean-600 bg-ocean-100';
       case 'departed': return 'text-ink-muted bg-sand-200';
       case 'arrived': return 'text-ocean-800 bg-ocean-50';
@@ -367,7 +367,7 @@ const FlightSchedule = () => {
           <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-ocean-600"></div>
         </div>
       ) : error ? (
-        <div className="text-center text-red-500 py-8">
+        <div className="text-center text-terracotta-500 py-8">
           <p>{error}</p>
         </div>
       ) : (

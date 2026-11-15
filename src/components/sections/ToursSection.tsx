@@ -66,11 +66,6 @@ export default function ToursSection() {
               description={t('tours.sectionDescription')}
             />
           </RevealOnScroll>
-          <RevealOnScroll className="lg:col-span-7 lg:flex lg:items-end lg:justify-end" delay={80}>
-            <p className="text-sm text-ink-muted max-w-md lg:text-right leading-relaxed">
-              {t('about.distinction')}
-            </p>
-          </RevealOnScroll>
         </div>
 
         {loading ? (

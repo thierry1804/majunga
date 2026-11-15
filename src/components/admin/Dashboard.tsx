@@ -140,7 +140,7 @@ export default function Dashboard() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-ocean-600"></div>
       </div>
     )
   }
@@ -149,8 +149,8 @@ export default function Dashboard() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
-        <p className="mt-1 text-sm text-gray-500">
+        <h1 className="text-2xl font-bold text-ink">Dashboard</h1>
+        <p className="mt-1 text-sm text-ink-light">
           Vue d'ensemble de votre activité MadaBooking
         </p>
       </div>
@@ -161,14 +161,14 @@ export default function Dashboard() {
           <div className="p-5">
             <div className="flex items-center">
               <div className="flex-shrink-0">
-                <MapPin className="h-6 w-6 text-blue-600" />
+                <MapPin className="h-6 w-6 text-ocean-600" />
               </div>
               <div className="ml-5 w-0 flex-1">
                 <dl>
-                  <dt className="text-sm font-medium text-gray-500 truncate">
+                  <dt className="text-sm font-medium text-ink-light truncate">
                     Tours actifs
                   </dt>
-                  <dd className="text-lg font-medium text-gray-900">
+                  <dd className="text-lg font-medium text-ink">
                     {stats.activeTours} / {stats.totalTours}
                   </dd>
                 </dl>
@@ -181,14 +181,14 @@ export default function Dashboard() {
           <div className="p-5">
             <div className="flex items-center">
               <div className="flex-shrink-0">
-                <Calendar className="h-6 w-6 text-green-600" />
+                <Calendar className="h-6 w-6 text-ocean-600" />
               </div>
               <div className="ml-5 w-0 flex-1">
                 <dl>
-                  <dt className="text-sm font-medium text-gray-500 truncate">
+                  <dt className="text-sm font-medium text-ink-light truncate">
                     Réservations
                   </dt>
-                  <dd className="text-lg font-medium text-gray-900">
+                  <dd className="text-lg font-medium text-ink">
                     {stats.totalBookings}
                   </dd>
                 </dl>
@@ -201,14 +201,14 @@ export default function Dashboard() {
           <div className="p-5">
             <div className="flex items-center">
               <div className="flex-shrink-0">
-                <DollarSign className="h-6 w-6 text-yellow-600" />
+                <DollarSign className="h-6 w-6 text-terracotta-500" />
               </div>
               <div className="ml-5 w-0 flex-1">
                 <dl>
-                  <dt className="text-sm font-medium text-gray-500 truncate">
+                  <dt className="text-sm font-medium text-ink-light truncate">
                     Chiffre d'affaires
                   </dt>
-                  <dd className="text-lg font-medium text-gray-900">
+                  <dd className="text-lg font-medium text-ink">
                     {formatCurrency(stats.totalRevenue)}
                   </dd>
                 </dl>
@@ -221,14 +221,14 @@ export default function Dashboard() {
           <div className="p-5">
             <div className="flex items-center">
               <div className="flex-shrink-0">
-                <Bus className="h-6 w-6 text-purple-600" />
+                <Bus className="h-6 w-6 text-ocean-600" />
               </div>
               <div className="ml-5 w-0 flex-1">
                 <dl>
-                  <dt className="text-sm font-medium text-gray-500 truncate">
+                  <dt className="text-sm font-medium text-ink-light truncate">
                     Navettes
                   </dt>
-                  <dd className="text-lg font-medium text-gray-900">
+                  <dd className="text-lg font-medium text-ink">
                     {stats.totalShuttles}
                   </dd>
                 </dl>
@@ -242,21 +242,21 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
         <div className="bg-white overflow-hidden shadow rounded-lg">
           <div className="p-5">
-            <h3 className="text-lg font-medium text-gray-900 mb-4">Statut des réservations</h3>
+            <h3 className="text-lg font-medium text-ink mb-4">Statut des réservations</h3>
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center">
-                  <div className="w-3 h-3 bg-yellow-400 rounded-full mr-3"></div>
-                  <span className="text-sm text-gray-600">En attente</span>
+                  <div className="w-3 h-3 bg-terracotta-400 rounded-full mr-3"></div>
+                  <span className="text-sm text-ink-muted">En attente</span>
                 </div>
-                <span className="text-sm font-medium text-gray-900">{stats.pendingBookings}</span>
+                <span className="text-sm font-medium text-ink">{stats.pendingBookings}</span>
               </div>
               <div className="flex items-center justify-between">
                 <div className="flex items-center">
-                  <div className="w-3 h-3 bg-green-400 rounded-full mr-3"></div>
-                  <span className="text-sm text-gray-600">Confirmées</span>
+                  <div className="w-3 h-3 bg-ocean-500 rounded-full mr-3"></div>
+                  <span className="text-sm text-ink-muted">Confirmées</span>
                 </div>
-                <span className="text-sm font-medium text-gray-900">{stats.confirmedBookings}</span>
+                <span className="text-sm font-medium text-ink">{stats.confirmedBookings}</span>
               </div>
             </div>
           </div>
@@ -264,23 +264,23 @@ export default function Dashboard() {
 
         <div className="bg-white overflow-hidden shadow rounded-lg">
           <div className="p-5">
-            <h3 className="text-lg font-medium text-gray-900 mb-4">Actions rapides</h3>
+            <h3 className="text-lg font-medium text-ink mb-4">Actions rapides</h3>
             <div className="space-y-2">
               <a
                 href="/admin/tours"
-                className="block w-full text-left px-3 py-2 text-sm text-blue-600 hover:bg-blue-50 rounded-md"
+                className="block w-full text-left px-3 py-2 text-sm text-ocean-600 hover:bg-ocean-50 rounded-md"
               >
                 Gérer les tours
               </a>
               <a
                 href="/admin/bookings"
-                className="block w-full text-left px-3 py-2 text-sm text-blue-600 hover:bg-blue-50 rounded-md"
+                className="block w-full text-left px-3 py-2 text-sm text-ocean-600 hover:bg-ocean-50 rounded-md"
               >
                 Voir les réservations
               </a>
               <a
                 href="/admin/shuttles"
-                className="block w-full text-left px-3 py-2 text-sm text-blue-600 hover:bg-blue-50 rounded-md"
+                className="block w-full text-left px-3 py-2 text-sm text-ocean-600 hover:bg-ocean-50 rounded-md"
               >
                 Gérer les navettes
               </a>
@@ -292,51 +292,51 @@ export default function Dashboard() {
       {/* Recent Bookings */}
       <div className="bg-white shadow rounded-lg">
         <div className="px-4 py-5 sm:p-6">
-          <h3 className="text-lg font-medium text-gray-900 mb-4">Réservations récentes</h3>
+          <h3 className="text-lg font-medium text-ink mb-4">Réservations récentes</h3>
           {stats.recentBookings.length > 0 ? (
             <div className="overflow-hidden">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
+              <table className="min-w-full divide-y divide-sand-200">
+                <thead className="bg-sand-50">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-ink-light uppercase tracking-wider">
                       Tour
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-ink-light uppercase tracking-wider">
                       Client
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-ink-light uppercase tracking-wider">
                       Date
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-ink-light uppercase tracking-wider">
                       Participants
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-ink-light uppercase tracking-wider">
                       Statut
                     </th>
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
+                <tbody className="bg-white divide-y divide-sand-200">
                   {stats.recentBookings.map((booking) => (
                     <tr key={booking.id}>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-ink">
                         Tour ID: {booking.tour_id}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-ink-light">
                         {booking.user_name}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-ink-light">
                         {formatDate(booking.booking_date)}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-ink-light">
                         {booking.participants}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
                           booking.status === 'confirmed' 
-                            ? 'bg-green-100 text-green-800'
+                            ? 'bg-ocean-100 text-ocean-800'
                             : booking.status === 'pending'
-                            ? 'bg-yellow-100 text-yellow-800'
-                            : 'bg-red-100 text-red-800'
+                            ? 'bg-terracotta-100 text-terracotta-600'
+                            : 'bg-terracotta-100 text-terracotta-600'
                         }`}>
                           {booking.status === 'confirmed' ? 'Confirmée' : 
                            booking.status === 'pending' ? 'En attente' : 'Annulée'}
@@ -348,7 +348,7 @@ export default function Dashboard() {
               </table>
             </div>
           ) : (
-            <p className="text-gray-500 text-center py-4">Aucune réservation récente</p>
+            <p className="text-ink-light text-center py-4">Aucune réservation récente</p>
           )}
         </div>
       </div>

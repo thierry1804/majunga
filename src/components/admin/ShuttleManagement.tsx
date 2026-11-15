@@ -188,7 +188,7 @@ export default function ShuttleManagement() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-ocean-600"></div>
       </div>
     )
   }
@@ -198,14 +198,14 @@ export default function ShuttleManagement() {
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Gestion des Navettes</h1>
-          <p className="mt-1 text-sm text-gray-500">
+          <h1 className="text-2xl font-bold text-ink">Gestion des Navettes</h1>
+          <p className="mt-1 text-sm text-ink-light">
             Gérez les horaires et tarifs des navettes
           </p>
         </div>
         <button
           onClick={() => setShowModal(true)}
-          className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+          className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-ocean-600 hover:bg-ocean-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ocean-500"
         >
           <Plus className="h-4 w-4 mr-2" />
           Nouvel horaire
@@ -218,14 +218,14 @@ export default function ShuttleManagement() {
           <div className="p-5">
             <div className="flex items-center">
               <div className="flex-shrink-0">
-                <Bus className="h-6 w-6 text-blue-600" />
+                <Bus className="h-6 w-6 text-ocean-600" />
               </div>
               <div className="ml-5 w-0 flex-1">
                 <dl>
-                  <dt className="text-sm font-medium text-gray-500 truncate">
+                  <dt className="text-sm font-medium text-ink-light truncate">
                     Total horaires
                   </dt>
-                  <dd className="text-lg font-medium text-gray-900">
+                  <dd className="text-lg font-medium text-ink">
                     {schedules.length}
                   </dd>
                 </dl>
@@ -238,14 +238,14 @@ export default function ShuttleManagement() {
           <div className="p-5">
             <div className="flex items-center">
               <div className="flex-shrink-0">
-                <Eye className="h-6 w-6 text-green-600" />
+                <Eye className="h-6 w-6 text-ocean-600" />
               </div>
               <div className="ml-5 w-0 flex-1">
                 <dl>
-                  <dt className="text-sm font-medium text-gray-500 truncate">
+                  <dt className="text-sm font-medium text-ink-light truncate">
                     Horaires actifs
                   </dt>
-                  <dd className="text-lg font-medium text-gray-900">
+                  <dd className="text-lg font-medium text-ink">
                     {activeSchedules.length}
                   </dd>
                 </dl>
@@ -258,14 +258,14 @@ export default function ShuttleManagement() {
           <div className="p-5">
             <div className="flex items-center">
               <div className="flex-shrink-0">
-                <EyeOff className="h-6 w-6 text-gray-400" />
+                <EyeOff className="h-6 w-6 text-ink-light" />
               </div>
               <div className="ml-5 w-0 flex-1">
                 <dl>
-                  <dt className="text-sm font-medium text-gray-500 truncate">
+                  <dt className="text-sm font-medium text-ink-light truncate">
                     Horaires inactifs
                   </dt>
-                  <dd className="text-lg font-medium text-gray-900">
+                  <dd className="text-lg font-medium text-ink">
                     {inactiveSchedules.length}
                   </dd>
                 </dl>
@@ -278,11 +278,11 @@ export default function ShuttleManagement() {
       {/* Active Schedules */}
       <div className="bg-white shadow overflow-hidden sm:rounded-md">
         <div className="px-4 py-5 sm:px-6">
-          <h3 className="text-lg leading-6 font-medium text-gray-900">
+          <h3 className="text-lg leading-6 font-medium text-ink">
             Horaires actifs ({activeSchedules.length})
           </h3>
         </div>
-        <ul className="divide-y divide-gray-200">
+        <ul className="divide-y divide-sand-200">
           {activeSchedules.map((schedule) => (
             <li key={schedule.id}>
               <div className="px-4 py-4 sm:px-6">
@@ -291,47 +291,47 @@ export default function ShuttleManagement() {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-4">
                         <div className="flex items-center space-x-2">
-                          <Clock className="h-5 w-5 text-gray-400" />
-                          <span className="text-sm font-medium text-gray-900">
+                          <Clock className="h-5 w-5 text-ink-light" />
+                          <span className="text-sm font-medium text-ink">
                             {formatTime(schedule.departure_time)}
                           </span>
                         </div>
                         <div className="flex items-center space-x-2">
-                          <MapPin className="h-5 w-5 text-gray-400" />
-                          <span className="text-sm text-gray-600">
+                          <MapPin className="h-5 w-5 text-ink-light" />
+                          <span className="text-sm text-ink-muted">
                             {schedule.route}
                           </span>
                         </div>
-                        <div className="text-sm text-gray-500">
+                        <div className="text-sm text-ink-light">
                           Arrivée: {formatTime(schedule.arrival_time)}
                         </div>
-                        <div className="text-sm text-gray-500">
+                        <div className="text-sm text-ink-light">
                           Durée: {getDuration(schedule.departure_time, schedule.arrival_time)}
                         </div>
                       </div>
                       <div className="flex items-center space-x-4">
                         <div className="text-right">
-                          <p className="text-lg font-semibold text-blue-600">
+                          <p className="text-lg font-semibold text-ocean-600">
                             {formatCurrency(schedule.price)}
                           </p>
                         </div>
                         <div className="flex space-x-2">
                           <button
                             onClick={() => toggleActive(schedule)}
-                            className="p-2 text-green-600 hover:bg-green-50 rounded-full"
+                            className="p-2 text-ocean-600 hover:bg-ocean-50 rounded-full"
                             title="Désactiver"
                           >
                             <Eye className="h-4 w-4" />
                           </button>
                           <button
                             onClick={() => handleEdit(schedule)}
-                            className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-full"
+                            className="p-2 text-ink-light hover:text-ocean-600 hover:bg-ocean-50 rounded-full"
                           >
                             <Edit className="h-4 w-4" />
                           </button>
                           <button
                             onClick={() => handleDelete(schedule.id)}
-                            className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-full"
+                            className="p-2 text-ink-light hover:text-terracotta-600 hover:bg-terracotta-50 rounded-full"
                           >
                             <Trash2 className="h-4 w-4" />
                           </button>
@@ -350,57 +350,57 @@ export default function ShuttleManagement() {
       {inactiveSchedules.length > 0 && (
         <div className="bg-white shadow overflow-hidden sm:rounded-md">
           <div className="px-4 py-5 sm:px-6">
-            <h3 className="text-lg leading-6 font-medium text-gray-900">
+            <h3 className="text-lg leading-6 font-medium text-ink">
               Horaires inactifs ({inactiveSchedules.length})
             </h3>
           </div>
-          <ul className="divide-y divide-gray-200">
+          <ul className="divide-y divide-sand-200">
             {inactiveSchedules.map((schedule) => (
-              <li key={schedule.id} className="bg-gray-50">
+              <li key={schedule.id} className="bg-sand-50">
                 <div className="px-4 py-4 sm:px-6">
                   <div className="flex items-center justify-between">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-4">
                           <div className="flex items-center space-x-2">
-                            <Clock className="h-5 w-5 text-gray-400" />
-                            <span className="text-sm font-medium text-gray-500">
+                            <Clock className="h-5 w-5 text-ink-light" />
+                            <span className="text-sm font-medium text-ink-light">
                               {formatTime(schedule.departure_time)}
                             </span>
                           </div>
                           <div className="flex items-center space-x-2">
-                            <MapPin className="h-5 w-5 text-gray-400" />
-                            <span className="text-sm text-gray-500">
+                            <MapPin className="h-5 w-5 text-ink-light" />
+                            <span className="text-sm text-ink-light">
                               {schedule.route}
                             </span>
                           </div>
-                          <div className="text-sm text-gray-400">
+                          <div className="text-sm text-ink-light">
                             Arrivée: {formatTime(schedule.arrival_time)}
                           </div>
                         </div>
                         <div className="flex items-center space-x-4">
                           <div className="text-right">
-                            <p className="text-lg font-semibold text-gray-400">
+                            <p className="text-lg font-semibold text-ink-light">
                               {formatCurrency(schedule.price)}
                             </p>
                           </div>
                           <div className="flex space-x-2">
                             <button
                               onClick={() => toggleActive(schedule)}
-                              className="p-2 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-full"
+                              className="p-2 text-ink-light hover:text-ocean-600 hover:bg-ocean-50 rounded-full"
                               title="Activer"
                             >
                               <EyeOff className="h-4 w-4" />
                             </button>
                             <button
                               onClick={() => handleEdit(schedule)}
-                              className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-full"
+                              className="p-2 text-ink-light hover:text-ocean-600 hover:bg-ocean-50 rounded-full"
                             >
                               <Edit className="h-4 w-4" />
                             </button>
                             <button
                               onClick={() => handleDelete(schedule.id)}
-                              className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-full"
+                              className="p-2 text-ink-light hover:text-terracotta-600 hover:bg-terracotta-50 rounded-full"
                             >
                               <Trash2 className="h-4 w-4" />
                             </button>
@@ -418,9 +418,9 @@ export default function ShuttleManagement() {
 
       {schedules.length === 0 && (
         <div className="text-center py-12">
-          <Bus className="mx-auto h-12 w-12 text-gray-400" />
-          <h3 className="mt-2 text-sm font-medium text-gray-900">Aucun horaire</h3>
-          <p className="mt-1 text-sm text-gray-500">
+          <Bus className="mx-auto h-12 w-12 text-ink-light" />
+          <h3 className="mt-2 text-sm font-medium text-ink">Aucun horaire</h3>
+          <p className="mt-1 text-sm text-ink-light">
             Commencez par créer un nouvel horaire de navette.
           </p>
         </div>
@@ -431,7 +431,7 @@ export default function ShuttleManagement() {
         <>
           {/* Overlay */}
           <div
-            className="fixed inset-0 bg-gray-600 bg-opacity-50 z-50 transition-opacity"
+            className="fixed inset-0 bg-ink-muted bg-opacity-50 z-50 transition-opacity"
             onClick={resetForm}
           />
 
@@ -439,12 +439,12 @@ export default function ShuttleManagement() {
           <div className="fixed right-0 top-0 bottom-0 z-50 w-full max-w-2xl bg-white shadow-xl flex flex-col transform transition-transform duration-300 ease-in-out">
             {/* Header - Fixed */}
             <div className="flex justify-between items-center p-6 border-b flex-shrink-0 bg-white">
-              <h3 className="text-lg font-medium text-gray-900">
+              <h3 className="text-lg font-medium text-ink">
                 {editingSchedule ? 'Modifier l\'horaire' : 'Nouvel horaire'}
               </h3>
               <button
                 onClick={resetForm}
-                className="text-gray-400 hover:text-gray-600 transition-colors"
+                className="text-ink-light hover:text-ink-muted transition-colors"
                 aria-label="Fermer"
               >
                 <X className="h-6 w-6" />
@@ -455,7 +455,7 @@ export default function ShuttleManagement() {
             <div className="overflow-y-auto flex-grow p-6">
               <form id="shuttle-form" onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">
+                  <label className="block text-sm font-medium text-ink-muted">
                     Itinéraire
                   </label>
                   <input
@@ -464,60 +464,60 @@ export default function ShuttleManagement() {
                     value={formData.route}
                     onChange={(e) => setFormData({ ...formData, route: e.target.value })}
                     placeholder="ex: Majunga - Antananarivo"
-                    className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                    className="mt-1 block w-full border-sand-300 rounded-md shadow-sm focus:ring-ocean-500 focus:border-ocean-500"
                   />
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">Départ (libellé)</label>
+                    <label className="block text-sm font-medium text-ink-muted">Départ (libellé)</label>
                     <input
                       type="text"
                       value={formData.from}
                       onChange={(e) => setFormData({ ...formData, from: e.target.value })}
                       placeholder="ex: Aéroport"
-                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                      className="mt-1 block w-full border-sand-300 rounded-md shadow-sm focus:ring-ocean-500 focus:border-ocean-500"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">Arrivée (libellé)</label>
+                    <label className="block text-sm font-medium text-ink-muted">Arrivée (libellé)</label>
                     <input
                       type="text"
                       value={formData.to}
                       onChange={(e) => setFormData({ ...formData, to: e.target.value })}
                       placeholder="ex: Majunga Centre"
-                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                      className="mt-1 block w-full border-sand-300 rounded-md shadow-sm focus:ring-ocean-500 focus:border-ocean-500"
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">Direction</label>
+                    <label className="block text-sm font-medium text-ink-muted">Direction</label>
                     <select
                       value={formData.direction}
                       onChange={(e) => setFormData({ ...formData, direction: e.target.value as 'airport-to-city' | 'city-to-airport' })}
-                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                      className="mt-1 block w-full border-sand-300 rounded-md shadow-sm focus:ring-ocean-500 focus:border-ocean-500"
                     >
                       <option value="airport-to-city">Aéroport → Ville</option>
                       <option value="city-to-airport">Ville → Aéroport</option>
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">Places disponibles</label>
+                    <label className="block text-sm font-medium text-ink-muted">Places disponibles</label>
                     <input
                       type="number"
                       min={0}
                       value={formData.available_seats}
                       onChange={(e) => setFormData({ ...formData, available_seats: e.target.value })}
-                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                      className="mt-1 block w-full border-sand-300 rounded-md shadow-sm focus:ring-ocean-500 focus:border-ocean-500"
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">
+                    <label className="block text-sm font-medium text-ink-muted">
                       Heure de départ
                     </label>
                     <input
@@ -525,11 +525,11 @@ export default function ShuttleManagement() {
                       required
                       value={formData.departure_time}
                       onChange={(e) => setFormData({ ...formData, departure_time: e.target.value })}
-                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                      className="mt-1 block w-full border-sand-300 rounded-md shadow-sm focus:ring-ocean-500 focus:border-ocean-500"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">
+                    <label className="block text-sm font-medium text-ink-muted">
                       Heure d'arrivée
                     </label>
                     <input
@@ -537,13 +537,13 @@ export default function ShuttleManagement() {
                       required
                       value={formData.arrival_time}
                       onChange={(e) => setFormData({ ...formData, arrival_time: e.target.value })}
-                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                      className="mt-1 block w-full border-sand-300 rounded-md shadow-sm focus:ring-ocean-500 focus:border-ocean-500"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">
+                  <label className="block text-sm font-medium text-ink-muted">
                     Prix (€)
                   </label>
                   <input
@@ -552,7 +552,7 @@ export default function ShuttleManagement() {
                     required
                     value={formData.price}
                     onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                    className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                    className="mt-1 block w-full border-sand-300 rounded-md shadow-sm focus:ring-ocean-500 focus:border-ocean-500"
                   />
                 </div>
 
@@ -562,9 +562,9 @@ export default function ShuttleManagement() {
                     id="is_active"
                     checked={formData.is_active}
                     onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
-                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                    className="h-4 w-4 text-ocean-600 focus:ring-ocean-500 border-sand-300 rounded"
                   />
-                  <label htmlFor="is_active" className="ml-2 block text-sm text-gray-900">
+                  <label htmlFor="is_active" className="ml-2 block text-sm text-ink">
                     Horaire actif
                   </label>
                 </div>
@@ -572,18 +572,18 @@ export default function ShuttleManagement() {
             </div>
 
             {/* Footer - Fixed */}
-            <div className="border-t p-6 bg-gray-50 flex justify-end space-x-3 flex-shrink-0">
+            <div className="border-t p-6 bg-sand-50 flex justify-end space-x-3 flex-shrink-0">
               <button
                 type="button"
                 onClick={resetForm}
-                className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                className="px-4 py-2 border border-sand-300 rounded-md shadow-sm text-sm font-medium text-ink-muted bg-white hover:bg-sand-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ocean-500"
               >
                 Annuler
               </button>
               <button
                 type="submit"
                 form="shuttle-form"
-                className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-ocean-600 hover:bg-ocean-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ocean-500"
               >
                 {editingSchedule ? 'Mettre à jour' : 'Créer'}
               </button>

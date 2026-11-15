@@ -157,6 +157,17 @@
             "pickTo": "Scegli l'arrivo",
             "customTime": "Orario di partenza desiderato",
             "customEstimate": "Prezzo stimato del tragitto",
+            "map": {
+                "loading": "Caricamento della mappa…",
+                "hintFrom": "Tocca la mappa per indicare la partenza.",
+                "hintTo": "Tocca la mappa per indicare l'arrivo.",
+                "from": "Partenza",
+                "to": "Arrivo",
+                "notSet": "Non ancora scelto",
+                "calculating": "Calcolo del percorso…",
+                "route": "Percorso",
+                "straightLine": "Distanza in linea d'aria"
+            },
             "selectTour": "Scegli un tour",
             "selectShuttle": "Scegli una navetta",
             "selectPlaceholderTour": "Seleziona un tour",

@@ -157,6 +157,17 @@
             "pickTo": "Pick drop-off",
             "customTime": "Preferred departure time",
             "customEstimate": "Estimated trip price",
+            "map": {
+                "loading": "Loading map…",
+                "hintFrom": "Tap the map to set the pick-up point.",
+                "hintTo": "Tap the map to set the drop-off point.",
+                "from": "Pick-up",
+                "to": "Drop-off",
+                "notSet": "Not chosen yet",
+                "calculating": "Calculating route…",
+                "route": "Route",
+                "straightLine": "Straight-line distance"
+            },
             "selectTour": "Choose a tour",
             "selectShuttle": "Choose a shuttle",
             "selectPlaceholderTour": "Select a tour",

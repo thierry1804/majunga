@@ -29,28 +29,28 @@ export default function AdminTest() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+    <div className="min-h-screen bg-sand-50 flex items-center justify-center">
       <div className="max-w-md w-full bg-white rounded-lg shadow-md p-6">
-        <h1 className="text-2xl font-bold text-gray-900 mb-4">
+        <h1 className="text-2xl font-bold text-ink mb-4">
           Test Interface Admin
         </h1>
         
         <div className="space-y-4">
           <div>
-            <h2 className="text-lg font-medium text-gray-700">Statut de connexion :</h2>
-            <p className="text-sm text-gray-600">{connectionStatus}</p>
+            <h2 className="text-lg font-medium text-ink-muted">Statut de connexion :</h2>
+            <p className="text-sm text-ink-muted">{connectionStatus}</p>
           </div>
 
           {error && (
-            <div className="bg-red-50 border border-red-200 rounded-md p-4">
-              <h3 className="text-sm font-medium text-red-800">Erreur :</h3>
-              <p className="text-sm text-red-700 mt-1">{error}</p>
+            <div className="bg-terracotta-50 border border-terracotta-100 rounded-md p-4">
+              <h3 className="text-sm font-medium text-terracotta-600">Erreur :</h3>
+              <p className="text-sm text-terracotta-600 mt-1">{error}</p>
             </div>
           )}
 
-          <div className="bg-blue-50 border border-blue-200 rounded-md p-4">
-            <h3 className="text-sm font-medium text-blue-800">Configuration API :</h3>
-            <div className="text-sm text-blue-700 mt-1 space-y-1">
+          <div className="bg-ocean-50 border border-ocean-200 rounded-md p-4">
+            <h3 className="text-sm font-medium text-ocean-800">Configuration API :</h3>
+            <div className="text-sm text-ocean-700 mt-1 space-y-1">
               <p>API_URL: {import.meta.env.VITE_MADABOOKING_API_URL || '✅ Auto (dev/prod)'}</p>
               <p>Mode: {import.meta.env.DEV ? '🔧 Développement' : '🚀 Production'}</p>
             </div>
@@ -59,13 +59,13 @@ export default function AdminTest() {
           <div className="flex space-x-3">
             <button
               onClick={testApiConnection}
-              className="flex-1 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
+              className="flex-1 bg-ocean-600 text-white px-4 py-2 rounded-md hover:bg-ocean-700"
             >
               Tester à nouveau
             </button>
             <a
               href="/"
-              className="flex-1 bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700 text-center"
+              className="flex-1 bg-ink-muted text-white px-4 py-2 rounded-md hover:bg-ink-muted text-center"
             >
               Retour au site
             </a>
