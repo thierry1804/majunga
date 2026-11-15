@@ -111,7 +111,12 @@ export default function BookingForm() {
     if (!list.some((item) => item.id === selection.id)) return;
 
     appliedSelection.current = selection.nonce;
-    setFormData((prev) => ({ ...prev, service: selection.service, serviceId: selection.id }));
+    setFormData((prev) => ({
+      ...prev,
+      service: selection.service,
+      serviceId: selection.id,
+      ...(selection.date ? { date: selection.date } : {}),
+    }));
     setPaymentStep(false);
     setSuccess(null);
     setErrorMessage(null);
