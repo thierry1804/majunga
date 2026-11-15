@@ -114,7 +114,7 @@
                 "departure": "Départ",
                 "arrival": "Arrivée",
                 "price": "Prix",
-                "availableSeats": "Places",
+                "availableSeats": "Places par départ",
                 "action": "Action"
             },
             "noSchedules": "Aucun horaire disponible pour cette direction.",
@@ -198,6 +198,13 @@
             "shuttleRoute": "Navette {{from}} vers {{to}}",
             "perPerson": "/ pers.",
             "seatsAvailable": "{{count}} places",
+            "seatsLeft_one": "{{count}} place restante",
+            "seatsLeft_other": "{{count}} places restantes",
+            "seatsOnly_one": "Il ne reste qu'{{count}} place pour cette date.",
+            "seatsOnly_other": "Il ne reste que {{count}} places pour cette date.",
+            "seatsFull": "Navette complète à cette date : choisissez un autre départ ou un autre jour.",
+            "seatsDeparted": "Départ déjà passé aujourd'hui",
+            "seatsPickDate": "Choisissez une date pour voir les places restantes.",
             "errors": {
                 "name": "Veuillez entrer votre nom.",
                 "email": "Veuillez entrer une adresse email valide.",

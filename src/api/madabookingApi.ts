@@ -257,6 +257,25 @@ export async function getPublicShuttleSchedules(direction?: string): Promise<Api
   return handleResponse<ApiShuttleSchedule[]>(response);
 }
 
+export interface ApiShuttleAvailability {
+  id: string;
+  capacity: number;
+  reserved: number;
+  remaining: number;
+  /** Vrai si la date est aujourd'hui et que le départ est déjà passé. */
+  departed: boolean;
+}
+
+/** Places restantes de chaque navette pour un jour donné (AAAA-MM-JJ). */
+export async function getShuttleAvailability(date: string): Promise<ApiShuttleAvailability[]> {
+  const response = await fetch(`${API_BASE_URL}/public/shuttle_schedules/availability?date=${encodeURIComponent(date)}`, {
+    method: 'GET',
+    headers: getPublicHeaders(),
+  });
+
+  return handleResponse<ApiShuttleAvailability[]>(response);
+}
+
 export async function createPublicBooking(
   booking: Omit<ApiBooking, 'id' | '@id' | '@type' | 'createdAt' | 'updatedAt'>
 ): Promise<ApiBooking> {

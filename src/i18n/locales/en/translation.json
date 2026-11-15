@@ -114,7 +114,7 @@
                 "departure": "Departure",
                 "arrival": "Arrival",
                 "price": "Price",
-                "availableSeats": "Seats",
+                "availableSeats": "Seats per departure",
                 "action": "Action"
             },
             "noSchedules": "No schedules available for this direction.",
@@ -198,6 +198,13 @@
             "shuttleRoute": "Shuttle {{from}} to {{to}}",
             "perPerson": "/ person",
             "seatsAvailable": "{{count}} seats",
+            "seatsLeft_one": "{{count}} seat left",
+            "seatsLeft_other": "{{count}} seats left",
+            "seatsOnly_one": "Only {{count}} seat is left on this date.",
+            "seatsOnly_other": "Only {{count}} seats are left on this date.",
+            "seatsFull": "This shuttle is full on this date: choose another departure or another day.",
+            "seatsDeparted": "Departure already left today",
+            "seatsPickDate": "Choose a date to see the seats left.",
             "errors": {
                 "name": "Please enter your name.",
                 "email": "Please enter a valid email address.",
