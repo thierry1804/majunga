@@ -4,6 +4,7 @@ import {
   getBookings,
   getShuttleSchedules
 } from '../../api/madabookingApi'
+import { Link } from 'react-router-dom'
 import { 
   Users, 
   MapPin, 
@@ -266,24 +267,24 @@ export default function Dashboard() {
           <div className="p-5">
             <h3 className="text-lg font-medium text-ink mb-4">Actions rapides</h3>
             <div className="space-y-2">
-              <a
-                href="/admin/tours"
+              <Link
+                to="/admin/tours"
                 className="block w-full text-left px-3 py-2 text-sm text-ocean-600 hover:bg-ocean-50 rounded-md"
               >
                 Gérer les tours
-              </a>
-              <a
-                href="/admin/bookings"
+              </Link>
+              <Link
+                to="/admin/bookings"
                 className="block w-full text-left px-3 py-2 text-sm text-ocean-600 hover:bg-ocean-50 rounded-md"
               >
                 Voir les réservations
-              </a>
-              <a
-                href="/admin/shuttles"
+              </Link>
+              <Link
+                to="/admin/shuttles"
                 className="block w-full text-left px-3 py-2 text-sm text-ocean-600 hover:bg-ocean-50 rounded-md"
               >
                 Gérer les navettes
-              </a>
+              </Link>
             </div>
           </div>
         </div>
