@@ -5,6 +5,7 @@ import Button from '../ui/Button';
 import WeatherWidget from '../WeatherWidget';
 import HeroBackground from '../motion/HeroBackground';
 import HeroEntrance from '../motion/HeroEntrance';
+import NextDepartures from './NextDepartures';
 import { useHeroScrollFade } from '../../hooks/useHeroScrollFade';
 
 export default function HeroSection() {
@@ -32,7 +33,8 @@ export default function HeroSection() {
       </div>
 
       <Container className="relative z-10 w-full pt-28 pb-16 md:pb-20 md:pt-32">
-        <div style={contentFadeStyle} className="max-w-xl lg:max-w-2xl">
+        <div style={contentFadeStyle} className="grid grid-cols-1 lg:grid-cols-12 items-end gap-10 lg:gap-8">
+          <div className="lg:col-span-7 max-w-xl lg:max-w-2xl">
           <HeroEntrance delay={0}>
             <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mb-6">
               <p className="section-label text-ocean-200 tracking-[0.16em]">
@@ -81,7 +83,8 @@ export default function HeroSection() {
               </Button>
             </div>
           </HeroEntrance>
-
+          </div>
+          <NextDepartures />
         </div>
       </Container>
 

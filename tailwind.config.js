@@ -38,7 +38,7 @@ export default {
         sans: ['"DM Sans"', 'system-ui', 'sans-serif'],
       },
       maxWidth: {
-        content: '72rem',
+        content: '84rem',
       },
       borderRadius: {
         DEFAULT: '0.5rem',

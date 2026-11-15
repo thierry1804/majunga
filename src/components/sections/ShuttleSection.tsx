@@ -63,7 +63,7 @@ export default function ShuttleSection() {
   return (
     <section id="shuttle" className="section-padding bg-sand-100">
       <Container>
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 mb-12">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 mb-4">
           <RevealOnScroll className="lg:col-span-6">
             <SectionHeader
               label={t('shuttle.sectionSubtitle')}
@@ -97,7 +97,7 @@ export default function ShuttleSection() {
         </div>
 
         <RevealOnScroll delay={100}>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-sand-300 rounded-xl overflow-hidden mb-12 md:mb-14 border border-sand-300">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-sand-300 rounded-xl overflow-hidden mb-8 md:mb-10 border border-sand-300">
             {highlights.map(({ icon: Icon, title, description }) => (
               <div key={title} className="bg-sand-50 p-5 md:p-6">
                 <Icon size={18} className="text-ocean-600 mb-3" strokeWidth={1.75} />
@@ -108,9 +108,10 @@ export default function ShuttleSection() {
           </div>
         </RevealOnScroll>
 
-        <RevealOnScroll delay={140}>
-          <div className="mb-12 md:mb-14">
-            <div className="flex items-center gap-2 mb-6">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start">
+        <RevealOnScroll className="lg:col-span-5" delay={140}>
+          <div>
+            <div className="flex items-center gap-2 mb-5">
               <Plane size={18} className="text-ocean-600" />
               <h3 className="font-display text-xl font-semibold text-ink">
                 {direction === 'airport-to-city'
@@ -181,19 +182,19 @@ export default function ShuttleSection() {
                   <table className="w-full text-sm">
                     <thead>
                       <tr className="border-b border-sand-300 text-left bg-sand-100/50">
-                        <th className="px-5 py-3.5 font-medium text-ink-muted text-xs uppercase tracking-wide">
+                        <th className="px-4 py-3.5 font-medium text-ink-muted text-xs uppercase tracking-wide">
                           {t('shuttle.schedule.columns.departure')}
                         </th>
-                        <th className="px-5 py-3.5 font-medium text-ink-muted text-xs uppercase tracking-wide">
+                        <th className="px-4 py-3.5 font-medium text-ink-muted text-xs uppercase tracking-wide">
                           {t('shuttle.schedule.columns.arrival')}
                         </th>
-                        <th className="px-5 py-3.5 font-medium text-ink-muted text-xs uppercase tracking-wide">
+                        <th className="px-4 py-3.5 font-medium text-ink-muted text-xs uppercase tracking-wide">
                           {t('shuttle.schedule.columns.price')}
                         </th>
-                        <th className="px-5 py-3.5 font-medium text-ink-muted text-xs uppercase tracking-wide">
+                        <th className="px-4 py-3.5 font-medium text-ink-muted text-xs uppercase tracking-wide">
                           {t('shuttle.schedule.columns.availableSeats')}
                         </th>
-                        <th className="px-5 py-3.5 font-medium text-ink-muted text-xs uppercase tracking-wide">
+                        <th className="px-4 py-3.5 font-medium text-ink-muted text-xs uppercase tracking-wide">
                           {t('shuttle.schedule.columns.action')}
                         </th>
                       </tr>
@@ -204,23 +205,23 @@ export default function ShuttleSection() {
                           key={schedule.id}
                           className="border-b border-sand-200 last:border-0 hover:bg-white/70 transition-colors"
                         >
-                          <td className="px-5 py-4 font-medium text-ink tabular-nums">
+                          <td className="px-4 py-4 font-medium text-ink tabular-nums">
                             {schedule.departureTime}
                           </td>
-                          <td className="px-5 py-4 text-ink-muted tabular-nums">
+                          <td className="px-4 py-4 text-ink-muted tabular-nums">
                             {schedule.arrivalTime}
                           </td>
-                          <td className="px-5 py-4 font-medium text-ocean-700">
+                          <td className="px-4 py-4 font-display text-lg font-semibold text-terracotta-500">
                             {schedule.price} {schedule.currency}
                           </td>
-                          <td className="px-5 py-4">
+                          <td className="px-4 py-4">
                             {schedule.availableSeats > 0 ? (
                               <span className="text-ocean-700">{schedule.availableSeats}</span>
                             ) : (
                               <span className="text-terracotta-500">{t('shuttle.schedule.full')}</span>
                             )}
                           </td>
-                          <td className="px-5 py-4">
+                          <td className="px-4 py-4">
                             <Button
                               size="sm"
                               variant="outline"
@@ -242,20 +243,19 @@ export default function ShuttleSection() {
           </div>
         </RevealOnScroll>
 
-        <RevealOnScroll delay={180}>
-          <div className="mb-12 md:mb-14">
-            <FlightSchedule />
-          </div>
+        <RevealOnScroll className="lg:col-span-7" delay={180}>
+          <FlightSchedule />
         </RevealOnScroll>
+        </div>
 
         <RevealOnScroll delay={220}>
-          <div className="border-t border-sand-300 pt-8 max-w-2xl">
+          <div className="mt-10 border-t border-sand-300 pt-8">
             <h3 className="font-medium text-ink mb-3">{t('shuttle.importantInfo.title')}</h3>
-            <ul className="space-y-2 text-sm text-ink-muted">
+            <ul className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-2 text-sm text-ink-muted">
               {(t('shuttle.importantInfo.items', { returnObjects: true }) as string[]).map(
                 (item, index) => (
                   <li key={index} className="flex gap-2">
-                    <span className="text-ocean-500 shrink-0">—</span>
+                    <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-ocean-500" aria-hidden="true" />
                     {item}
                   </li>
                 )

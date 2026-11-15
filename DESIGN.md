@@ -23,7 +23,7 @@ typography:
     letterSpacing: "-0.03em"
   headline:
     fontFamily: "Fraunces, Georgia, serif"
-    fontSize: "clamp(1.875rem, 4vw, 2.75rem)"
+    fontSize: "clamp(2.25rem, 4.5vw, 3.5rem)"
     fontWeight: 600
     lineHeight: 1.1
     letterSpacing: "-0.01em"
@@ -50,9 +50,9 @@ rounded:
   lg: "0.75rem"
   xl: "0.75rem"
 spacing:
-  section-y: "5rem"
-  section-y-md: "7rem"
-  content-max: "72rem"
+  section-y: "3.5rem"
+  section-y-md: "6rem"
+  content-max: "84rem"
   gutter: "1.25rem"
 components:
   button-primary:
@@ -138,8 +138,8 @@ A warm coastal palette rooted in Majunga's sand, mangrove water, and laterite ea
 **Character:** Editorial warmth without luxury pretension. Fraunces gives headlines a local-guide personality; DM Sans keeps forms, tables, and nav readable under tropical sunlight on mobile.
 
 ### Hierarchy
-- **Display** (600, clamp 3.25–5.5rem, line-height 0.98): Hero H1 only, set on two lines with the place name ("Majunga") in italic terracotta on its own line.
-- **Headline** (600, clamp 1.875–2.75rem, line-height 1.1): Section titles via `SectionHeader`. Fraunces.
+- **Display** (600, clamp 3.25 à 5.5rem, line-height 0.98): Hero H1 only, set on two lines with the place name ("Majunga") in italic terracotta on its own line.
+- **Headline** (600, clamp 2.25 à 3.5rem, line-height 1.04): Section titles via `SectionHeader`. Fraunces.
 - **Title** (600, 1.25rem, line-height 1.3): Tour card titles, modal headers, table section labels.
 - **Body** (400, 1rem, line-height 1.625, max 65ch): Descriptions, form labels, footer copy. DM Sans.
 - **Label** (500, 0.75rem, letter-spacing 0.12em, uppercase): Section eyebrows (`.section-label`), weather widget header, footer column titles.
@@ -193,6 +193,9 @@ Hybrid system: flat at rest, lifted on interaction. Depth between sections uses 
 ### Weather Widget (signature)
 - **Context:** Hero only. Purposeful glass: `bg-ocean-800/40 backdrop-blur-sm` over photography.
 - **Not reusable elsewhere.** No glassmorphism on admin or form surfaces.
+
+### Hero Departures Card (signature)
+- **NextDepartures** : carte pleine (sand-50, en-tête ocean-700, prix terracotta, bouton terracotta) à droite du hero sur grand écran. Elle montre les trois prochains départs de navette lus depuis l'API, pour que l'offre soit visible dès l'ouverture. Masquée sur mobile.
 
 ### Hero Scene (signature)
 - **BaobabScene** : illustration SVG en aplats par bandes (allée de baobabs, soleil terracotta coupé par l'horizon, pirogue), uniquement dans la palette ocean / terracotta / sand. Aucun dégradé ni photo, aucune dépendance réseau.
