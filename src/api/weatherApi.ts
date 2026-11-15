@@ -1,6 +1,6 @@
 import i18n from '../i18n/i18n';
 
-// Service API météo — proxy backend en priorité, fallback OpenMeteo
+// Service API météo : proxy backend en priorité, repli sur OpenMeteo
 const API_BASE_URL = import.meta.env.VITE_MADABOOKING_API_URL ||
   (import.meta.env.DEV ? 'https://127.0.0.1:8000/api' : 'https://api.madabooking.mg/api');
 

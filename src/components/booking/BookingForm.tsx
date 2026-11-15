@@ -419,12 +419,12 @@ export default function BookingForm() {
                   {formData.service === 'tour'
                     ? tours.map((tour) => (
                         <option key={tour.id} value={tour.id}>
-                          {tour.title} — {tour.price} {tour.currency} {t('booking.form.perPerson')}
+                          {tour.title} ({tour.price} {tour.currency} {t('booking.form.perPerson')})
                         </option>
                       ))
                     : schedules.map((schedule) => (
                         <option key={schedule.id} value={schedule.id}>
-                          {schedule.from} → {schedule.to} — {schedule.departureTime} (
+                          {schedule.from} → {schedule.to}, {schedule.departureTime} (
                           {t('booking.form.seatsAvailable', { count: schedule.availableSeats })})
                         </option>
                       ))}
