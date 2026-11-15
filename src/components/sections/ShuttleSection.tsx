@@ -8,9 +8,11 @@ import SectionHeader from '../ui/SectionHeader';
 import Button from '../ui/Button';
 import FlightSchedule from '../FlightSchedule';
 import RevealOnScroll from '../motion/RevealOnScroll';
+import { useBookingSelection } from '../../contexts/BookingSelectionContext';
 
 export default function ShuttleSection() {
   const { t } = useTranslation();
+  const { selectForBooking } = useBookingSelection();
   const [schedules, setSchedules] = useState<ShuttleSchedule[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -167,9 +169,7 @@ export default function ShuttleSection() {
                           size="sm"
                           variant="outline"
                           disabled={schedule.availableSeats === 0}
-                          onClick={() =>
-                            document.getElementById('booking')?.scrollIntoView({ behavior: 'smooth' })
-                          }
+                          onClick={() => selectForBooking({ service: 'shuttle', id: schedule.id })}
                         >
                           {t('shuttle.bookShuttle')}
                         </Button>
@@ -226,9 +226,7 @@ export default function ShuttleSection() {
                               size="sm"
                               variant="outline"
                               disabled={schedule.availableSeats === 0}
-                              onClick={() =>
-                                document.getElementById('booking')?.scrollIntoView({ behavior: 'smooth' })
-                              }
+                              onClick={() => selectForBooking({ service: 'shuttle', id: schedule.id })}
                             >
                               {t('shuttle.bookShuttle')}
                             </Button>

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { Calendar, Users, Check, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Tour, ShuttleSchedule, BookingFormData, Location } from '../../types';
@@ -7,9 +7,12 @@ import { getPublicSiteSettingByKey } from '../../api/madabookingApi';
 import Button from '../ui/Button';
 import PayPalButton from './PayPalButton';
 import MapSelector from './MapSelector';
+import { useBookingSelection } from '../../contexts/BookingSelectionContext';
 
 export default function BookingForm() {
   const { t, i18n } = useTranslation();
+  const { selection } = useBookingSelection();
+  const appliedSelection = useRef(0);
   const [formData, setFormData] = useState<BookingFormData>({
     name: '',
     email: '',
@@ -39,8 +42,9 @@ export default function BookingForm() {
         const [toursData, schedulesData, enabledSetting, maxSetting, priceSetting] = await Promise.all([
           getToursFromSupabase(),
           getShuttleSchedulesFromSupabase(),
-          getPublicSiteSettingByKey('booking_enabled'),
-          getPublicSiteSettingByKey('max_booking_participants'),
+          // Les réglages sont facultatifs : un échec ici ne doit jamais vider la liste des circuits et navettes.
+          getPublicSiteSettingByKey('booking_enabled').catch(() => null),
+          getPublicSiteSettingByKey('max_booking_participants').catch(() => null),
           getPublicSiteSettingByKey('price_per_km').catch(() => null),
         ]);
 
@@ -74,6 +78,26 @@ export default function BookingForm() {
 
     loadData();
   }, []);
+
+  // Un bouton « Réserver » d'un circuit ou d'une navette présélectionne ce choix dans le formulaire.
+  // On attend que les listes soient chargées pour vérifier que le choix existe.
+  useEffect(() => {
+    if (!selection || selection.nonce === appliedSelection.current) return;
+    const list = selection.service === 'tour' ? tours : schedules;
+    if (!list.some((item) => item.id === selection.id)) return;
+
+    appliedSelection.current = selection.nonce;
+    setFormData((prev) => ({ ...prev, service: selection.service, serviceId: selection.id }));
+    setPaymentStep(false);
+    setSuccess(null);
+    setErrorMessage(null);
+
+    // Après le défilement, on place le curseur sur la première information à saisir.
+    const timer = window.setTimeout(() => {
+      document.getElementById('date')?.focus({ preventScroll: true });
+    }, 700);
+    return () => window.clearTimeout(timer);
+  }, [selection, tours, schedules]);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
