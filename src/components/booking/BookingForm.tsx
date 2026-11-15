@@ -3,7 +3,7 @@ import { Calendar, Users, Check, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Tour, ShuttleSchedule, BookingFormData, Location } from '../../types';
 import { getToursFromSupabase, getShuttleSchedulesFromSupabase, createBooking } from '../../api/supabaseService';
-import { getPublicSiteSettingByKey } from '../../api/madabookingApi';
+import { getPublicSiteSettingByKey, getShuttleAvailability } from '../../api/madabookingApi';
 import Button from '../ui/Button';
 import PayPalButton from './PayPalButton';
 import MapSelector from './MapSelector';
@@ -34,6 +34,8 @@ export default function BookingForm() {
   const [bookingEnabled, setBookingEnabled] = useState(true);
   const [maxParticipants, setMaxParticipants] = useState(20);
   const [pricePerKm, setPricePerKm] = useState(0.5);
+  // Places restantes par navette (clé : identifiant API) pour la date choisie
+  const [availability, setAvailability] = useState<Record<string, { remaining: number; departed: boolean }>>({});
   const [mapMode, setMapMode] = useState<'from' | 'to'>('from');
 
   useEffect(() => {
@@ -78,6 +80,28 @@ export default function BookingForm() {
 
     loadData();
   }, []);
+
+  // Les places se calculent par jour : on les demande dès qu'une date est choisie pour une navette.
+  useEffect(() => {
+    if (formData.service !== 'shuttle' || !formData.date) {
+      setAvailability({});
+      return;
+    }
+    let active = true;
+    getShuttleAvailability(formData.date)
+      .then((list) => {
+        if (active) {
+          setAvailability(Object.fromEntries(list.map((a) => [a.id, { remaining: a.remaining, departed: a.departed }])));
+        }
+      })
+      // Sans réponse, on n'affiche pas de compteur : le serveur refuse de toute façon une navette complète.
+      .catch(() => {
+        if (active) setAvailability({});
+      });
+    return () => {
+      active = false;
+    };
+  }, [formData.service, formData.date]);
 
   // Un bouton « Réserver » d'un circuit ou d'une navette présélectionne ce choix dans le formulaire.
   // On attend que les listes soient chargées pour vérifier que le choix existe.
@@ -168,6 +192,20 @@ export default function BookingForm() {
         return false;
       }
       return true;
+    }
+    if (formData.service === 'shuttle' && seat) {
+      if (seat.departed) {
+        setErrorMessage(t('booking.form.seatsDeparted'));
+        return false;
+      }
+      if (seat.remaining <= 0) {
+        setErrorMessage(t('booking.form.seatsFull'));
+        return false;
+      }
+      if (formData.numberOfPeople > seat.remaining) {
+        setErrorMessage(t('booking.form.seatsOnly', { count: seat.remaining }));
+        return false;
+      }
     }
     if (formData.serviceId === 0) {
       setErrorMessage(
@@ -322,6 +360,20 @@ export default function BookingForm() {
     return t('booking.form.shuttleRoute', { from: schedule.from, to: schedule.to });
   };
 
+  // Navette sélectionnée et ses places restantes pour la date choisie
+  const selectedSchedule = formData.service === 'shuttle' ? schedules.find((s) => s.id === formData.serviceId) : undefined;
+  const seat = selectedSchedule?.apiId ? availability[selectedSchedule.apiId] : undefined;
+  // Le nombre de personnes ne peut pas dépasser le maximum du site ni les places restantes
+  const seatLimit = seat ? Math.max(1, Math.min(maxParticipants, seat.remaining)) : maxParticipants;
+
+  const seatSuffix = (apiId?: string) => {
+    const info = apiId ? availability[apiId] : undefined;
+    if (!info) return '';
+    if (info.departed) return ` (${t('booking.form.seatsDeparted')})`;
+    if (info.remaining <= 0) return ` (${t('shuttle.schedule.full')})`;
+    return ` (${t('booking.form.seatsLeft', { count: info.remaining })})`;
+  };
+
   const getMinDate = () => new Date().toISOString().split('T')[0];
 
   const inputWithIcon = 'field-input pl-10';
@@ -447,12 +499,32 @@ export default function BookingForm() {
                         </option>
                       ))
                     : schedules.map((schedule) => (
-                        <option key={schedule.id} value={schedule.id}>
-                          {schedule.from} → {schedule.to}, {schedule.departureTime} (
-                          {t('booking.form.seatsAvailable', { count: schedule.availableSeats })})
+                        <option
+                          key={schedule.id}
+                          value={schedule.id}
+                          disabled={!!schedule.apiId && (availability[schedule.apiId]?.remaining === 0 || !!availability[schedule.apiId]?.departed)}
+                        >
+                          {schedule.from} → {schedule.to}, {schedule.departureTime}
+                          {seatSuffix(schedule.apiId)}
                         </option>
                       ))}
                 </select>
+                {formData.service === 'shuttle' && (
+                  <p
+                    className={`mt-2 text-sm ${seat && (seat.departed || seat.remaining <= 0) ? 'text-terracotta-600' : 'text-ink-muted'}`}
+                    aria-live="polite"
+                  >
+                    {!formData.date
+                      ? t('booking.form.seatsPickDate')
+                      : !seat
+                        ? null
+                        : seat.departed
+                          ? t('booking.form.seatsDeparted')
+                          : seat.remaining <= 0
+                            ? t('booking.form.seatsFull')
+                            : t('booking.form.seatsLeft', { count: seat.remaining })}
+                  </p>
+                )}
               </div>
               )}
 
@@ -486,7 +558,7 @@ export default function BookingForm() {
                       id="numberOfPeople"
                       name="numberOfPeople"
                       min={1}
-                      max={maxParticipants}
+                      max={seatLimit}
                       value={formData.numberOfPeople}
                       onChange={handleInputChange}
                       className={inputWithIcon}

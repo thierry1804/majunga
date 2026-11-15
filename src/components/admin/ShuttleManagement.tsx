@@ -504,7 +504,7 @@ export default function ShuttleManagement() {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-ink-muted">Places disponibles</label>
+                    <label className="block text-sm font-medium text-ink-muted">Places par départ</label>
                     <input
                       type="number"
                       min={0}
