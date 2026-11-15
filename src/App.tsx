@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
+import { BookingSelectionProvider } from './contexts/BookingSelectionContext';
 import Navbar from './components/layout/Navbar';
 import HeroSection from './components/sections/HeroSection';
 import AboutSection from './components/sections/AboutSection';
@@ -36,6 +37,7 @@ function AppContent() {
     <Routes>
       {/* Route publique */}
       <Route path="/" element={
+        <BookingSelectionProvider>
         <div className="min-h-screen bg-sand-50">
           <SkipLink />
           <ScrollProgress />
@@ -55,6 +57,7 @@ function AppContent() {
           </main>
           <Footer />
         </div>
+        </BookingSelectionProvider>
       } />
 
         {/* Route de réinitialisation de mot de passe */}

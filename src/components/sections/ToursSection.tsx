@@ -9,10 +9,12 @@ import TourDetailsModal from '../tours/TourDetailsModal';
 import Button from '../ui/Button';
 import { TourCardSkeleton } from '../ui/Skeleton';
 import RevealOnScroll from '../motion/RevealOnScroll';
+import { useBookingSelection } from '../../contexts/BookingSelectionContext';
 import { useBodyScrollLock } from '../../hooks/useBodyScrollLock';
 
 export default function ToursSection() {
   const { t } = useTranslation();
+  const { selectForBooking } = useBookingSelection();
   const [tours, setTours] = useState<Tour[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -46,11 +48,10 @@ export default function ToursSection() {
     setSelectedTour(null);
   };
 
-  const handleBookNow = () => {
+  const handleBookNow = (tour: Tour) => {
     setSelectedTour(null);
-    setTimeout(() => {
-      document.getElementById('booking')?.scrollIntoView({ behavior: 'smooth' });
-    }, 100);
+    // Laisse la fenêtre se fermer (et le défilement se libérer) avant d'amener le visiteur au formulaire.
+    setTimeout(() => selectForBooking({ service: 'tour', id: tour.id }), 100);
   };
 
   const [featured, ...rest] = tours;

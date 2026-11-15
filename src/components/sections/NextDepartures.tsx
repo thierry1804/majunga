@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { getShuttleSchedulesFromSupabase } from '../../api/supabaseService';
 import { ShuttleSchedule } from '../../types';
 import HeroEntrance from '../motion/HeroEntrance';
+import { useBookingSelection } from '../../contexts/BookingSelectionContext';
 
 const toMinutes = (time: string) => {
   const [h, m] = time.split(':').map(Number);
@@ -13,6 +14,7 @@ const toMinutes = (time: string) => {
 /** Les trois prochains départs de la navette, lus depuis l'API : le visiteur voit tout de suite l'offre. */
 export default function NextDepartures() {
   const { t } = useTranslation();
+  const { selectForBooking } = useBookingSelection();
   const [next, setNext] = useState<ShuttleSchedule[]>([]);
 
   useEffect(() => {
@@ -35,7 +37,8 @@ export default function NextDepartures() {
 
   if (next.length === 0) return null;
 
-  const goToShuttle = () => document.querySelector('#shuttle')?.scrollIntoView({ behavior: 'smooth' });
+  // Le bouton réserve le prochain départ, affiché en haut de la carte.
+  const bookNext = () => selectForBooking({ service: 'shuttle', id: next[0].id });
 
   return (
     <HeroEntrance delay={320} className="hidden lg:block lg:col-span-4 lg:col-start-9">
@@ -66,7 +69,7 @@ export default function NextDepartures() {
         </ul>
         <button
           type="button"
-          onClick={goToShuttle}
+          onClick={bookNext}
           className="flex w-full items-center justify-between bg-terracotta-500 px-5 py-3.5 text-sm font-medium text-sand-50 transition-colors duration-200 hover:bg-terracotta-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-sand-50"
         >
           {t('shuttle.bookShuttle')}
