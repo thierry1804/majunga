@@ -16,7 +16,7 @@ export default function SectionHeader({
   const alignClass = align === 'center' ? 'text-center mx-auto items-center' : 'text-left items-start';
 
   return (
-    <header className={`mb-10 md:mb-14 max-w-2xl flex flex-col ${alignClass} ${className}`}>
+    <header className={`mb-8 md:mb-10 max-w-3xl flex flex-col ${alignClass} ${className}`}>
       {label && (
         <div className={`flex items-center gap-3 mb-4 ${align === 'center' ? 'justify-center' : ''}`}>
           {align === 'left' && (
@@ -25,7 +25,7 @@ export default function SectionHeader({
           <p className="section-label">{label}</p>
         </div>
       )}
-      <h2 className="heading-display text-3xl md:text-4xl lg:text-[2.75rem] font-semibold leading-[1.08] text-balance">
+      <h2 className="heading-display text-4xl md:text-5xl lg:text-[3.5rem] font-semibold leading-[1.04] tracking-[-0.02em] text-balance">
         {title}
       </h2>
       {description && (

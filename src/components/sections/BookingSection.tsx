@@ -1,4 +1,4 @@
-import { Check, MessageCircle, Phone } from 'lucide-react';
+import { Check, MessageCircle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import Container from '../ui/Container';
 import SectionHeader from '../ui/SectionHeader';
@@ -35,22 +35,22 @@ export default function BookingSection() {
                 ))}
               </ul>
 
-              <div className="space-y-3 pt-6 border-t border-sand-200">
+              <div className="rounded-xl bg-ocean-800 p-6 md:p-7 text-sand-50">
+                <p className="text-sm text-ocean-100">{t('booking.reassurance.phone')}</p>
+                <a
+                  href="tel:+261326478291"
+                  className="mt-1 block font-display text-3xl md:text-4xl font-semibold tracking-[-0.01em] text-sand-50 hover:text-white transition-colors"
+                >
+                  +261 32 64 782 91
+                </a>
                 <a
                   href={WHATSAPP_URL}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-3 text-sm font-medium text-ocean-700 hover:text-ocean-900 transition-colors"
+                  className="mt-5 inline-flex items-center gap-2 rounded-lg bg-terracotta-500 px-4 py-2.5 text-sm font-medium text-sand-50 hover:bg-terracotta-600 transition-colors duration-200"
                 >
-                  <MessageCircle size={18} className="shrink-0" />
+                  <MessageCircle size={16} className="shrink-0" aria-hidden="true" />
                   {t('booking.reassurance.whatsapp')}
-                </a>
-                <a
-                  href="tel:+261326478291"
-                  className="flex items-center gap-3 text-sm text-ink-muted hover:text-ink transition-colors"
-                >
-                  <Phone size={18} className="shrink-0" />
-                  {t('booking.reassurance.phone')} · +261 32 64 782 91
                 </a>
               </div>
             </div>

@@ -58,20 +58,21 @@ export default function ToursSection() {
   return (
     <section id="tours" className="section-padding bg-white">
       <Container>
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 mb-12 md:mb-16">
-          <RevealOnScroll className="lg:col-span-5">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
+          <RevealOnScroll className="lg:col-span-4 lg:sticky lg:top-28 lg:self-start">
             <SectionHeader
               label={t('tours.sectionSubtitle')}
               title={t('tours.sectionTitle')}
               description={t('tours.sectionDescription')}
+              className="!mb-0"
             />
           </RevealOnScroll>
-        </div>
 
+          <div className="lg:col-span-8 min-w-0">
         {loading ? (
           <div className="space-y-8">
             <TourCardSkeleton />
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {[1, 2].map((i) => (
                 <TourCardSkeleton key={i} />
               ))}
@@ -95,7 +96,7 @@ export default function ToursSection() {
             )}
 
             {rest.length > 0 && (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-10">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
                 {rest.map((tour, index) => (
                   <RevealOnScroll key={tour.id} delay={index * 100} y={32} duration={800}>
                     <TourCard tour={tour} onClick={handleTourClick} />
@@ -105,6 +106,9 @@ export default function ToursSection() {
             )}
           </div>
         )}
+
+          </div>
+        </div>
 
         {selectedTour && (
           <TourDetailsModal

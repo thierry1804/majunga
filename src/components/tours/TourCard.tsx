@@ -67,7 +67,7 @@ export default function TourCard({ tour, onClick, featured = false }: TourCardPr
           </p>
           <div className="flex items-end justify-between mt-auto pt-4 border-t border-sand-200">
             <div>
-              <span className="font-display text-2xl font-semibold text-ocean-700">
+              <span className="font-display text-3xl font-semibold text-terracotta-500">
                 {tour.price} {tour.currency}
               </span>
               <span className="text-ink-light text-xs ml-1">{t('tours.perPerson')}</span>
@@ -102,7 +102,7 @@ export default function TourCard({ tour, onClick, featured = false }: TourCardPr
         </button>
 
         <div className="absolute top-3 right-3 bg-sand-50 rounded-lg px-2.5 py-1 pointer-events-none">
-          <span className="font-display text-sm font-semibold text-ocean-700">
+          <span className="font-display text-base font-semibold text-terracotta-500">
             {tour.price} {tour.currency}
           </span>
         </div>

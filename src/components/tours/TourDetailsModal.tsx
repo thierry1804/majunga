@@ -81,7 +81,7 @@ export default function TourDetailsModal({ tour, onClose, onBookNow }: TourDetai
               >
                 <img
                   src={image}
-                  alt={`${tour.title} — ${index + 1}`}
+                  alt={`${tour.title} (${index + 1})`}
                   className="w-full h-full object-cover"
                   loading="lazy"
                 />
@@ -112,7 +112,7 @@ export default function TourDetailsModal({ tour, onClose, onBookNow }: TourDetai
             <ul className="space-y-2">
               {tour.highlights.map((highlight, index) => (
                 <li key={index} className="flex items-start gap-2 text-sm text-ink-muted">
-                  <span className="text-ocean-600 mt-0.5 shrink-0">—</span>
+                  <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-ocean-500" aria-hidden="true" />
                   {highlight}
                 </li>
               ))}

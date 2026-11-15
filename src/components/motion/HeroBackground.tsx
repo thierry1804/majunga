@@ -29,13 +29,13 @@ export default function HeroBackground() {
           />
         </KenBurnsLayer>
         {/* Voile pour garder le texte lisible sur n'importe quelle photo */}
-        <div className="absolute inset-0 bg-ocean-900/45" aria-hidden="true" />
+        <div className="absolute inset-0 bg-ocean-900/30" aria-hidden="true" />
         <div
           className="absolute inset-0"
           aria-hidden="true"
           style={{
             background:
-              'linear-gradient(to right, rgba(6,38,38,0.7) 0%, rgba(6,38,38,0.3) 55%, rgba(6,38,38,0) 100%)',
+              'linear-gradient(to right, rgba(6,38,38,0.62) 0%, rgba(6,38,38,0.22) 50%, rgba(6,38,38,0) 100%)',
           }}
         />
       </>
