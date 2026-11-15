@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useSiteSettings } from '../../hooks/useSiteSettings';
 import { Save, Plus, Trash2, Edit, X, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { ApiSiteSetting } from '../../api/madabookingApi';
+import SiteImagesPanel from './SiteImagesPanel';
 
 // Paramètres essentiels prédéfinis
 const ESSENTIAL_SETTINGS = [
@@ -121,10 +122,15 @@ export default function SettingsManagement() {
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
+  // Garde : la création automatique ne doit s'exécuter qu'une fois, sinon chaque rechargement
+  // de la liste la relance et tente de recréer les mêmes paramètres en parallèle.
+  const essentialsChecked = useRef(false);
+
   useEffect(() => {
     // Créer les paramètres essentiels s'ils n'existent pas
     const initializeEssentialSettings = async () => {
-      if (loading || settings.length === 0) return;
+      if (loading || settings.length === 0 || essentialsChecked.current) return;
+      essentialsChecked.current = true;
 
       for (const essential of ESSENTIAL_SETTINGS) {
         const existing = getSetting(essential.key);
@@ -225,7 +231,7 @@ export default function SettingsManagement() {
           <select
             value={value}
             onChange={(e) => onChange(e.target.value)}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+            className="mt-1 block w-full rounded-md border-sand-300 shadow-sm focus:border-ocean-500 focus:ring-ocean-500"
           >
             <option value="false">Non</option>
             <option value="true">Oui</option>
@@ -237,7 +243,7 @@ export default function SettingsManagement() {
             type="number"
             value={value}
             onChange={(e) => onChange(e.target.value)}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+            className="mt-1 block w-full rounded-md border-sand-300 shadow-sm focus:border-ocean-500 focus:ring-ocean-500"
           />
         );
       case 'json':
@@ -246,7 +252,7 @@ export default function SettingsManagement() {
             value={value}
             onChange={(e) => onChange(e.target.value)}
             rows={4}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 font-mono text-sm"
+            className="mt-1 block w-full rounded-md border-sand-300 shadow-sm focus:border-ocean-500 focus:ring-ocean-500 font-mono text-sm"
             placeholder='{"key": "value"}'
           />
         );
@@ -256,7 +262,7 @@ export default function SettingsManagement() {
             type="text"
             value={value}
             onChange={(e) => onChange(e.target.value)}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+            className="mt-1 block w-full rounded-md border-sand-300 shadow-sm focus:border-ocean-500 focus:ring-ocean-500"
           />
         );
     }
@@ -277,8 +283,8 @@ export default function SettingsManagement() {
     return (
       <div className="flex items-center justify-center py-12">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Chargement des paramètres...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-ocean-600 mx-auto"></div>
+          <p className="mt-4 text-ink-muted">Chargement des paramètres...</p>
         </div>
       </div>
     );
@@ -286,10 +292,10 @@ export default function SettingsManagement() {
 
   if (error) {
     return (
-      <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+      <div className="bg-terracotta-50 border border-terracotta-100 rounded-lg p-4">
         <div className="flex items-center">
-          <AlertCircle className="h-5 w-5 text-red-600 mr-2" />
-          <p className="text-red-800">Erreur: {error.message}</p>
+          <AlertCircle className="h-5 w-5 text-terracotta-600 mr-2" />
+          <p className="text-terracotta-600">Erreur: {error.message}</p>
         </div>
       </div>
     );
@@ -299,24 +305,30 @@ export default function SettingsManagement() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Paramètres du site</h1>
-          <p className="mt-2 text-gray-600">Gérez les paramètres de configuration du site</p>
+          <h1 className="text-3xl font-bold text-ink">Paramètres du site</h1>
+          <p className="mt-2 text-ink-muted">Gérez les paramètres de configuration du site</p>
         </div>
         <button
           onClick={() => setShowAddModal(true)}
-          className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          className="inline-flex items-center px-4 py-2 bg-ocean-600 text-white rounded-lg hover:bg-ocean-700 transition-colors"
         >
           <Plus className="h-5 w-5 mr-2" />
           Ajouter un paramètre
         </button>
       </div>
 
+      <SiteImagesPanel
+        getSetting={getSetting}
+        createSetting={createSetting}
+        updateSettingByKey={updateSettingByKey}
+      />
+
       {message && (
         <div
           className={`p-4 rounded-lg flex items-center ${
             message.type === 'success'
-              ? 'bg-green-50 border border-green-200 text-green-800'
-              : 'bg-red-50 border border-red-200 text-red-800'
+              ? 'bg-ocean-50 border border-ocean-200 text-ocean-800'
+              : 'bg-terracotta-50 border border-terracotta-100 text-terracotta-600'
           }`}
         >
           {message.type === 'success' ? (
@@ -329,8 +341,8 @@ export default function SettingsManagement() {
       )}
 
       {Object.keys(groupedSettings).length === 0 ? (
-        <div className="bg-gray-50 rounded-lg p-8 text-center">
-          <p className="text-gray-600">Aucun paramètre configuré</p>
+        <div className="bg-sand-50 rounded-lg p-8 text-center">
+          <p className="text-ink-muted">Aucun paramètre configuré</p>
         </div>
       ) : (
         <div className="space-y-8">
@@ -339,30 +351,30 @@ export default function SettingsManagement() {
             if (categorySettings.length === 0) return null;
 
             return (
-              <div key={category} className="bg-white rounded-lg shadow-sm border border-gray-200">
-                <div className="px-6 py-4 border-b border-gray-200">
-                  <h2 className="text-xl font-semibold text-gray-900 capitalize">
+              <div key={category} className="bg-white rounded-lg shadow-sm border border-sand-200">
+                <div className="px-6 py-4 border-b border-sand-200">
+                  <h2 className="text-xl font-semibold text-ink capitalize">
                     {category === 'system' ? 'Système' : category === 'general' ? 'Général' : category === 'booking' ? 'Réservations' : category}
                   </h2>
                 </div>
-                <div className="divide-y divide-gray-200">
+                <div className="divide-y divide-sand-200">
                   {categorySettings.map((setting) => (
-                    <div key={setting.id} className="px-6 py-4 hover:bg-gray-50">
+                    <div key={setting.id} className="px-6 py-4 hover:bg-sand-50">
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
                           <div className="flex items-center gap-2">
-                            <h3 className="text-lg font-medium text-gray-900">{setting.key}</h3>
+                            <h3 className="text-lg font-medium text-ink">{setting.key}</h3>
                             {setting.isPublic && (
-                              <span className="px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full">
+                              <span className="px-2 py-1 text-xs bg-ocean-100 text-ocean-800 rounded-full">
                                 Public
                               </span>
                             )}
-                            <span className="px-2 py-1 text-xs bg-gray-100 text-gray-800 rounded-full">
+                            <span className="px-2 py-1 text-xs bg-sand-100 text-ink rounded-full">
                               {setting.valueType}
                             </span>
                           </div>
                           {setting.description && (
-                            <p className="mt-1 text-sm text-gray-600">{setting.description}</p>
+                            <p className="mt-1 text-sm text-ink-muted">{setting.description}</p>
                           )}
                           <div className="mt-3">
                             {editingKey === setting.key ? (
@@ -372,14 +384,14 @@ export default function SettingsManagement() {
                                   <button
                                     onClick={() => handleSave(setting.key)}
                                     disabled={saving}
-                                    className="inline-flex items-center px-3 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
+                                    className="inline-flex items-center px-3 py-2 bg-ocean-600 text-white rounded-md hover:bg-ocean-700 disabled:opacity-50"
                                   >
                                     <Save className="h-4 w-4 mr-2" />
                                     Enregistrer
                                   </button>
                                   <button
                                     onClick={handleCancel}
-                                    className="inline-flex items-center px-3 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300"
+                                    className="inline-flex items-center px-3 py-2 bg-sand-200 text-ink rounded-md hover:bg-sand-300"
                                   >
                                     <X className="h-4 w-4 mr-2" />
                                     Annuler
@@ -389,15 +401,15 @@ export default function SettingsManagement() {
                             ) : (
                               <div className="flex items-center gap-4">
                                 <div className="flex-1">
-                                  <p className="text-sm text-gray-500">Valeur actuelle:</p>
-                                  <p className="mt-1 text-gray-900 font-mono text-sm break-all">
+                                  <p className="text-sm text-ink-light">Valeur actuelle:</p>
+                                  <p className="mt-1 text-ink font-mono text-sm break-all">
                                     {setting.value || '(vide)'}
                                   </p>
                                 </div>
                                 <div className="flex gap-2">
                                   <button
                                     onClick={() => handleEdit(setting.key)}
-                                    className="inline-flex items-center px-3 py-2 bg-blue-50 text-blue-600 rounded-md hover:bg-blue-100"
+                                    className="inline-flex items-center px-3 py-2 bg-ocean-50 text-ocean-600 rounded-md hover:bg-ocean-100"
                                   >
                                     <Edit className="h-4 w-4 mr-2" />
                                     Modifier
@@ -405,7 +417,7 @@ export default function SettingsManagement() {
                                   {!ESSENTIAL_SETTINGS.find((s) => s.key === setting.key) && (
                                     <button
                                       onClick={() => handleDelete(setting.id!, setting.key)}
-                                      className="inline-flex items-center px-3 py-2 bg-red-50 text-red-600 rounded-md hover:bg-red-100"
+                                      className="inline-flex items-center px-3 py-2 bg-terracotta-50 text-terracotta-600 rounded-md hover:bg-terracotta-100"
                                     >
                                       <Trash2 className="h-4 w-4 mr-2" />
                                       Supprimer
@@ -430,36 +442,36 @@ export default function SettingsManagement() {
       {showAddModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
-            <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
-              <h2 className="text-xl font-semibold text-gray-900">Ajouter un paramètre</h2>
+            <div className="px-6 py-4 border-b border-sand-200 flex justify-between items-center">
+              <h2 className="text-xl font-semibold text-ink">Ajouter un paramètre</h2>
               <button
                 onClick={() => setShowAddModal(false)}
-                className="text-gray-400 hover:text-gray-600"
+                className="text-ink-light hover:text-ink-muted"
               >
                 <X className="h-6 w-6" />
               </button>
             </div>
             <div className="px-6 py-4 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-ink-muted mb-1">
                   Clé (unique) *
                 </label>
                 <input
                   type="text"
                   value={newSetting.key}
                   onChange={(e) => setNewSetting({ ...newSetting, key: e.target.value })}
-                  className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                  className="w-full rounded-md border-sand-300 shadow-sm focus:border-ocean-500 focus:ring-ocean-500"
                   placeholder="ex: site_name"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-ink-muted mb-1">
                   Type de valeur *
                 </label>
                 <select
                   value={newSetting.valueType}
                   onChange={(e) => setNewSetting({ ...newSetting, valueType: e.target.value })}
-                  className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                  className="w-full rounded-md border-sand-300 shadow-sm focus:border-ocean-500 focus:ring-ocean-500"
                 >
                   <option value="string">String</option>
                   <option value="boolean">Boolean</option>
@@ -468,7 +480,7 @@ export default function SettingsManagement() {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-ink-muted mb-1">
                   Valeur *
                 </label>
                 {renderValueInput(
@@ -478,25 +490,25 @@ export default function SettingsManagement() {
                 )}
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-ink-muted mb-1">
                   Description
                 </label>
                 <textarea
                   value={newSetting.description}
                   onChange={(e) => setNewSetting({ ...newSetting, description: e.target.value })}
                   rows={3}
-                  className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                  className="w-full rounded-md border-sand-300 shadow-sm focus:border-ocean-500 focus:ring-ocean-500"
                   placeholder="Description du paramètre"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-ink-muted mb-1">
                   Catégorie
                 </label>
                 <select
                   value={newSetting.category}
                   onChange={(e) => setNewSetting({ ...newSetting, category: e.target.value })}
-                  className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                  className="w-full rounded-md border-sand-300 shadow-sm focus:border-ocean-500 focus:ring-ocean-500"
                 >
                   <option value="general">Général</option>
                   <option value="system">Système</option>
@@ -511,24 +523,24 @@ export default function SettingsManagement() {
                   id="isPublic"
                   checked={newSetting.isPublic}
                   onChange={(e) => setNewSetting({ ...newSetting, isPublic: e.target.checked })}
-                  className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  className="rounded border-sand-300 text-ocean-600 focus:ring-ocean-500"
                 />
-                <label htmlFor="isPublic" className="ml-2 text-sm text-gray-700">
+                <label htmlFor="isPublic" className="ml-2 text-sm text-ink-muted">
                   Paramètre public (accessible sans authentification)
                 </label>
               </div>
             </div>
-            <div className="px-6 py-4 border-t border-gray-200 flex justify-end gap-3">
+            <div className="px-6 py-4 border-t border-sand-200 flex justify-end gap-3">
               <button
                 onClick={() => setShowAddModal(false)}
-                className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300"
+                className="px-4 py-2 bg-sand-200 text-ink rounded-md hover:bg-sand-300"
               >
                 Annuler
               </button>
               <button
                 onClick={handleAdd}
                 disabled={saving || !newSetting.key || !newSetting.value}
-                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
+                className="px-4 py-2 bg-ocean-600 text-white rounded-md hover:bg-ocean-700 disabled:opacity-50"
               >
                 {saving ? 'Création...' : 'Créer'}
               </button>

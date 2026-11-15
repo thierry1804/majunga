@@ -60,17 +60,17 @@ export default function UsersManagement() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">Utilisateurs</h1>
+      <h1 className="text-2xl font-bold text-ink mb-6">Utilisateurs</h1>
 
-      {error && <p className="text-red-600 text-sm mb-4">{error}</p>}
+      {error && <p className="text-terracotta-600 text-sm mb-4">{error}</p>}
 
-      <form onSubmit={handleCreate} className="bg-white border border-gray-200 rounded-lg p-4 mb-8 grid grid-cols-1 md:grid-cols-4 gap-3">
+      <form onSubmit={handleCreate} className="bg-white border border-sand-200 rounded-lg p-4 mb-8 grid grid-cols-1 md:grid-cols-4 gap-3">
         <input
           type="email"
           placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="border border-gray-300 rounded px-3 py-2 text-sm"
+          className="border border-sand-300 rounded px-3 py-2 text-sm"
           required
         />
         <input
@@ -78,13 +78,13 @@ export default function UsersManagement() {
           placeholder="Mot de passe"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="border border-gray-300 rounded px-3 py-2 text-sm"
+          className="border border-sand-300 rounded px-3 py-2 text-sm"
           required
         />
         <select
           value={role}
           onChange={(e) => setRole(e.target.value)}
-          className="border border-gray-300 rounded px-3 py-2 text-sm"
+          className="border border-sand-300 rounded px-3 py-2 text-sm"
         >
           <option value="ROLE_USER">Utilisateur</option>
           <option value="ROLE_EDITOR">Éditeur</option>
@@ -94,12 +94,12 @@ export default function UsersManagement() {
       </form>
 
       {loading ? (
-        <p className="text-gray-500 text-sm">Chargement...</p>
+        <p className="text-ink-light text-sm">Chargement...</p>
       ) : (
-        <div className="overflow-x-auto bg-white border border-gray-200 rounded-lg">
+        <div className="overflow-x-auto bg-white border border-sand-200 rounded-lg">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-gray-200 text-left bg-gray-50">
+              <tr className="border-b border-sand-200 text-left bg-sand-50">
                 <th className="px-4 py-3">Email</th>
                 <th className="px-4 py-3">Rôles</th>
                 <th className="px-4 py-3">Actions</th>
@@ -107,20 +107,20 @@ export default function UsersManagement() {
             </thead>
             <tbody>
               {users.map((user) => (
-                <tr key={user.id} className="border-b border-gray-100 last:border-0">
+                <tr key={user.id} className="border-b border-sand-100 last:border-0">
                   <td className="px-4 py-3">{user.email}</td>
                   <td className="px-4 py-3">{(user.roles || []).join(', ')}</td>
                   <td className="px-4 py-3 space-x-2">
                     <button
                       type="button"
-                      className="text-blue-600 hover:underline text-xs"
+                      className="text-ocean-600 hover:underline text-xs"
                       onClick={() => user.id && handlePromote(String(user.id), 'ROLE_ADMIN')}
                     >
                       Promouvoir admin
                     </button>
                     <button
                       type="button"
-                      className="text-red-600 hover:underline text-xs"
+                      className="text-terracotta-600 hover:underline text-xs"
                       onClick={() => user.id && handleDelete(String(user.id))}
                     >
                       Supprimer

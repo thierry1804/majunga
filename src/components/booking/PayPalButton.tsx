@@ -40,7 +40,7 @@ function MockPayPalButton({
       onClick={handlePayment}
       disabled={isDisabled || loading}
       className={`flex items-center justify-center w-full rounded px-4 py-3 font-bold text-white transition-colors ${
-        isDisabled ? 'bg-gray-400 cursor-not-allowed' : loading ? 'bg-blue-400 cursor-wait' : 'bg-[#0070BA] hover:bg-[#003087]'
+        isDisabled ? 'bg-sand-300 cursor-not-allowed' : loading ? 'bg-ocean-500 cursor-wait' : 'bg-[#0070BA] hover:bg-[#003087]'
       }`}
     >
       {loading ? 'Traitement...' : (

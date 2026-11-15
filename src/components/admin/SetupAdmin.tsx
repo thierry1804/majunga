@@ -106,13 +106,13 @@ export default function SetupAdmin() {
 
   if (!user) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-sand-50">
         <div className="max-w-md w-full text-center">
-          <AlertCircle className="mx-auto h-12 w-12 text-red-600" />
-          <h2 className="mt-6 text-2xl font-bold text-gray-900">
+          <AlertCircle className="mx-auto h-12 w-12 text-terracotta-600" />
+          <h2 className="mt-6 text-2xl font-bold text-ink">
             Connexion requise
           </h2>
-          <p className="mt-2 text-gray-600">
+          <p className="mt-2 text-ink-muted">
             Vous devez être connecté pour configurer un compte administrateur.
           </p>
         </div>
@@ -121,16 +121,16 @@ export default function SetupAdmin() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center bg-sand-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full">
         <div className="text-center">
-          <div className="mx-auto h-12 w-12 flex items-center justify-center rounded-full bg-blue-100">
-            <Shield className="h-6 w-6 text-blue-600" />
+          <div className="mx-auto h-12 w-12 flex items-center justify-center rounded-full bg-ocean-100">
+            <Shield className="h-6 w-6 text-ocean-600" />
           </div>
-          <h2 className="mt-6 text-3xl font-extrabold text-gray-900">
+          <h2 className="mt-6 text-3xl font-extrabold text-ink">
             Configuration Administrateur
           </h2>
-          <p className="mt-2 text-sm text-gray-600">
+          <p className="mt-2 text-sm text-ink-muted">
             Configurez votre compte comme administrateur
           </p>
         </div>
@@ -138,28 +138,28 @@ export default function SetupAdmin() {
         <div className="mt-8 bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
           <div className="space-y-6">
             <div>
-              <h3 className="text-lg font-medium text-gray-900">
+              <h3 className="text-lg font-medium text-ink">
                 Informations de connexion
               </h3>
               <dl className="mt-4 space-y-2">
                 <div className="flex justify-between">
-                  <dt className="text-sm font-medium text-gray-500">Email:</dt>
-                  <dd className="text-sm text-gray-900">{user.email}</dd>
+                  <dt className="text-sm font-medium text-ink-light">Email:</dt>
+                  <dd className="text-sm text-ink">{user.email}</dd>
                 </div>
                 <div className="flex justify-between">
-                  <dt className="text-sm font-medium text-gray-500">ID:</dt>
-                  <dd className="text-sm text-gray-900 font-mono text-xs">
+                  <dt className="text-sm font-medium text-ink-light">ID:</dt>
+                  <dd className="text-sm text-ink font-mono text-xs">
                     {user.id.substring(0, 8)}...
                   </dd>
                 </div>
                 {existingProfile && (
                   <div className="flex justify-between">
-                    <dt className="text-sm font-medium text-gray-500">Rôle actuel:</dt>
-                    <dd className="text-sm text-gray-900">
+                    <dt className="text-sm font-medium text-ink-light">Rôle actuel:</dt>
+                    <dd className="text-sm text-ink">
                       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                        existingProfile.role === 'admin' ? 'bg-green-100 text-green-800' :
-                        existingProfile.role === 'editor' ? 'bg-blue-100 text-blue-800' :
-                        'bg-gray-100 text-gray-800'
+                        existingProfile.role === 'admin' ? 'bg-ocean-100 text-ocean-800' :
+                        existingProfile.role === 'editor' ? 'bg-ocean-100 text-ocean-800' :
+                        'bg-sand-100 text-ink'
                       }`}>
                         {existingProfile.role}
                       </span>
@@ -170,24 +170,24 @@ export default function SetupAdmin() {
             </div>
 
             {error && (
-              <div className="rounded-md bg-red-50 p-4">
+              <div className="rounded-md bg-terracotta-50 p-4">
                 <div className="flex">
-                  <AlertCircle className="h-5 w-5 text-red-400" />
+                  <AlertCircle className="h-5 w-5 text-terracotta-400" />
                   <div className="ml-3">
-                    <h3 className="text-sm font-medium text-red-800">Erreur</h3>
-                    <div className="mt-2 text-sm text-red-700">{error}</div>
+                    <h3 className="text-sm font-medium text-terracotta-600">Erreur</h3>
+                    <div className="mt-2 text-sm text-terracotta-600">{error}</div>
                   </div>
                 </div>
               </div>
             )}
 
             {success && (
-              <div className="rounded-md bg-green-50 p-4">
+              <div className="rounded-md bg-ocean-50 p-4">
                 <div className="flex">
-                  <CheckCircle className="h-5 w-5 text-green-400" />
+                  <CheckCircle className="h-5 w-5 text-ocean-500" />
                   <div className="ml-3">
-                    <h3 className="text-sm font-medium text-green-800">Succès</h3>
-                    <div className="mt-2 text-sm text-green-700">
+                    <h3 className="text-sm font-medium text-ocean-800">Succès</h3>
+                    <div className="mt-2 text-sm text-ocean-700">
                       Votre compte a été configuré comme administrateur. Redirection en cours...
                     </div>
                   </div>
@@ -196,16 +196,16 @@ export default function SetupAdmin() {
             )}
 
             {existingProfile?.role === 'admin' ? (
-              <div className="rounded-md bg-green-50 p-4">
+              <div className="rounded-md bg-ocean-50 p-4">
                 <div className="flex">
-                  <CheckCircle className="h-5 w-5 text-green-400" />
+                  <CheckCircle className="h-5 w-5 text-ocean-500" />
                   <div className="ml-3">
-                    <p className="text-sm text-green-700">
+                    <p className="text-sm text-ocean-700">
                       Votre compte est déjà configuré comme administrateur.
                     </p>
                     <a
                       href="/admin"
-                      className="mt-2 inline-block text-sm font-medium text-green-600 hover:text-green-500"
+                      className="mt-2 inline-block text-sm font-medium text-ocean-600 hover:text-ocean-500"
                     >
                       Accéder au panneau d'administration →
                     </a>
@@ -216,7 +216,7 @@ export default function SetupAdmin() {
               <button
                 onClick={handleCreateAdminProfile}
                 disabled={loading}
-                className="w-full flex justify-center items-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full flex justify-center items-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-ocean-600 hover:bg-ocean-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ocean-500 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {loading ? (
                   <>
@@ -232,8 +232,8 @@ export default function SetupAdmin() {
               </button>
             )}
 
-            <div className="border-t border-gray-200 pt-4">
-              <p className="text-xs text-gray-500">
+            <div className="border-t border-sand-200 pt-4">
+              <p className="text-xs text-ink-light">
                 Cette page permet de créer ou mettre à jour votre profil avec les droits d'administrateur.
                 Après la configuration, vous aurez accès à toutes les fonctionnalités d'administration.
               </p>

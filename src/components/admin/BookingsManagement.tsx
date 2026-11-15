@@ -139,21 +139,21 @@ export default function BookingsManagement() {
     switch (status) {
       case 'confirmed':
         return (
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-ocean-100 text-ocean-800">
             <CheckCircle className="w-3 h-3 mr-1" />
             Confirmée
           </span>
         )
       case 'pending':
         return (
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-terracotta-100 text-terracotta-600">
             <Clock className="w-3 h-3 mr-1" />
             En attente
           </span>
         )
       case 'cancelled':
         return (
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-terracotta-100 text-terracotta-600">
             <XCircle className="w-3 h-3 mr-1" />
             Annulée
           </span>
@@ -177,7 +177,7 @@ export default function BookingsManagement() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-ocean-600"></div>
       </div>
     )
   }
@@ -187,14 +187,14 @@ export default function BookingsManagement() {
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Gestion des Réservations</h1>
-          <p className="mt-1 text-sm text-gray-500">
+          <h1 className="text-2xl font-bold text-ink">Gestion des Réservations</h1>
+          <p className="mt-1 text-sm text-ink-light">
             Gérez toutes les réservations de tours
           </p>
         </div>
         <button
           onClick={fetchBookings}
-          className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm font-medium"
+          className="px-4 py-2 bg-ocean-600 text-white rounded-md hover:bg-ocean-700 focus:outline-none focus:ring-2 focus:ring-ocean-500 text-sm font-medium"
         >
           Actualiser
         </button>
@@ -206,14 +206,14 @@ export default function BookingsManagement() {
           <div className="p-5">
             <div className="flex items-center">
               <div className="flex-shrink-0">
-                <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+                <div className="w-8 h-8 bg-ocean-500 rounded-full flex items-center justify-center">
                   <span className="text-white text-sm font-medium">{stats.total}</span>
                 </div>
               </div>
               <div className="ml-5 w-0 flex-1">
                 <dl>
-                  <dt className="text-sm font-medium text-gray-500 truncate">Total</dt>
-                  <dd className="text-lg font-medium text-gray-900">{stats.total}</dd>
+                  <dt className="text-sm font-medium text-ink-light truncate">Total</dt>
+                  <dd className="text-lg font-medium text-ink">{stats.total}</dd>
                 </dl>
               </div>
             </div>
@@ -224,14 +224,14 @@ export default function BookingsManagement() {
           <div className="p-5">
             <div className="flex items-center">
               <div className="flex-shrink-0">
-                <div className="w-8 h-8 bg-yellow-500 rounded-full flex items-center justify-center">
+                <div className="w-8 h-8 bg-terracotta-400 rounded-full flex items-center justify-center">
                   <span className="text-white text-sm font-medium">{stats.pending}</span>
                 </div>
               </div>
               <div className="ml-5 w-0 flex-1">
                 <dl>
-                  <dt className="text-sm font-medium text-gray-500 truncate">En attente</dt>
-                  <dd className="text-lg font-medium text-gray-900">{stats.pending}</dd>
+                  <dt className="text-sm font-medium text-ink-light truncate">En attente</dt>
+                  <dd className="text-lg font-medium text-ink">{stats.pending}</dd>
                 </dl>
               </div>
             </div>
@@ -242,14 +242,14 @@ export default function BookingsManagement() {
           <div className="p-5">
             <div className="flex items-center">
               <div className="flex-shrink-0">
-                <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
+                <div className="w-8 h-8 bg-ocean-500 rounded-full flex items-center justify-center">
                   <span className="text-white text-sm font-medium">{stats.confirmed}</span>
                 </div>
               </div>
               <div className="ml-5 w-0 flex-1">
                 <dl>
-                  <dt className="text-sm font-medium text-gray-500 truncate">Confirmées</dt>
-                  <dd className="text-lg font-medium text-gray-900">{stats.confirmed}</dd>
+                  <dt className="text-sm font-medium text-ink-light truncate">Confirmées</dt>
+                  <dd className="text-lg font-medium text-ink">{stats.confirmed}</dd>
                 </dl>
               </div>
             </div>
@@ -260,14 +260,14 @@ export default function BookingsManagement() {
           <div className="p-5">
             <div className="flex items-center">
               <div className="flex-shrink-0">
-                <div className="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center">
+                <div className="w-8 h-8 bg-terracotta-500 rounded-full flex items-center justify-center">
                   <span className="text-white text-sm font-medium">{stats.cancelled}</span>
                 </div>
               </div>
               <div className="ml-5 w-0 flex-1">
                 <dl>
-                  <dt className="text-sm font-medium text-gray-500 truncate">Annulées</dt>
-                  <dd className="text-lg font-medium text-gray-900">{stats.cancelled}</dd>
+                  <dt className="text-sm font-medium text-ink-light truncate">Annulées</dt>
+                  <dd className="text-lg font-medium text-ink">{stats.cancelled}</dd>
                 </dl>
               </div>
             </div>
@@ -281,26 +281,26 @@ export default function BookingsManagement() {
           <div className="flex-1">
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Search className="h-5 w-5 text-gray-400" />
+                <Search className="h-5 w-5 text-ink-light" />
               </div>
               <input
                 type="text"
                 placeholder="Rechercher par nom, email ou tour..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                className="block w-full pl-10 pr-3 py-2 border border-sand-300 rounded-md leading-5 bg-white placeholder-ink-light focus:outline-none focus:placeholder-sand-300 focus:ring-1 focus:ring-ocean-500 focus:border-ocean-500"
               />
             </div>
           </div>
           <div className="sm:w-48">
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Filter className="h-5 w-5 text-gray-400" />
+                <Filter className="h-5 w-5 text-ink-light" />
               </div>
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                className="block w-full pl-10 pr-3 py-2 border border-sand-300 rounded-md leading-5 bg-white focus:outline-none focus:ring-1 focus:ring-ocean-500 focus:border-ocean-500"
               >
                 <option value="all">Tous les statuts</option>
                 <option value="pending">En attente</option>
@@ -315,11 +315,11 @@ export default function BookingsManagement() {
       {/* Bookings Table */}
       <div className="bg-white shadow overflow-hidden sm:rounded-md">
         <div className="px-4 py-5 sm:px-6">
-          <h3 className="text-lg leading-6 font-medium text-gray-900">
+          <h3 className="text-lg leading-6 font-medium text-ink">
             Réservations ({filteredBookings.length})
           </h3>
         </div>
-        <ul className="divide-y divide-gray-200">
+        <ul className="divide-y divide-sand-200">
           {filteredBookings.map((booking) => (
             <li key={booking.id}>
               <div className="px-4 py-4 sm:px-6">
@@ -327,19 +327,19 @@ export default function BookingsManagement() {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-sm font-medium text-blue-600 truncate">
+                        <p className="text-sm font-medium text-ocean-600 truncate">
                           {booking.tours?.title || 'Tour supprimé'}
                         </p>
-                        <p className="text-sm text-gray-500">
+                        <p className="text-sm text-ink-light">
                           {booking.user_name} ({booking.user_email})
                         </p>
                       </div>
                       <div className="flex items-center space-x-4">
                         <div className="text-right">
-                          <p className="text-sm font-medium text-gray-900">
+                          <p className="text-sm font-medium text-ink">
                             {formatCurrency(booking.total_price)}
                           </p>
-                          <p className="text-sm text-gray-500">
+                          <p className="text-sm text-ink-light">
                             {booking.participants} participant{booking.participants > 1 ? 's' : ''}
                           </p>
                         </div>
@@ -347,7 +347,7 @@ export default function BookingsManagement() {
                       </div>
                     </div>
                     <div className="mt-2 flex items-center justify-between">
-                      <div className="flex items-center text-sm text-gray-500">
+                      <div className="flex items-center text-sm text-ink-light">
                         <span>Date du tour: {formatDate(booking.booking_date)}</span>
                         <span className="mx-2">•</span>
                         <span>Réservé le {formatDate(booking.created_at)}</span>
@@ -357,14 +357,14 @@ export default function BookingsManagement() {
                           <>
                             <button
                               onClick={() => updateBookingStatus(booking.id, 'confirmed')}
-                              className="inline-flex items-center px-2.5 py-1.5 border border-transparent text-xs font-medium rounded text-green-700 bg-green-100 hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                              className="inline-flex items-center px-2.5 py-1.5 border border-transparent text-xs font-medium rounded text-ocean-700 bg-ocean-100 hover:bg-ocean-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ocean-500"
                             >
                               <CheckCircle className="w-3 h-3 mr-1" />
                               Confirmer
                             </button>
                             <button
                               onClick={() => updateBookingStatus(booking.id, 'cancelled')}
-                              className="inline-flex items-center px-2.5 py-1.5 border border-transparent text-xs font-medium rounded text-red-700 bg-red-100 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                              className="inline-flex items-center px-2.5 py-1.5 border border-transparent text-xs font-medium rounded text-terracotta-600 bg-terracotta-100 hover:bg-terracotta-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-terracotta-500"
                             >
                               <XCircle className="w-3 h-3 mr-1" />
                               Annuler
@@ -373,7 +373,7 @@ export default function BookingsManagement() {
                         )}
                         <button
                           onClick={() => setSelectedBooking(booking)}
-                          className="inline-flex items-center px-2.5 py-1.5 border border-gray-300 text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                          className="inline-flex items-center px-2.5 py-1.5 border border-sand-300 text-xs font-medium rounded text-ink-muted bg-white hover:bg-sand-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ocean-500"
                         >
                           <Eye className="w-3 h-3 mr-1" />
                           Détails
@@ -390,7 +390,7 @@ export default function BookingsManagement() {
 
       {filteredBookings.length === 0 && (
         <div className="text-center py-12">
-          <p className="text-gray-500">Aucune réservation trouvée</p>
+          <p className="text-ink-light">Aucune réservation trouvée</p>
         </div>
       )}
 
@@ -399,7 +399,7 @@ export default function BookingsManagement() {
         <>
           {/* Overlay */}
           <div
-            className="fixed inset-0 bg-gray-600 bg-opacity-50 z-50 transition-opacity"
+            className="fixed inset-0 bg-ink-muted bg-opacity-50 z-50 transition-opacity"
             onClick={() => setSelectedBooking(null)}
           />
 
@@ -407,12 +407,12 @@ export default function BookingsManagement() {
           <div className="fixed right-0 top-0 bottom-0 z-50 w-full max-w-2xl bg-white shadow-xl flex flex-col transform transition-transform duration-300 ease-in-out">
             {/* Header - Fixed */}
             <div className="flex justify-between items-start p-6 border-b flex-shrink-0 bg-white">
-              <h3 className="text-lg font-medium text-gray-900">
+              <h3 className="text-lg font-medium text-ink">
                 Détails de la réservation
               </h3>
               <button
                 onClick={() => setSelectedBooking(null)}
-                className="text-gray-400 hover:text-gray-600 transition-colors"
+                className="text-ink-light hover:text-ink-muted transition-colors"
                 aria-label="Fermer"
               >
                 <X className="h-6 w-6" />
@@ -424,13 +424,13 @@ export default function BookingsManagement() {
               <div className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">Tour</label>
-                    <p className="mt-1 text-sm text-gray-900">
+                    <label className="block text-sm font-medium text-ink-muted">Tour</label>
+                    <p className="mt-1 text-sm text-ink">
                       {selectedBooking.tours?.title || 'Tour supprimé'}
                     </p>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">Statut</label>
+                    <label className="block text-sm font-medium text-ink-muted">Statut</label>
                     <div className="mt-1">
                       {getStatusBadge(selectedBooking.status)}
                     </div>
@@ -439,13 +439,13 @@ export default function BookingsManagement() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">Client</label>
-                    <p className="mt-1 text-sm text-gray-900">{selectedBooking.user_name}</p>
-                    <p className="text-sm text-gray-500">{selectedBooking.user_email}</p>
+                    <label className="block text-sm font-medium text-ink-muted">Client</label>
+                    <p className="mt-1 text-sm text-ink">{selectedBooking.user_name}</p>
+                    <p className="text-sm text-ink-light">{selectedBooking.user_email}</p>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">Date du tour</label>
-                    <p className="mt-1 text-sm text-gray-900">
+                    <label className="block text-sm font-medium text-ink-muted">Date du tour</label>
+                    <p className="mt-1 text-sm text-ink">
                       {formatDate(selectedBooking.booking_date)}
                     </p>
                   </div>
@@ -453,14 +453,14 @@ export default function BookingsManagement() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">Participants</label>
-                    <p className="mt-1 text-sm text-gray-900">
+                    <label className="block text-sm font-medium text-ink-muted">Participants</label>
+                    <p className="mt-1 text-sm text-ink">
                       {selectedBooking.participants} personne{selectedBooking.participants > 1 ? 's' : ''}
                     </p>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">Prix total</label>
-                    <p className="mt-1 text-sm font-semibold text-gray-900">
+                    <label className="block text-sm font-medium text-ink-muted">Prix total</label>
+                    <p className="mt-1 text-sm font-semibold text-ink">
                       {formatCurrency(selectedBooking.total_price)}
                     </p>
                   </div>
@@ -468,15 +468,15 @@ export default function BookingsManagement() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">Date de réservation</label>
-                    <p className="mt-1 text-sm text-gray-900">
+                    <label className="block text-sm font-medium text-ink-muted">Date de réservation</label>
+                    <p className="mt-1 text-sm text-ink">
                       {formatDate(selectedBooking.created_at)}
                     </p>
                   </div>
                   {selectedBooking.payment_id && (
                     <div>
-                      <label className="block text-sm font-medium text-gray-700">ID de paiement</label>
-                      <p className="mt-1 text-sm text-gray-900 font-mono">
+                      <label className="block text-sm font-medium text-ink-muted">ID de paiement</label>
+                      <p className="mt-1 text-sm text-ink font-mono">
                         {selectedBooking.payment_id}
                       </p>
                     </div>
@@ -486,10 +486,10 @@ export default function BookingsManagement() {
             </div>
 
             {/* Footer - Fixed */}
-            <div className="border-t p-6 bg-gray-50 flex justify-end space-x-3 flex-shrink-0">
+            <div className="border-t p-6 bg-sand-50 flex justify-end space-x-3 flex-shrink-0">
               <button
                 onClick={() => setSelectedBooking(null)}
-                className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                className="px-4 py-2 border border-sand-300 rounded-md shadow-sm text-sm font-medium text-ink-muted bg-white hover:bg-sand-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ocean-500"
               >
                 Fermer
               </button>
@@ -500,7 +500,7 @@ export default function BookingsManagement() {
                       updateBookingStatus(selectedBooking.id, 'confirmed')
                       setSelectedBooking(null)
                     }}
-                    className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                    className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-ocean-600 hover:bg-ocean-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ocean-500"
                   >
                     Confirmer
                   </button>
@@ -509,7 +509,7 @@ export default function BookingsManagement() {
                       updateBookingStatus(selectedBooking.id, 'cancelled')
                       setSelectedBooking(null)
                     }}
-                    className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                    className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-terracotta-600 hover:bg-terracotta-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-terracotta-500"
                   >
                     Annuler
                   </button>
