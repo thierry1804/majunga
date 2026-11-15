@@ -67,7 +67,8 @@ const ESSENTIAL_SETTINGS = [
     valueType: 'number',
     description: 'Nombre maximum de participants par réservation',
     category: 'booking',
-    isPublic: false,
+    // Public : le formulaire de réservation lit cette valeur pour valider le nombre de personnes.
+    isPublic: true,
     defaultValue: '20',
   },
   {
