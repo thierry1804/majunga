@@ -72,6 +72,14 @@ const ESSENTIAL_SETTINGS = [
     defaultValue: '20',
   },
   {
+    key: 'admin_notification_email',
+    valueType: 'string',
+    description: "Adresse qui reçoit un e-mail à chaque nouvelle réservation. Laissez vide pour ne pas notifier l'équipe.",
+    category: 'booking',
+    isPublic: false,
+    defaultValue: '',
+  },
+  {
     key: 'price_per_km',
     valueType: 'number',
     description: 'Tarif au kilomètre (EUR) pour les navettes sur mesure',

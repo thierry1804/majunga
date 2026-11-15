@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Clock, MapPin, Ticket, Plane } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { getShuttleSchedulesFromSupabase } from '../../api/supabaseService';
+import { getShuttleAvailability } from '../../api/madabookingApi';
 import { ShuttleSchedule } from '../../types';
 import Container from '../ui/Container';
 import SectionHeader from '../ui/SectionHeader';
@@ -19,6 +20,58 @@ export default function ShuttleSection() {
   const [direction, setDirection] = useState<'airport-to-city' | 'city-to-airport'>(
     'airport-to-city'
   );
+  // Les places se calculent par jour : le visiteur choisit la date, aujourd'hui par défaut.
+  const todayIso = () => new Date().toLocaleDateString('en-CA');
+  const [date, setDate] = useState(todayIso);
+  const [availability, setAvailability] = useState<Record<string, { remaining: number; departed: boolean }>>({});
+
+  useEffect(() => {
+    let active = true;
+    getShuttleAvailability(date)
+      .then((list) => {
+        if (active) {
+          setAvailability(Object.fromEntries(list.map((a) => [a.id, { remaining: a.remaining, departed: a.departed }])));
+        }
+      })
+      // Sans réponse, on garde l'affichage de la capacité : le serveur refuse de toute façon une navette complète.
+      .catch(() => {
+        if (active) setAvailability({});
+      });
+    return () => {
+      active = false;
+    };
+  }, [date]);
+
+  // État d'un départ à la date choisie
+  const seatState = (schedule: ShuttleSchedule) => {
+    const info = schedule.apiId ? availability[schedule.apiId] : undefined;
+    const departed = !!info?.departed;
+    const full = !departed && (info ? info.remaining <= 0 : schedule.availableSeats <= 0);
+    return { info, departed, full, unavailable: departed || full };
+  };
+
+  const renderSeats = (schedule: ShuttleSchedule) => {
+    const { info, departed, full } = seatState(schedule);
+    if (departed) {
+      return (
+        <span className="inline-flex rounded-md bg-sand-200 px-2 py-0.5 text-xs font-medium text-ink-muted">
+          {t('shuttle.schedule.departed')}
+        </span>
+      );
+    }
+    if (full) {
+      return (
+        <span className="inline-flex rounded-md border border-terracotta-100 bg-terracotta-50 px-2 py-0.5 text-xs font-medium text-terracotta-600">
+          {t('shuttle.schedule.full')}
+        </span>
+      );
+    }
+    return (
+      <span className="text-ocean-700">
+        {info ? t('booking.form.seatsLeft', { count: info.remaining }) : schedule.availableSeats}
+      </span>
+    );
+  };
 
   useEffect(() => {
     const loadSchedules = async () => {
@@ -38,11 +91,22 @@ export default function ShuttleSection() {
     loadSchedules();
   }, [t]);
 
-  const filteredSchedules = schedules.filter((schedule) =>
-    direction === 'airport-to-city'
-      ? schedule.direction === 'airport-to-city' || (schedule.from?.toLowerCase().includes('airport') && !schedule.to?.toLowerCase().includes('airport'))
-      : schedule.direction === 'city-to-airport' || (schedule.to?.toLowerCase().includes('airport') && !schedule.from?.toLowerCase().includes('airport'))
-  );
+  // Une navette ne doit jamais disparaître : on classe par direction explicite, puis par le nom
+  // des lieux (sans accents, FR/EN/IT), et si on ne peut pas trancher elle reste visible dans les deux onglets.
+  const isAirport = (place?: string | null) =>
+    /a[eé]ro?port|airport|aeroporto/.test(
+      (place ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase()
+    );
+
+  const filteredSchedules = schedules.filter((schedule) => {
+    if (schedule.direction === 'airport-to-city' || schedule.direction === 'city-to-airport') {
+      return schedule.direction === direction;
+    }
+    const fromAirport = isAirport(schedule.from);
+    const toAirport = isAirport(schedule.to);
+    if (fromAirport === toAirport) return true;
+    return direction === 'airport-to-city' ? fromAirport : toAirport;
+  });
 
   const highlights = [
     {
@@ -113,13 +177,28 @@ export default function ShuttleSection() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start">
         <RevealOnScroll className="lg:col-span-5" delay={140}>
           <div>
-            <div className="flex items-center gap-2 mb-5">
-              <Plane size={18} className="text-ocean-600" />
-              <h3 className="font-display text-xl font-semibold text-ink">
-                {direction === 'airport-to-city'
-                  ? t('shuttle.schedule.title.airportToCity')
-                  : t('shuttle.schedule.title.cityToAirport')}
-              </h3>
+            <div className="mb-5 flex flex-wrap items-end justify-between gap-x-4 gap-y-3">
+              <div className="flex items-center gap-2">
+                <Plane size={18} className="text-ocean-600" />
+                <h3 className="font-display text-xl font-semibold text-ink">
+                  {direction === 'airport-to-city'
+                    ? t('shuttle.schedule.title.airportToCity')
+                    : t('shuttle.schedule.title.cityToAirport')}
+                </h3>
+              </div>
+              <div>
+                <label htmlFor="shuttle-date" className="field-label">
+                  {t('booking.form.date')}
+                </label>
+                <input
+                  id="shuttle-date"
+                  type="date"
+                  min={todayIso()}
+                  value={date}
+                  onChange={(e) => setDate(e.target.value || todayIso())}
+                  className="field-input w-auto py-1.5"
+                />
+              </div>
             </div>
 
             {loading ? (
@@ -159,17 +238,13 @@ export default function ShuttleSection() {
                           <span className="font-display font-semibold text-ocean-700">
                             {schedule.price} {schedule.currency}
                           </span>
-                          <span className="text-xs text-ink-light ml-2">
-                            {schedule.availableSeats > 0
-                              ? `${schedule.availableSeats} ${t('shuttle.schedule.columns.availableSeats').toLowerCase()}`
-                              : t('shuttle.schedule.full')}
-                          </span>
+                          <span className="ml-2 text-xs text-ink-light">{renderSeats(schedule)}</span>
                         </div>
                         <Button
                           size="sm"
                           variant="outline"
-                          disabled={schedule.availableSeats === 0}
-                          onClick={() => selectForBooking({ service: 'shuttle', id: schedule.id })}
+                          disabled={seatState(schedule).unavailable}
+                          onClick={() => selectForBooking({ service: 'shuttle', id: schedule.id, date })}
                         >
                           {t('shuttle.bookShuttle')}
                         </Button>
@@ -192,7 +267,7 @@ export default function ShuttleSection() {
                           {t('shuttle.schedule.columns.price')}
                         </th>
                         <th className="px-4 py-3.5 font-medium text-ink-muted text-xs uppercase tracking-wide">
-                          {t('shuttle.schedule.columns.availableSeats')}
+                          {t('shuttle.schedule.columns.seatsOnDate')}
                         </th>
                         <th className="px-4 py-3.5 font-medium text-ink-muted text-xs uppercase tracking-wide">
                           {t('shuttle.schedule.columns.action')}
@@ -211,22 +286,18 @@ export default function ShuttleSection() {
                           <td className="px-4 py-4 text-ink-muted tabular-nums">
                             {schedule.arrivalTime}
                           </td>
-                          <td className="px-4 py-4 font-display text-lg font-semibold text-terracotta-500">
+                          <td className="whitespace-nowrap px-4 py-4 font-display text-lg font-semibold text-terracotta-500">
                             {schedule.price} {schedule.currency}
                           </td>
                           <td className="px-4 py-4">
-                            {schedule.availableSeats > 0 ? (
-                              <span className="text-ocean-700">{schedule.availableSeats}</span>
-                            ) : (
-                              <span className="text-terracotta-500">{t('shuttle.schedule.full')}</span>
-                            )}
+                            {renderSeats(schedule)}
                           </td>
                           <td className="px-4 py-4">
                             <Button
                               size="sm"
                               variant="outline"
-                              disabled={schedule.availableSeats === 0}
-                              onClick={() => selectForBooking({ service: 'shuttle', id: schedule.id })}
+                              disabled={seatState(schedule).unavailable}
+                              onClick={() => selectForBooking({ service: 'shuttle', id: schedule.id, date })}
                             >
                               {t('shuttle.bookShuttle')}
                             </Button>

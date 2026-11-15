@@ -115,10 +115,12 @@
                 "arrival": "Arrival",
                 "price": "Price",
                 "availableSeats": "Seats per departure",
+                "seatsOnDate": "Seats on this date",
                 "action": "Action"
             },
             "noSchedules": "No schedules available for this direction.",
-            "full": "Full"
+            "full": "Full",
+            "departed": "Already left"
         },
         "importantInfo": {
             "title": "Practical information",
