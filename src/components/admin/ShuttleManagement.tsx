@@ -5,9 +5,11 @@ import {
   updateShuttleSchedule,
   deleteShuttleSchedule,
   patchShuttleSchedule,
-  ApiShuttleSchedule
+  getShuttleAvailability,
+  ApiShuttleSchedule,
+  ApiShuttleAvailability
 } from '../../api/madabookingApi'
-import { Plus, Edit, Trash2, Eye, EyeOff, Clock, MapPin, Bus, X } from 'lucide-react'
+import { Plus, Edit, Trash2, Eye, EyeOff, Clock, MapPin, Bus, X, Users } from 'lucide-react'
 
 interface ShuttleSchedule {
   id: string
@@ -24,9 +26,24 @@ interface ShuttleSchedule {
   updated_at: string
 }
 
+/** Date du jour au format AAAA-MM-JJ, dans le fuseau local de l'équipe. */
+const getTodayIso = () => {
+  const now = new Date()
+  const month = String(now.getMonth() + 1).padStart(2, '0')
+  const day = String(now.getDate()).padStart(2, '0')
+  return `${now.getFullYear()}-${month}-${day}`
+}
+
+/** Les horaires modifiés par PATCH doivent respecter le format HH:MM:SS exigé par l'API. */
+const toFullTime = (time: string) => (time.length === 5 ? `${time}:00` : time)
+
 export default function ShuttleManagement() {
   const [schedules, setSchedules] = useState<ShuttleSchedule[]>([])
   const [loading, setLoading] = useState(true)
+  const [actionError, setActionError] = useState('')
+  const [availabilityDate, setAvailabilityDate] = useState(getTodayIso())
+  const [availability, setAvailability] = useState<Record<string, ApiShuttleAvailability>>({})
+  const [availabilityError, setAvailabilityError] = useState(false)
   const [showModal, setShowModal] = useState(false)
   const [editingSchedule, setEditingSchedule] = useState<ShuttleSchedule | null>(null)
   const [formData, setFormData] = useState({
@@ -44,6 +61,31 @@ export default function ShuttleManagement() {
   useEffect(() => {
     fetchSchedules()
   }, [])
+
+  // Places restantes de chaque départ pour le jour choisi
+  useEffect(() => {
+    if (!availabilityDate) return
+    let cancelled = false
+    setAvailabilityError(false)
+    getShuttleAvailability(availabilityDate)
+      .then((items) => {
+        if (cancelled) return
+        const byId: Record<string, ApiShuttleAvailability> = {}
+        items.forEach((item) => {
+          byId[item.id] = item
+        })
+        setAvailability(byId)
+      })
+      .catch((error) => {
+        if (cancelled) return
+        console.error('Erreur lors du chargement des places restantes:', error)
+        setAvailability({})
+        setAvailabilityError(true)
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [availabilityDate, schedules])
 
   const fetchSchedules = async () => {
     try {
@@ -135,11 +177,17 @@ export default function ShuttleManagement() {
   }
 
   const toggleActive = async (schedule: ShuttleSchedule) => {
+    setActionError('')
     try {
-      await patchShuttleSchedule(schedule.id, { isActive: !schedule.is_active })
+      await patchShuttleSchedule(schedule.id, {
+        departureTime: toFullTime(schedule.departure_time),
+        arrivalTime: toFullTime(schedule.arrival_time),
+        isActive: !schedule.is_active
+      })
       await fetchSchedules()
     } catch (error) {
       console.error('Erreur lors de la mise à jour:', error)
+      setActionError('Impossible de modifier l\'état de cet horaire. Réessayez dans un instant.')
     }
   }
 
@@ -182,6 +230,34 @@ export default function ShuttleManagement() {
     return `${hours}h${minutes > 0 ? minutes.toString().padStart(2, '0') : ''}`
   }
 
+  const renderSeats = (schedule: ShuttleSchedule) => {
+    const info = availability[schedule.id]
+    const capacity = info ? info.capacity : schedule.available_seats
+    const full = !!info && info.remaining <= 0
+    return (
+      <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">
+        <span className="inline-flex items-center text-ink-light">
+          <Users className="h-4 w-4 mr-1" />
+          {capacity ?? '?'} places par départ
+        </span>
+        {info && (
+          full ? (
+            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-terracotta-100 text-terracotta-600">
+              Complet
+            </span>
+          ) : (
+            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-ocean-100 text-ocean-800">
+              {info.remaining} place{info.remaining > 1 ? 's' : ''} restante{info.remaining > 1 ? 's' : ''} sur {info.capacity}
+            </span>
+          )
+        )}
+        {info && info.departed && (
+          <span className="text-xs text-ink-light">Départ déjà passé</span>
+        )}
+      </div>
+    )
+  }
+
   const activeSchedules = schedules.filter(s => s.is_active)
   const inactiveSchedules = schedules.filter(s => !s.is_active)
 
@@ -211,6 +287,38 @@ export default function ShuttleManagement() {
           Nouvel horaire
         </button>
       </div>
+
+      {/* Places restantes par jour */}
+      <div className="bg-white p-4 rounded-lg shadow flex flex-col sm:flex-row sm:items-center gap-3">
+        <label htmlFor="availability-date" className="text-sm font-medium text-ink-muted">
+          Places restantes le
+        </label>
+        <input
+          id="availability-date"
+          type="date"
+          value={availabilityDate}
+          onChange={(e) => setAvailabilityDate(e.target.value)}
+          className="block border-sand-300 rounded-md shadow-sm focus:ring-ocean-500 focus:border-ocean-500 text-sm"
+        />
+        <button
+          type="button"
+          onClick={() => setAvailabilityDate(getTodayIso())}
+          className="px-3 py-2 border border-sand-300 rounded-md text-sm font-medium text-ink-muted bg-white hover:bg-sand-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ocean-500"
+        >
+          Aujourd'hui
+        </button>
+        {availabilityError && (
+          <span className="text-sm text-terracotta-600">
+            Les places restantes sont indisponibles pour le moment.
+          </span>
+        )}
+      </div>
+
+      {actionError && (
+        <div className="p-3 rounded-md bg-terracotta-100 text-terracotta-600 text-sm" role="alert">
+          {actionError}
+        </div>
+      )}
 
       {/* Stats */}
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-3">
@@ -338,6 +446,7 @@ export default function ShuttleManagement() {
                         </div>
                       </div>
                     </div>
+                    {renderSeats(schedule)}
                   </div>
                 </div>
               </div>
@@ -407,6 +516,7 @@ export default function ShuttleManagement() {
                           </div>
                         </div>
                       </div>
+                      {renderSeats(schedule)}
                     </div>
                   </div>
                 </div>

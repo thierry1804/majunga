@@ -97,10 +97,10 @@ export default function BookingsManagement() {
             service_type: serviceType,
             service_label: serviceLabel,
             special_requests: apiBooking.specialRequests || null,
-            user_email: apiBooking.userEmail,
-            user_name: apiBooking.userName,
+            user_email: apiBooking.userEmail || '',
+            user_name: apiBooking.userName || '',
             booking_date: apiBooking.bookingDate,
-            participants: apiBooking.participants,
+            participants: apiBooking.participants || 0,
             total_price: parseFloat(apiBooking.totalPrice) || 0,
             status: (apiBooking.status || 'pending') as 'pending' | 'confirmed' | 'cancelled',
             payment_id: apiBooking.paymentId || null,
@@ -159,6 +159,7 @@ export default function BookingsManagement() {
   }
 
   const formatDate = (dateString: string) => {
+    if (!dateString || Number.isNaN(new Date(dateString).getTime())) return 'Non renseignée'
     return new Date(dateString).toLocaleDateString('fr-FR', {
       day: 'numeric',
       month: 'long',
