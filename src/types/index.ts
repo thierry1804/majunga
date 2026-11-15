@@ -51,13 +51,24 @@ export interface SupabaseShuttleSchedule {
   updated_at: string;
 }
 
+export interface Location {
+  lat: number;
+  lng: number;
+  address: string;
+}
+
 export interface BookingFormData {
   name: string;
   email: string;
   phone: string;
-  service: 'tour' | 'shuttle';
+  service: 'tour' | 'shuttle' | 'custom-shuttle';
   serviceId: number;
   date: string;
   numberOfPeople: number;
   specialRequests?: string;
-}
+  // Navette sur mesure (carte)
+  customFromLocation?: Location;
+  customToLocation?: Location;
+  customDepartureTime?: string;
+  customPrice?: number;
+}

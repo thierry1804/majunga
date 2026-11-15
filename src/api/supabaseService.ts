@@ -119,7 +119,12 @@ export async function getShuttleSchedulesFromSupabase(): Promise<ShuttleSchedule
 export async function createBooking(bookingData: {
   tour_id?: string;
   shuttle_id?: string;
-  service_type?: 'tour' | 'shuttle';
+  custom_route?: {
+    from: { lat: number; lng: number; address: string };
+    to: { lat: number; lng: number; address: string };
+    departureTime: string;
+  };
+  service_type?: 'tour' | 'shuttle' | 'custom_shuttle';
   user_email: string;
   user_name: string;
   phone?: string;
@@ -134,6 +139,7 @@ export async function createBooking(bookingData: {
   const apiBooking = await createPublicBooking({
     serviceType,
     tour: bookingData.tour_id ? `/api/tours/${bookingData.tour_id}` : undefined,
+    customRoute: bookingData.custom_route,
     shuttleSchedule: bookingData.shuttle_id ? `/api/shuttle_schedules/${bookingData.shuttle_id}` : undefined,
     userEmail: bookingData.user_email,
     userName: bookingData.user_name,
