@@ -62,8 +62,13 @@ export interface ApiBooking {
   '@id'?: string;
   '@type'?: string;
   id?: string;
-  serviceType?: 'tour' | 'shuttle';
+  serviceType?: 'tour' | 'shuttle' | 'custom_shuttle';
   tour?: string;
+  customRoute?: {
+    from: { lat: number; lng: number; address: string };
+    to: { lat: number; lng: number; address: string };
+    departureTime: string;
+  };
   shuttleSchedule?: string;
   userEmail: string;
   userName: string;

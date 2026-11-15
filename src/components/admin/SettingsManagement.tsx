@@ -70,6 +70,14 @@ const ESSENTIAL_SETTINGS = [
     defaultValue: '20',
   },
   {
+    key: 'price_per_km',
+    valueType: 'number',
+    description: 'Tarif au kilomètre (EUR) pour les navettes sur mesure',
+    category: 'booking',
+    isPublic: true,
+    defaultValue: '0.5',
+  },
+  {
     key: 'currency',
     valueType: 'string',
     description: 'Devise utilisée (EUR, USD, MGA, etc.)',
